@@ -1,0 +1,66 @@
+# agent_runtime.yaml — Configuração de runtime (MVP)
+# Observação: nomes de modelos são aliases. A escolha concreta (Claude / OpenAI) é feita por ambiente.
+
+runtime:
+  max_retries: 2
+  timeout_seconds_per_step: 90
+  max_context_chars: 30000
+  context:
+    max_products: 5
+    max_dimension_docs: 6
+    max_kits: 2
+
+models:
+  FAST_TEXT:
+    provider: "configurable"   # ex.: anthropic|openai
+    model: "fast"
+    temperature: 0.2
+    max_output_tokens: 800
+  REASONING:
+    provider: "configurable"
+    model: "reasoning"
+    temperature: 0.2
+    max_output_tokens: 1400
+  WRITER:
+    provider: "configurable"
+    model: "writer"
+    temperature: 0.5
+    max_output_tokens: 1600
+  JSON_STRICT:
+    provider: "configurable"
+    model: "json"
+    temperature: 0.0
+    max_output_tokens: 1200
+
+pipeline:
+  - step: ValidateInput
+    kind: system
+  - step: ContextAssembly
+    kind: retrieval
+  - step: DiagnosisAgent
+    kind: llm
+    model: FAST_TEXT
+  - step: MatchingAgent
+    kind: llm
+    model: REASONING
+  - step: SolutionArchitectAgent
+    kind: llm
+    model: REASONING
+    when:
+      complexity_not_in: ["BAIXA"]
+  - step: SalesNarrativeAgent
+    kind: llm
+    model: WRITER
+  - step: MarketingDeckAgent
+    kind: llm
+    model: WRITER
+  - step: ERPSankhyaMapperAgent
+    kind: llm
+    model: JSON_STRICT
+  - step: PartnerCenterMapperAgent
+    kind: llm
+    model: JSON_STRICT
+  - step: DocsPublisherAgent
+    kind: renderer
+  - step: PersistSolutionPack
+    kind: system

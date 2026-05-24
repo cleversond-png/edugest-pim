@@ -1,0 +1,180 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.local/schemas/solution_pack.schema.json",
+  "title": "OpportunitySolutionPack",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "diagnosis",
+    "recommendation",
+    "exports",
+    "telemetry",
+    "executionId",
+    "opportunityId",
+    "status",
+    "durationMs",
+    "createdAt"
+  ],
+  "properties": {
+    "executionId": {
+      "type": "string"
+    },
+    "opportunityId": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["SUCCESS", "PARTIAL_SUCCESS", "FAILED"]
+    },
+    "durationMs": {
+      "type": "number"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "diagnosis": {
+      "type": "object"
+    },
+    "recommendation": {
+      "type": "object"
+    },
+    "presales": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "default": null
+    },
+    "sales": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "default": null
+    },
+    "marketing": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "default": null
+    },
+    "exports": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "erp",
+        "partner"
+      ],
+      "properties": {
+        "erp": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": [
+            "blocked",
+            "payload"
+          ],
+          "properties": {
+            "blocked": {
+              "type": "boolean"
+            },
+            "blockedReasons": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": []
+            },
+            "payload": {
+              "type": [
+                "object",
+                "array",
+                "string",
+                "number",
+                "boolean",
+                "null"
+              ]
+            }
+          }
+        },
+        "partner": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": [
+            "payload"
+          ],
+          "properties": {
+            "payload": {
+              "type": [
+                "object",
+                "array",
+                "string",
+                "number",
+                "boolean",
+                "null"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "docs": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "contentType",
+              "content"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "contentType": {
+                "type": "string"
+              },
+              "content": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "telemetry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "modelRouting",
+        "tokenUsage"
+      ],
+      "properties": {
+        "modelRouting": {
+          "type": "object"
+        },
+        "tokenUsage": {
+          "type": "object"
+        }
+      }
+    },
+    "errors": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}

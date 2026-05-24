@@ -1,0 +1,29 @@
+{
+  "name": "edugest-pim",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "start": "ts-node runner.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.98.0",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1"
+  },
+  "devDependencies": {
+    "@prisma/client": "^5.21.1",
+    "@types/node": "^25.9.1",
+    "prisma": "^5.21.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  }
+}

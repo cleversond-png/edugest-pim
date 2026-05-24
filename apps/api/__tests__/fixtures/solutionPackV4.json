@@ -1,0 +1,98 @@
+{
+  "executionId": "00e02027-545b-494c-ba9d-fa251791e73b",
+  "opportunityId": "test-opp-001",
+  "status": "PARTIAL_SUCCESS",
+  "durationMs": 20,
+  "createdAt": "2026-05-24T19:00:00Z",
+  "diagnosis": {
+    "pains": ["Falta de visibilidade em tempo real", "Integração manual cara"],
+    "objectives": ["Integração com SharePoint", "Dashboards executivos", "Autenticação AD"],
+    "constraints": ["Orçamento limitado", "Integrações citadas"],
+    "maturity": "NAO_EVIDENCIADO",
+    "complexity": "ALTA",
+    "context": "Cliente precisa integração com SharePoint...",
+    "notEvidenced": []
+  },
+  "recommendation": {
+    "intelligence": {
+      "score": 0.79,
+      "candidates": [
+        {
+          "product_id": "intranet-sharepoint",
+          "score": 0.78,
+          "reasons": ["SharePoint detectado"]
+        }
+      ]
+    },
+    "business": {
+      "products": [
+        {
+          "product_id": "intranet-sharepoint",
+          "name": "INTRANET SHAREPOINT",
+          "erp_code": "105202",
+          "group_code": "105005",
+          "group_name": "INTRANET CORPORATIVA",
+          "pm_type": "Serviço Profissional",
+          "contract_model": "Pontual",
+          "billing_model": "Pontual",
+          "dependency_type": "Nenhuma",
+          "notes": "Página em SharePoint"
+        }
+      ],
+      "required_dependencies": []
+    },
+    "strategy": {
+      "summary": "Integrar SharePoint com autenticação AD",
+      "justification": "Cliente citou explicitamente SharePoint"
+    }
+  },
+  "presales": {
+    "architecture": "SharePoint + AD integration",
+    "risks": []
+  },
+  "sales": {
+    "pitch": "Solução integrada de portal",
+    "objections": ["Preço"]
+  },
+  "marketing": {
+    "slide_contents": [
+      {"slide": 1, "title": "Cenário"},
+      {"slide": 2, "title": "Dores"},
+      {"slide": 3, "title": "Solução"}
+    ]
+  },
+  "exports": {
+    "erp": {
+      "blocked": false,
+      "blockedReasons": [],
+      "payload": {
+        "items": [
+          {
+            "product_id": "intranet-sharepoint",
+            "erp_code": "105202",
+            "name": "INTRANET SHAREPOINT",
+            "contract_model": "Pontual"
+          }
+        ]
+      }
+    },
+    "partner": {
+      "payload": {
+        "items": [],
+        "generatedAt": "2026-05-24T19:00:00Z"
+      }
+    }
+  },
+  "telemetry": {
+    "modelRouting": {
+      "DiagnosisAgent": "FAST_TEXT",
+      "MatchingAgent": "REASONING"
+    },
+    "tokenUsage": {
+      "total": {
+        "input": 0,
+        "output": 0
+      }
+    }
+  }
+}

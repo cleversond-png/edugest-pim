@@ -1,0 +1,458 @@
+// schema.prisma — EduGest-PIM (Central Inteligente de Produto)
+// Gerado a partir do SPEC-DATA-MODEL.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProductStatus {
+  RASCUNHO
+  ATIVO
+  DESCONTINUADO
+}
+
+enum ProductCategory {
+  SOFTWARE
+  SERVICO
+  LICENCIAMENTO
+  CREDITO
+  PROJETO
+}
+
+enum HostingModel {
+  CLOUD
+  LOCAL
+}
+
+enum KitType {
+  SALES
+  MARKETING
+  PRESALES
+}
+
+enum DimensionType {
+  IDENTIDADE
+  TECNICO
+  COMERCIAL
+  SUPORTE
+  ROADMAP
+  INTEGRACOES
+}
+
+enum PricingModel {
+  POR_FAIXA
+  POR_USUARIO
+  FLAT
+  HORA
+  CUSTOM
+}
+
+enum ValidationStatus {
+  OK
+  A_VALIDAR
+  BLOQUEADO
+}
+
+enum ExportTarget {
+  ERP_SANKHYA
+  PARTNER_CENTER
+  SHAREPOINT_DOCS
+}
+
+enum OpportunityMaturity {
+  BAIXA
+  MEDIA
+  ALTA
+  NAO_EVIDENCIADO
+}
+
+enum OpportunityComplexity {
+  BAIXA
+  MEDIA
+  ALTA
+  NAO_EVIDENCIADO
+}
+
+model Product {
+  id              String        @id @default(cuid())
+  name            String
+  slug            String        @unique
+  status          ProductStatus @default(RASCUNHO)
+
+  category        ProductCategory
+  subcategory     String?
+  productTypePM   String?
+
+  shortPitch      String?
+  longDescription String?       @db.Text
+
+  personaJson      Json?
+  painsJson        Json?
+  valueProp        String?      @db.Text
+  differentiators  Json?
+
+  capabilities     ProductCapability[]
+  dimensionDocs    ProductDimensionDoc[]
+  kits             ProductKit[]
+
+  pricingPolicies  PricingPolicy[]
+
+  erpMapping       ERPMappingSankhya?
+  partnerMapping   PartnerCenterMapping?
+  sharepointConfig SharePointConfig?
+
+  dependencyRules  DependencyRule[]
+
+  versions         ProductVersion[]
+  docBuildRuns     DocBuildRun[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model ProductVersion {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  version   String
+  snapshot  Json
+  notes     String?  @db.Text
+
+  createdAt DateTime @default(now())
+
+  @@unique([productId, version])
+  @@index([productId])
+}
+
+model Capability {
+  id          String @id @default(cuid())
+  code        String @unique
+  name        String
+  description String? @db.Text
+
+  products    ProductCapability[]
+}
+
+model ProductCapability {
+  id           String     @id @default(cuid())
+  productId    String
+  capabilityId String
+
+  product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  capability   Capability @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
+
+  weight       Int?
+
+  @@unique([productId, capabilityId])
+  @@index([productId])
+  @@index([capabilityId])
+}
+
+model ProductDimensionDoc {
+  id         String        @id @default(cuid())
+  productId  String
+  type       DimensionType
+
+  title      String
+  markdown   String?       @db.Text
+  html       String?       @db.Text
+  jsonData   Json?
+
+  product    Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  updatedAt  DateTime @updatedAt
+  createdAt  DateTime @default(now())
+
+  @@index([productId])
+  @@index([type])
+}
+
+model ProductKit {
+  id         String   @id @default(cuid())
+  productId  String
+  type       KitType
+
+  markdown   String?  @db.Text
+  jsonData   Json?
+
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  updatedAt  DateTime @updatedAt
+  createdAt  DateTime @default(now())
+
+  @@unique([productId, type])
+  @@index([productId])
+}
+
+model PricingPolicy {
+  id         String      @id @default(cuid())
+  productId  String
+  name       String
+  model      PricingModel
+  currency   String      @default("BRL")
+
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  versions   PricingVersion[]
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([productId])
+}
+
+model PricingVersion {
+  id              String        @id @default(cuid())
+  pricingPolicyId String
+  pricingPolicy   PricingPolicy @relation(fields: [pricingPolicyId], references: [id], onDelete: Cascade)
+
+  version       String
+  active        Boolean      @default(true)
+
+  tiers         PricingTier[]
+  adjustments   PricingAdjustment[]
+
+  rulesJson     Json?
+
+  validFrom     DateTime     @default(now())
+  validTo       DateTime?
+
+  createdAt     DateTime @default(now())
+
+  @@unique([pricingPolicyId, version])
+  @@index([pricingPolicyId])
+  @@index([active])
+}
+
+model PricingTier {
+  id               String        @id @default(cuid())
+  pricingVersionId String
+  pricingVersion   PricingVersion @relation(fields: [pricingVersionId], references: [id], onDelete: Cascade)
+
+  hosting       HostingModel?
+  minQty        Int
+  maxQty        Int
+
+  monthlyFee    Decimal  @db.Decimal(10,2)
+  planName      String?
+
+  includesJson  Json?
+
+  @@index([pricingVersionId])
+}
+
+model PricingAdjustment {
+  id               String        @id @default(cuid())
+  pricingVersionId String
+  pricingVersion   PricingVersion @relation(fields: [pricingVersionId], references: [id], onDelete: Cascade)
+
+  code            String
+  factor          Decimal  @db.Decimal(6,3)
+  description     String?
+
+  @@unique([pricingVersionId, code])
+  @@index([pricingVersionId])
+}
+
+model DependencyRule {
+  id           String @id @default(cuid())
+  productId    String
+  product      Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  dependencyType String
+  baseProductRef String?
+  conditionJson  Json?
+  notes          String? @db.Text
+
+  @@index([productId])
+}
+
+model ERPMappingSankhya {
+  id         String  @id @default(cuid())
+  productId  String  @unique
+  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  tipoReceitaDespesa String @default("RECEITA")
+  ativo              Boolean @default(true)
+
+  grupoCodigo         String?
+  grupoDescricao      String?
+
+  codigo              String?
+  descricao           String?
+
+  tipoServicoCodigo    String?
+  tipoServicoDescricao String?
+
+  unidadePadrao       String?
+  unidadeDescricao    String?
+
+  temISS              String?
+
+  calcularComissao     Boolean?
+  percComissaoVendedor Decimal? @db.Decimal(6,3)
+  percComissaoGerente  Decimal? @db.Decimal(6,3)
+
+  bloquearVendaFracionada Boolean?
+
+  centroResultado      String?
+  codigoNBS            String?
+  ncmValido            String?
+
+  fiscalStatus         ValidationStatus @default(A_VALIDAR)
+  cadastroStatus       ValidationStatus @default(A_VALIDAR)
+
+  observacao           String? @db.Text
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model PartnerCenterMapping {
+  id         String  @id @default(cuid())
+  productId  String  @unique
+  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  offerType  String?
+
+  title      String?
+  shortDescription String?
+  longDescription  String? @db.Text
+
+  industries Json?
+  categories Json?
+
+  markets    Json?
+  languages  Json?
+
+  keywords   Json?
+  solutionAreas Json?
+
+  contactJson Json?
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model SharePointConfig {
+  id         String @id @default(cuid())
+  productId  String @unique
+  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  siteUrl     String
+  libraryPath String?
+  folderSlug  String?
+
+  lastSyncAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DocTemplate {
+  id        String @id @default(cuid())
+  name      String
+  type      String
+
+  templateMd   String? @db.Text
+  templateHtml String? @db.Text
+  templateJson Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DocBuildRun {
+  id          String @id @default(cuid())
+  productId   String
+  product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  target      ExportTarget @default(SHAREPOINT_DOCS)
+  status      String
+  filesGenerated Int @default(0)
+
+  outputPath  String?
+  logs        String? @db.Text
+
+  createdAt   DateTime @default(now())
+
+  @@index([productId])
+  @@index([target])
+}
+
+model Asset {
+  id        String @id @default(cuid())
+  name      String
+  kind      String
+  mimeType  String?
+  url       String?
+  base64    String? @db.Text
+
+  ownerType String?
+  ownerId   String?
+
+  createdAt DateTime @default(now())
+}
+
+model Opportunity {
+  id          String @id @default(cuid())
+
+  externalRef String?
+  name        String
+
+  crmPayload  Json?
+
+  maturity    OpportunityMaturity @default(NAO_EVIDENCIADO)
+  complexity  OpportunityComplexity @default(NAO_EVIDENCIADO)
+
+  transcripts Transcript[]
+  solutionPacks SolutionPack[]
+
+  clientBranding Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Transcript {
+  id            String @id @default(cuid())
+  opportunityId String
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+
+  source        String?
+  language      String?
+  rawText       String  @db.Text
+
+  createdAt DateTime @default(now())
+
+  @@index([opportunityId])
+}
+
+model SolutionPack {
+  id            String @id @default(cuid())
+  opportunityId String
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+
+  inputSnapshot Json
+
+  diagnosis     Json
+  recommendation Json
+  presales      Json
+  sales         Json
+  marketing     Json
+  exports       Json
+
+  deckOutlineMd String? @db.Text
+
+  modelRouting  Json?
+  tokenUsage    Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([opportunityId])
+}

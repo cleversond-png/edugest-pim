@@ -1,0 +1,33 @@
+{
+  "diagnosis": {
+    "pains": [
+      "Falta de integração"
+    ],
+    "objectives": [
+      "Integrar sistemas"
+    ],
+    "constraints": [
+      "Orçamento limitado"
+    ],
+    "complexity": "MEDIA"
+  },
+  "recommendation": {
+    "business": {
+      "products": [
+        {
+          "name": "Intranet SharePoint",
+          "erp_code": "SP001",
+          "contract_model": "SaaS"
+        }
+      ]
+    }
+  },
+  "exports": {
+    "erp": {
+      "blocked": false,
+      "payload": {
+        "test": "data"
+      }
+    }
+  }
+}

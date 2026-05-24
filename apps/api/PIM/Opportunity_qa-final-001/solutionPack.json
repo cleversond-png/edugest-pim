@@ -1,0 +1,213 @@
+{
+  "executionId": "7a2e28ad-3893-4b08-b872-9dbb651305f1",
+  "opportunityId": "qa-final-001",
+  "status": "PARTIAL_SUCCESS",
+  "durationMs": 2,
+  "createdAt": "2026-05-24T19:43:24.109Z",
+  "diagnosis": {
+    "pains": [
+      "não evidenciado"
+    ],
+    "objectives": [
+      "integracao com sharepoint e dashboards para gestao academica"
+    ],
+    "constraints": [
+      "Integrações citadas (mapear sistemas e campos necessários)"
+    ],
+    "maturity": "NAO_EVIDENCIADO",
+    "complexity": "ALTA",
+    "context": "cliente quer integracao com sharepoint e dashboards para gestao academica",
+    "notEvidenced": []
+  },
+  "recommendation": {
+    "intelligence": {
+      "score": 0.79,
+      "candidates": [
+        {
+          "product_id": "relatorios-inteligentes",
+          "score": 0.85,
+          "reasons": [
+            "Relatórios/Dashboards",
+            "Integração evidenciada (forte)"
+          ]
+        },
+        {
+          "product_id": "intranet-sharepoint",
+          "score": 0.78,
+          "reasons": [
+            "SharePoint/Portal/Intranet detectado"
+          ]
+        },
+        {
+          "product_id": "integrador-provisionador",
+          "score": 0.74,
+          "reasons": [
+            "Integração evidenciada para a intranet"
+          ]
+        }
+      ]
+    },
+    "business": {
+      "products": [
+        {
+          "product_id": "relatorios-inteligentes",
+          "name": "RELATORIOS INTELIGENTES",
+          "erp_code": "105103",
+          "group_code": "105000",
+          "group_name": "PRODUTOS PRÓPRIOS (PLATAFORMAS & PRODUTOS CORE)",
+          "pm_type": "SaaS BB",
+          "contract_model": "Subscrição",
+          "billing_model": "Recorrente",
+          "dependency_type": "Condicional",
+          "base_preferred": "integrador-provisionador",
+          "notes": "Requer integração educacional ativa, preferencialmente via Integrador/Provisionador."
+        },
+        {
+          "product_id": "intranet-sharepoint",
+          "name": "INTRANET SHAREPOINT",
+          "erp_code": "105202",
+          "group_code": "105005",
+          "group_name": "INTRANET CORPORATIVA",
+          "pm_type": "Serviço Profissional / SharePoint",
+          "contract_model": "Pontual",
+          "billing_model": "Pontual",
+          "dependency_type": "Nenhuma",
+          "notes": "Página/estrutura em SharePoint. Não depende do Integrador (mas pode exigir Integrador se houver integração citada na demanda)."
+        },
+        {
+          "product_id": "integrador-provisionador",
+          "name": "INTEGRADOR BIG BRAIN / PROVISIONADOR",
+          "erp_code": "105101",
+          "group_code": "105001",
+          "group_name": "INTEGRADOR",
+          "pm_type": "SaaS BB",
+          "contract_model": "Subscrição",
+          "billing_model": "Recorrente",
+          "dependency_type": "Nenhuma",
+          "notes": "Produto SaaS faturável que integra sistemas educacionais ao Microsoft 365/Office 365."
+        }
+      ],
+      "required_dependencies": [
+        "integrador-provisionador"
+      ]
+    },
+    "strategy": {
+      "summary": "Objetivo: integracao com sharepoint e dashboards para gestao academica. Restrição: Integrações citadas (mapear sistemas e campos necessários). Evidências: Transcrição indica integração/sistemas; Diagnóstico indica integrações como restrição. Dependências: Requer integração educacional ativa (comprov",
+      "justification": "Objetivo: integracao com sharepoint e dashboards para gestao academica. Restrição: Integrações citadas (mapear sistemas e campos necessários). Evidências: Transcrição indica integração/sistemas; Diagnóstico indica integrações como restrição. Dependências: Requer integração educacional ativa (comprovação) — matriz Sankhya.. Selecionados: relatorios-inteligentes, intranet-sharepoint, integrador-provisionador."
+    }
+  },
+  "presales": {
+    "architecture": "High-level architecture",
+    "risks": []
+  },
+  "sales": {
+    "pitch": "Proposta de valor clara",
+    "objections": [
+      "Preço",
+      "Prazo"
+    ]
+  },
+  "marketing": {
+    "slide_contents": [
+      {
+        "slide": 1,
+        "title": "Cenário"
+      },
+      {
+        "slide": 2,
+        "title": "Dores"
+      },
+      {
+        "slide": 3,
+        "title": "Solução"
+      }
+    ]
+  },
+  "exports": {
+    "erp": {
+      "blocked": true,
+      "blockedReasons": [
+        "Campos fiscais/cadastro pendentes (A VALIDAR). Validar com Fiscal/Cadastro/Financeiro antes de exportar."
+      ],
+      "payload": null
+    },
+    "partner": {
+      "payload": {
+        "items": [
+          {
+            "product_id": "relatorios-inteligentes",
+            "offerType": "Solution",
+            "title": "RELATORIOS INTELIGENTES",
+            "shortDescription": "Requer integração educacional ativa, preferencialmente via Integrador/Provisionador.",
+            "solutionAreas": [
+              "ModernWork"
+            ],
+            "markets": [
+              "en-US"
+            ],
+            "languages": [
+              "en-US"
+            ],
+            "keywords": [
+              "PRODUTOS PRÓPRIOS (PLATAFORMAS & PRODUTOS CORE)"
+            ]
+          },
+          {
+            "product_id": "intranet-sharepoint",
+            "offerType": "Solution",
+            "title": "INTRANET SHAREPOINT",
+            "shortDescription": "Página/estrutura em SharePoint. Não depende do Integrador (mas pode exigir Integrador se houver integração citada na demanda).",
+            "solutionAreas": [
+              "ModernWork"
+            ],
+            "markets": [
+              "en-US"
+            ],
+            "languages": [
+              "en-US"
+            ],
+            "keywords": [
+              "INTRANET CORPORATIVA"
+            ]
+          },
+          {
+            "product_id": "integrador-provisionador",
+            "offerType": "Solution",
+            "title": "INTEGRADOR BIG BRAIN / PROVISIONADOR",
+            "shortDescription": "Produto SaaS faturável que integra sistemas educacionais ao Microsoft 365/Office 365.",
+            "solutionAreas": [
+              "ModernWork"
+            ],
+            "markets": [
+              "en-US"
+            ],
+            "languages": [
+              "en-US"
+            ],
+            "keywords": [
+              "INTEGRADOR"
+            ]
+          }
+        ],
+        "generatedAt": "2026-05-24T19:43:24.109Z"
+      }
+    }
+  },
+  "telemetry": {
+    "modelRouting": {
+      "DiagnosisAgent": "FAST_TEXT",
+      "MatchingAgent": "REASONING",
+      "SolutionArchitectAgent": "REASONING",
+      "SalesNarrativeAgent": "WRITER",
+      "MarketingDeckAgent": "WRITER",
+      "ERPSankhyaMapperAgent": "JSON_STRICT",
+      "PartnerCenterMapperAgent": "JSON_STRICT"
+    },
+    "tokenUsage": {
+      "total": {
+        "input": 0,
+        "output": 0
+      }
+    }
+  }
+}

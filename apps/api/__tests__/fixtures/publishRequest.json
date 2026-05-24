@@ -1,0 +1,30 @@
+{
+  "executionId": "00e02027-545b-494c-ba9d-fa251791e73b",
+  "opportunityId": "test-opp-001",
+  "solutionPack": {
+    "executionId": "00e02027-545b-494c-ba9d-fa251791e73b",
+    "opportunityId": "test-opp-001",
+    "status": "PARTIAL_SUCCESS",
+    "durationMs": 20,
+    "createdAt": "2026-05-24T19:00:00Z",
+    "diagnosis": {
+      "pains": ["Falta de visibilidade"],
+      "objectives": ["Integração"],
+      "constraints": [],
+      "complexity": "ALTA"
+    },
+    "recommendation": {
+      "business": {
+        "products": [
+          {"name": "Intranet", "erp_code": "SP001"}
+        ]
+      }
+    },
+    "exports": {
+      "erp": {
+        "blocked": false,
+        "payload": null
+      }
+    }
+  }
+}

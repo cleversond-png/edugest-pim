@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.local/schemas/opportunity_context.schema.json",
+  "title": "OpportunityContext",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "opportunityId",
+    "transcript"
+  ],
+  "properties": {
+    "opportunityId": {
+      "type": "string",
+      "minLength": 5
+    },
+    "transcript": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "text"
+      ],
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "language": {
+          "type": "string",
+          "default": "pt-BR"
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "Teams",
+            "Stream",
+            "Upload",
+            "Other"
+          ],
+          "default": "Other"
+        }
+      }
+    },
+    "crmPayload": {
+      "type": [
+        "object",
+        "array",
+        "string",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "productFilter": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "maxProducts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20,
+          "default": 5
+        }
+      }
+    },
+    "clientBranding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "clientName": {
+          "type": "string"
+        },
+        "logoAssetId": {
+          "type": "string"
+        },
+        "primaryColor": {
+          "type": "string",
+          "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+        },
+        "secondaryColor": {
+          "type": "string",
+          "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+        }
+      }
+    }
+  }
+}

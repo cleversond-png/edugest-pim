@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.local/schemas/render_result.schema.json",
+  "title": "RenderResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "blocked",
+    "files",
+    "summary"
+  ],
+  "properties": {
+    "blocked": {
+      "type": "boolean"
+    },
+    "blockedReasons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "contentType",
+          "content"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "contentType": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "filesGenerated",
+        "targets",
+        "product"
+      ],
+      "properties": {
+        "filesGenerated": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "product": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "name",
+            "slug"
+          ],
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "slug": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

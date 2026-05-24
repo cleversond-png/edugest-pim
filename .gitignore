@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Build outputs
+dist/
+build/
+.next/
+.turbo/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs/
+*.log
+
+# Temp
+tmp/
+temp/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+.jest_cache/
+node_modules
+
+# Credenciais e informações sensíveis
+CREDENCIAIS-*.md
+*-PRODUCAO.md
+*-SECRET*.md
+.env*
+!.env.example

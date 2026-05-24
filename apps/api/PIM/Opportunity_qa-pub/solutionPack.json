@@ -1,0 +1,134 @@
+{
+  "executionId": "b5113dc7-198a-429d-9da3-ce4cef75407e",
+  "opportunityId": "qa-pub",
+  "status": "PARTIAL_SUCCESS",
+  "durationMs": 1,
+  "createdAt": "2026-05-24T19:43:39.812Z",
+  "diagnosis": {
+    "pains": [
+      "não evidenciado"
+    ],
+    "objectives": [
+      "não evidenciado"
+    ],
+    "constraints": [
+      "não evidenciado"
+    ],
+    "maturity": "NAO_EVIDENCIADO",
+    "complexity": "NAO_EVIDENCIADO",
+    "context": "cliente quer sistema",
+    "notEvidenced": []
+  },
+  "recommendation": {
+    "intelligence": {
+      "score": 0.4,
+      "candidates": [
+        {
+          "product_id": "consultoria-especializada",
+          "score": 0.4,
+          "reasons": [
+            "Sem sinais claros → consultoria (descoberta)"
+          ]
+        }
+      ]
+    },
+    "business": {
+      "products": [
+        {
+          "product_id": "consultoria-especializada",
+          "name": "CONSULTORIA ESPECIALIZADA",
+          "erp_code": "109501",
+          "group_code": "109501",
+          "group_name": "CONSULTORIA",
+          "pm_type": "Serviço Profissional",
+          "contract_model": "Pontual",
+          "billing_model": "Pontual",
+          "dependency_type": "Nenhuma"
+        }
+      ],
+      "required_dependencies": []
+    },
+    "strategy": {
+      "summary": "Selecionados: consultoria-especializada.",
+      "justification": "Selecionados: consultoria-especializada."
+    }
+  },
+  "presales": {
+    "architecture": "High-level architecture",
+    "risks": []
+  },
+  "sales": {
+    "pitch": "Proposta de valor clara",
+    "objections": [
+      "Preço",
+      "Prazo"
+    ]
+  },
+  "marketing": {
+    "slide_contents": [
+      {
+        "slide": 1,
+        "title": "Cenário"
+      },
+      {
+        "slide": 2,
+        "title": "Dores"
+      },
+      {
+        "slide": 3,
+        "title": "Solução"
+      }
+    ]
+  },
+  "exports": {
+    "erp": {
+      "blocked": true,
+      "blockedReasons": [
+        "Campos fiscais/cadastro pendentes (A VALIDAR). Validar com Fiscal/Cadastro/Financeiro antes de exportar."
+      ],
+      "payload": null
+    },
+    "partner": {
+      "payload": {
+        "items": [
+          {
+            "product_id": "consultoria-especializada",
+            "offerType": "Solution",
+            "title": "CONSULTORIA ESPECIALIZADA",
+            "shortDescription": "CONSULTORIA ESPECIALIZADA offering",
+            "solutionAreas": [
+              "ModernWork"
+            ],
+            "markets": [
+              "en-US"
+            ],
+            "languages": [
+              "en-US"
+            ],
+            "keywords": [
+              "CONSULTORIA"
+            ]
+          }
+        ],
+        "generatedAt": "2026-05-24T19:43:39.812Z"
+      }
+    }
+  },
+  "telemetry": {
+    "modelRouting": {
+      "DiagnosisAgent": "FAST_TEXT",
+      "MatchingAgent": "REASONING",
+      "SolutionArchitectAgent": "REASONING",
+      "SalesNarrativeAgent": "WRITER",
+      "MarketingDeckAgent": "WRITER",
+      "ERPSankhyaMapperAgent": "JSON_STRICT",
+      "PartnerCenterMapperAgent": "JSON_STRICT"
+    },
+    "tokenUsage": {
+      "total": {
+        "input": 0,
+        "output": 0
+      }
+    }
+  }
+}
