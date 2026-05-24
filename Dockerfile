@@ -20,6 +20,9 @@ RUN npm ci && npm run build --workspace=web
 FROM node:20-alpine
 WORKDIR /app
 
+# Copy package files
+COPY package.json package-lock.json ./
+
 # Copy built backend
 COPY --from=builder-backend /app/apps/api/dist ./apps/api/dist
 COPY --from=builder-backend /app/apps/api/package.json ./apps/api/
@@ -29,10 +32,13 @@ COPY --from=builder-frontend /app/apps/web/.next ./apps/web/.next
 COPY --from=builder-frontend /app/apps/web/public ./apps/web/public
 COPY --from=builder-frontend /app/apps/web/package.json ./apps/web/
 
-# Copy necessary dependencies
-COPY package.json package-lock.json ./
-COPY apps/api/node_modules ./apps/api/node_modules
-COPY apps/web/node_modules ./apps/web/node_modules
+# Copy packages/core
+COPY packages/core ./packages/core
+
+# Copy node_modules from builders
+COPY --from=builder-backend /app/node_modules ./node_modules
+COPY --from=builder-backend /app/apps/api/node_modules ./apps/api/node_modules
+COPY --from=builder-frontend /app/apps/web/node_modules ./apps/web/node_modules
 
 # Copy production startup script
 COPY start.js ./
