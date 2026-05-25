@@ -19,7 +19,7 @@ export function DiagnosisCard({ diagnosis }: DiagnosisCardProps) {
           <h4 className="mb-3 text-sm font-medium text-gray-700">Dores Identificadas</h4>
           <div className="space-y-2">
             {diagnosis.pains.length > 0 ? (
-              diagnosis.pains.map((pain, i) => (
+              diagnosis.pains.map((pain: string, i) => (
                 <div key={i} className="flex items-start gap-2 text-sm text-gray-600">
                   <span className="mt-1 inline-block h-1.5 w-1.5 rounded-full bg-red-500 flex-shrink-0" />
                   {pain}
@@ -36,7 +36,7 @@ export function DiagnosisCard({ diagnosis }: DiagnosisCardProps) {
           <h4 className="mb-3 text-sm font-medium text-gray-700">Objetivos</h4>
           <div className="space-y-2">
             {diagnosis.objectives.length > 0 ? (
-              diagnosis.objectives.map((obj, i) => (
+              diagnosis.objectives.map((obj: string, i) => (
                 <div key={i} className="flex items-start gap-2 text-sm text-gray-600">
                   <Target className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600" />
                   {obj}
@@ -75,7 +75,7 @@ export function DiagnosisCard({ diagnosis }: DiagnosisCardProps) {
           <div>
             <h4 className="mb-3 text-sm font-medium text-gray-700">Não Evidenciado</h4>
             <div className="space-y-2">
-              {diagnosis.notEvidenced.map((item, i) => (
+              {diagnosis.notEvidenced.map((item: string, i) => (
                 <div key={i} className="flex items-start gap-2 text-sm text-gray-600">
                   <ZapOff className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600" />
                   {item}
