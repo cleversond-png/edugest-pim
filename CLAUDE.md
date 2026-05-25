@@ -300,7 +300,7 @@ DATABASE_URL=
 # LLM
 ANTHROPIC_API_KEY=
 ```
-
+Frontend sempre em desenvolvimento local até backend estar 100% validado em produção. Nunca perguntar sobre frontend antes de todas as rotas da API estarem confirmadas com curl.
 ---
 
 *Fim do prompt mestre. Inicie lendo CHECKPOINT.md e STATE.json agora.*

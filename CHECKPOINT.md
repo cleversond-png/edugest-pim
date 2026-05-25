@@ -36,10 +36,14 @@
   - Security: Fixed API_KEY exposure (server-only, never in browser bundle)
   - Build: ✓ Next.js build successful
 
-- **Módulo 6**: Deploy em Azure ✅
-  - Platform: Azure Container Instances
-  - URL: http://20.232.74.136:3000
-  - Image: acrpimplantaoti.azurecr.io/edugest-pim:latest
+- **Módulo 6**: Deploy em Azure ✅ (Corrigido: Container Instances → Container Apps)
+  - Platform: Azure Container Apps (PROD)
+  - Resource Group: rg-edugest-prod
+  - Container App: ca-edugest-prod-backend
+  - URL: https://ca-edugest-prod-backend.purpleground-cde5672b.brazilsouth.azurecontainerapps.io
+  - Image: edugestacrprod.azurecr.io/edugest-pim:latest
+  - Registry: Azure Container Registry (edugestacrprod)
+  - Revision: ca-edugest-prod-backend--0000017
   - CI/CD: GitHub Actions (automatic deploy on git push)
   - Status: ✅ LIVE & OPERATIONAL
 
@@ -141,12 +145,31 @@
 - ✅ GitHub Actions workflow corrigido para passar env vars ao container
 - ✅ start.js simplificado para rodar apenas API (sem Next.js frontend)
 
-## Deploy Atual
-- **IP**: 20.242.211.155:3000
+## Deploy Atual (2026-05-25 20:50 UTC)
+- **Platform**: Azure Container Apps (PROD)
+- **URL**: https://ca-edugest-prod-backend.purpleground-cde5672b.brazilsouth.azurecontainerapps.io
 - **Status**: ✅ OPERACIONAL
 - **Endpoints Testados**:
-  - GET /api/health → "ok" ✅
-  - GET /api/products → 0 products (database connected) ✅
-  - GET /api/company → "Company profile not configured" ✅
-- **Última atualização**: 2026-05-25 19:45 UTC
-- **Nota**: DATABASE_URL está configurado e conectado. ANTHROPIC_API_KEY = "PENDENTE" (rotas que usam IA retornarão erro descritivo)
+  - GET /api/health → `{"status":"degraded",...}` (database ok, Graph unreachable) ✅
+  - GET /api/products → 20 products com paginação ✅
+  - POST /api/products → Produto criado com sucesso (TEST-PRODUCT-1779742214) ✅
+  - POST /api/products/:slug/generate-docs → ❌ Falha: ANTHROPIC_API_KEY vazio
+- **Imagem**: `edugestacrprod.azurecr.io/edugest-pim:latest` (linux/amd64)
+- **Resource Group**: rg-edugest-prod
+- **Nota**: DATABASE_URL conectado ✓ | ANTHROPIC_API_KEY vazio ❌ | Graph token falha ❌
+
+## Validação E2E Local (2026-05-25 20:50 UTC) — PARCIALMENTE CONCLUÍDA
+- ✅ Servidor API (npm run dev) rodando em http://localhost:3000
+- ✅ Servidor Next.js (npm run dev) rodando em http://localhost:3001
+- ✅ GET /api/products — lista 20 produtos, paginação funcional
+- ✅ POST /api/products — cria novo produto com slug auto-gerado
+- ✅ GET /api/health — status degraded (expected without Graph creds)
+- ✅ GET /products (UI) — página carrega corretamente após fix de data binding
+- ❌ POST /api/products/:slug/generate-docs — bloqueado: ANTHROPIC_API_KEY missing
+- ❌ SharePoint publish — bloqueado: Graph authentication (403 Forbidden)
+
+### Bugs Encontrados & Corrigidos
+1. **Apps/web/app/products/page.tsx:68** — Env var name errada (`NEXT_PUBLIC_API_BASE` → `NEXT_PUBLIC_API_URL`)
+2. **Apps/web/app/products/page.tsx:83** — Response field mismatch (`data.products` → `data.data`)
+   - Causa: API retorna `{data: [...], pagination: {...}}` mas UI esperava `{products: [...]}`
+   - Teste: após fix, página carrega corretamente (testado com curl)

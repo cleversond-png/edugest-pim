@@ -4,17 +4,17 @@
   "last_updated": "2026-05-25T20:04:37Z",
   "current_phase": "Phase 3 — Validação End-to-End",
 
-  "current_task": "Testar fluxo completo local: cadastrar produto → gerar docs → verificar arquivos .md gerados",
+  "current_task": "Validação E2E: Fluxo funcional, bloqueado por ANTHROPIC_API_KEY e Graph perms",
 
-  "pivot_note": "Projeto reorientado em 2026-05-25. O foco principal passa a ser o cadastro de produto como fonte única de verdade. O motor de análise de transcrição (POST /api/analyze) coexiste mas é funcionalidade secundária. 2026-05-25 20:04 — Deploy corrigido de Container Instance → Container Apps. URL de produção: ca-edugest-prod-backend.purpleground-cde5672b.brazilsouth.azurecontainerapps.io. Health check respondendo corretamente.",
+  "pivot_note": "Projeto reorientado em 2026-05-25. O foco principal passa a ser o cadastro de produto como fonte única de verdade. O motor de análise de transcrição (POST /api/analyze) coexiste mas é funcionalidade secundária. 2026-05-25 20:50 — Testes E2E locais: criação de produtos ✓, UI page load ✓, data binding corrigido ✓. Blockers: ANTHROPIC_API_KEY vazio (doc generation), Graph 403 (SharePoint publish).",
 
   "next_tasks": [
-    "Testar fluxo completo local: cadastrar produto → gerar docs → verificar arquivos .md gerados",
-    "Testar geração de .pptx com perfil Escola Pequena",
+    "Configurar ANTHROPIC_API_KEY em .env local e testar geração de docs",
     "Resolver permissão Graph 403 (publicação no SharePoint)",
-    "Testar publicação de docs no SharePoint",
-    "Configurar ANTHROPIC_API_KEY em produção",
-    "Testar POST /api/analyze em produção"
+    "Testar geração de .pptx com perfil Escola Pequena",
+    "Testar publicação completa de docs no SharePoint",
+    "Validar fluxo E2E em produção (após configurar ANTHROPIC_API_KEY em Azure Container)",
+    "Testar POST /api/analyze em produção com dataset de oportunidade"
   ],
 
   "completed_tasks": [
