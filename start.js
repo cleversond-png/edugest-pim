@@ -1,7 +1,27 @@
 #!/usr/bin/env node
 
-console.log("[App] Starting EduGest-PIM API...");
+const { spawn } = require("child_process");
 
-// Start backend (Fastify on port 3000)
-// The API handles both the REST endpoints and serves the Next.js frontend via reverse proxy
-require("./apps/api/dist/server.js");
+console.log("[App] Starting EduGest-PIM...");
+
+// Start backend API (Fastify on port 3001)
+console.log("[App] Starting API on port 3001...");
+const apiProcess = spawn("node", ["./apps/api/dist/server.js"], {
+  env: { ...process.env, PORT: "3001" },
+  stdio: "inherit"
+});
+
+// Start frontend (Next.js on port 3000)
+console.log("[App] Starting Next.js frontend on port 3000...");
+const nextProcess = spawn("node", ["./apps/web/.next/standalone/server.js"], {
+  env: { ...process.env, PORT: "3000" },
+  stdio: "inherit"
+});
+
+// Handle shutdown gracefully
+process.on("SIGTERM", () => {
+  console.log("[App] Shutting down gracefully...");
+  apiProcess.kill();
+  nextProcess.kill();
+  process.exit(0);
+});
