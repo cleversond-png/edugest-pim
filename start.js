@@ -13,7 +13,8 @@ const apiProcess = spawn("node", ["./apps/api/dist/server.js"], {
 
 // Start frontend (Next.js on port 3000)
 console.log("[App] Starting Next.js frontend on port 3000...");
-const nextProcess = spawn("node", ["./apps/web/.next/standalone/server.js"], {
+const nextProcess = spawn("npm", ["run", "start", "-w", "web"], {
+  cwd: "/app",
   env: { ...process.env, PORT: "3000" },
   stdio: "inherit"
 });
