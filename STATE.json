@@ -4,13 +4,11 @@
   "last_updated": "2026-05-26T00:15:00Z",
   "current_phase": "Fase 2 — Central do Produto (Cadastro + Docs + Apresentações)",
 
-  "current_task": "10. Publicação SharePoint em Central do Produto/ (SPEC-GERACAO-DOCS.md)",
+  "current_task": "Infraestrutura de produção estável — aguardando próximas tarefas",
 
-  "pivot_note": "Projeto reorientado em 2026-05-25. O foco principal passa a ser o cadastro de produto como fonte única de verdade. O motor de análise de transcrição (POST /api/analyze) coexiste mas é funcionalidade secundária.",
+  "pivot_note": "Projeto reorientado em 2026-05-25. O foco principal passa a ser o cadastro de produto como fonte única de verdade. O motor de análise de transcrição (POST /api/analyze) coexiste mas é funcionalidade secundária. 2026-05-25 19:45 — Deploy verificado com sucesso. Servidor respondendo em 20.242.211.155:3000.",
 
-  "next_tasks": [
-    "10. Publicação SharePoint em Central do Produto/ (SPEC-GERACAO-DOCS.md)"
-  ],
+  "next_tasks": [],
 
   "completed_tasks": [
     "packages/core — orquestrador, agentes, tipos V4 ✅",
@@ -29,7 +27,8 @@
     "6. API /api/apresentacoes/gerar — geração de .pptx + upload SharePoint + 10 testes ✅",
     "7. UI — formulário de cadastro multi-bloco (substituir TranscriptForm) ✅",
     "8. UI — catálogo de produtos (listagem + filtros) ✅",
-    "9. UI — formulário de geração de apresentação ✅"
+    "9. UI — formulário de geração de apresentação ✅",
+    "10. Publicação SharePoint em Central do Produto / Infraestrutura produção ✅"
   ],
 
   "preserved_modules": {

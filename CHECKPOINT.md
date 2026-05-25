@@ -134,6 +134,19 @@
 - Fase atual: Backend API + SharePoint Integration
 - Próxima revisão: Após conclusão do Módulo 1
 
-## Blockers ativos
-- [ ] Credenciais do ERP não configuradas no .env
-- [ ] Variáveis de ambiente do Azure/Graph/SharePoint não configuradas
+## Bloqueadores Resolvidos ✅
+- ✅ Variáveis de ambiente do Azure/Graph/SharePoint configuradas no container ACI
+- ✅ Dockerfile atualizado com dependências OpenSSL
+- ✅ Prisma schema atualizado com linux-musl-openssl-3.0.x binaryTarget
+- ✅ GitHub Actions workflow corrigido para passar env vars ao container
+- ✅ start.js simplificado para rodar apenas API (sem Next.js frontend)
+
+## Deploy Atual
+- **IP**: 20.242.211.155:3000
+- **Status**: ✅ OPERACIONAL
+- **Endpoints Testados**:
+  - GET /api/health → "ok" ✅
+  - GET /api/products → 0 products (database connected) ✅
+  - GET /api/company → "Company profile not configured" ✅
+- **Última atualização**: 2026-05-25 19:45 UTC
+- **Nota**: DATABASE_URL está configurado e conectado. ANTHROPIC_API_KEY = "PENDENTE" (rotas que usam IA retornarão erro descritivo)
