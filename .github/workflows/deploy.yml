@@ -37,9 +37,6 @@ jobs:
       - name: Build Web
         run: npm run build --workspace=web
 
-      - name: Debug - Check start.js
-        run: cat start.js
-
       - name: Azure Login
         uses: azure/login@v1
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
