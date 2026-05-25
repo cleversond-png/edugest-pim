@@ -171,6 +171,8 @@ Estas regras nunca podem ser violadas, independente da implementação:
 6. **Contrato V4 é imutável** — nunca alterar `solution_pack_schema.json` sem aprovação explícita.
 7. **API Key no servidor** — nunca expor `API_KEY` ao browser ou bundle frontend.
 8. **Falhas parciais permitidas** — pipeline retorna `PARTIAL_SUCCESS` com `errors[]`; nunca silencia falhas.
+9. **Toda rota nova deve ser registrada** — toda rota nova em `apps/api/src/routes/` deve ter seu import em `apps/api/src/server.ts` antes do commit. Verificar com `grep` se o import existe.
+10. **Checklist de deploy obrigatório** — ao fim de cada módulo: (1) aguardar GitHub Actions verde, (2) testar GET /health em produção, (3) testar cada rota nova com curl na URL do Container App. Deploy com erro ou rota retornando NOT_FOUND = módulo não concluído.
 
 ---
 
