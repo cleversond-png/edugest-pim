@@ -56,13 +56,42 @@ jobs:
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:${{ github.sha }}
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:latest
 
-      - name: Restart Azure Container Instance
+      - name: Update or Create Azure Container Instance
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          az container restart \
-            --resource-group ${{ secrets.CONTAINER_RESOURCE_GROUP }} \
-            --name ${{ secrets.CONTAINER_NAME }} \
-            --no-wait || true
+          RESOURCE_GROUP="${{ secrets.CONTAINER_RESOURCE_GROUP }}"
+          CONTAINER_NAME="${{ secrets.CONTAINER_NAME }}"
+
+          # Delete existing container if it exists
+          az container delete \
+            --resource-group "$RESOURCE_GROUP" \
+            --name "$CONTAINER_NAME" \
+            --yes || true
+
+          # Create new container with environment variables
+          az container create \
+            --resource-group "$RESOURCE_GROUP" \
+            --name "$CONTAINER_NAME" \
+            --image "${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:latest" \
+            --cpu 1 \
+            --memory 1.5 \
+            --registry-login-username "${{ secrets.ACR_USERNAME }}" \
+            --registry-login-password "${{ secrets.ACR_PASSWORD }}" \
+            --ports 3000 \
+            --dns-name-label edugest-prod \
+            --environment-variables \
+              PORT=3000 \
+              NODE_ENV=production \
+              API_KEY="${{ secrets.API_KEY }}" \
+              DATABASE_URL="${{ secrets.DATABASE_URL }}" \
+              ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}" \
+              AZURE_TENANT_ID="${{ secrets.AZURE_TENANT_ID }}" \
+              AZURE_CLIENT_ID="${{ secrets.AZURE_CLIENT_ID }}" \
+              AZURE_CLIENT_SECRET="${{ secrets.AZURE_CLIENT_SECRET }}" \
+              SHAREPOINT_SITE_ID="${{ secrets.SHAREPOINT_SITE_ID }}" \
+              SHAREPOINT_DRIVE_ID="${{ secrets.SHAREPOINT_DRIVE_ID }}" \
+              SHAREPOINT_BASE_FOLDER="EduGest-PIM" \
+            --no-wait
 
       - name: Azure Logout
         if: always()
