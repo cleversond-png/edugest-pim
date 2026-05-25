@@ -75,8 +75,9 @@ jobs:
             --image "${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:latest" \
             --cpu 1 \
             --memory 1.5 \
-            --registry-login-username "${{ secrets.ACR_USERNAME }}" \
-            --registry-login-password "${{ secrets.ACR_PASSWORD }}" \
+            --os-type Linux \
+            --registry-username "${{ secrets.ACR_USERNAME }}" \
+            --registry-password "${{ secrets.ACR_PASSWORD }}" \
             --ports 3000 \
             --dns-name-label edugest-prod \
             --environment-variables \
