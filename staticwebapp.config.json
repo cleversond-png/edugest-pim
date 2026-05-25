@@ -1,0 +1,22 @@
+{
+  "routes": [
+    {
+      "route": "/api/*",
+      "proxy": {
+        "backendUri": "https://ca-edugest-prod-backend.purpleground-cde5672b.brazilsouth.azurecontainerapps.io/api/"
+      }
+    },
+    {
+      "route": "/*",
+      "serve": "/index.html",
+      "statusCode": 200
+    }
+  ],
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/api/*"]
+  },
+  "missionControl": {
+    "cli_version": "latest"
+  }
+}
