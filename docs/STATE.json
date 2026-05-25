@@ -1,149 +1,134 @@
 {
-  "version": "v2",
+  "version": "v3",
   "project": "EDUGEST-PIM",
-  "last_updated": "2026-05-24T22:00:00Z",
-  "current_phase": "Testing Complete — Step 5 Documentation Done",
+  "last_updated": "2026-05-25",
+  "current_phase": "Fase 2 — Central do Produto (Cadastro + Docs + Apresentações)",
 
-  "current_task": "Step 6 (Optional): CI/CD GitHub Actions or Step 7: Final Verification",
+  "current_task": "Implementar cadastro de produto (formulário multi-bloco + API /api/products)",
+
+  "pivot_note": "Projeto reorientado em 2026-05-25. O foco principal passa a ser o cadastro de produto como fonte única de verdade. O motor de análise de transcrição (POST /api/analyze) coexiste mas é funcionalidade secundária.",
 
   "next_tasks": [
-    "Step 6: CI/CD pipeline (GitHub Actions) - Optional",
-    "Step 7: Final Verification (npm test, coverage)",
-    "Integração com SharePoint (quando MFA resolver)",
-    "Criar UI (Next.js) - frontend",
-    "Deploy em Azure",
-    "Monitoring e observabilidade"
+    "1. Prisma schema — adicionar modelo Product com todos os blocos (SPEC-PRODUTO.md)",
+    "2. Seed — migrar SANKHYA_CATALOG atual para banco (20 produtos)",
+    "3. API /api/products — CRUD completo (POST, GET, PUT, GET/:slug)",
+    "4. API /api/products/:slug/generate-docs — geração de .md/.html por público",
+    "5. API /api/products/:slug/slides — banco de slides (SPEC-APRESENTACAO.md)",
+    "6. API /api/apresentacoes/gerar — geração de .pptx (SPEC-APRESENTACAO.md)",
+    "7. UI — formulário de cadastro multi-bloco (substituir TranscriptForm)",
+    "8. UI — catálogo de produtos (listagem + filtros)",
+    "9. UI — formulário de geração de apresentação",
+    "10. Publicação SharePoint em Central do Produto/ (SPEC-GERACAO-DOCS.md)"
   ],
 
   "completed_tasks": [
-    "Orquestrador multi-agente funcional",
-    "DiagnosisAgent implementado",
-    "MatchingAgent V3 com score e dependências",
-    "Integração com catálogo Sankhya",
-    "ERP Sankhya Mapper V2 funcionando",
-    "Geração de payload ERP estruturado",
-    "Implementação de bloqueio (blocked + reason)",
-    "Reorganização de packages/core com tipos V4",
-    "Servidor Fastify + health check",
-    "Endpoint POST /api/analyze com transformação V4",
-    "Module 1 (packages/core) - ✅ Validado",
-    "Module 2 (Fastify server) - ✅ Validado",
-    "Module 3 (POST /api/analyze) - ✅ Validado",
-    "Module 4 (POST /api/publish local) - ✅ Validado",
-    "QA Test Suite - ✅ 7/8 passed",
-    "Step 3: Unit Tests - ✅ 47 tests (38 tests + 9 core tests)",
-    "Step 4: Coverage Analysis - ✅ 102 total tests, 70%+ all metrics",
-    "Step 5: Documentation - ✅ TESTING.md + TEST_RESULTS.md"
+    "packages/core — orquestrador, agentes, tipos V4 ✅",
+    "apps/api — Fastify server, auth, health check ✅",
+    "apps/api — POST /api/analyze com transformação V4 ✅",
+    "apps/api — POST /api/publish local ✅",
+    "apps/api — 102 testes, 76% cobertura ✅",
+    "apps/web — estrutura Next.js, formulário básico ✅",
+    "SharePoint — Site ID e Drive ID configurados ✅",
+    "Especificação completa da nova fase (SPEC-PRODUTO, SPEC-GERACAO-DOCS, SPEC-APRESENTACAO, SPEC-PRECIFICACAO) ✅"
   ],
 
-  "core_modules": [
-    "fallback-orchestrator.ts",
-    "runner.ts",
-    "guardrails.ts",
-    "stepRegistry.example.ts",
-    "matchingAgentV3.ts",
-    "erpSankhyaMapperV2.ts"
-  ],
-
-  "contracts": [
-    {
-      "name": "SolutionPackV4",
-      "status": "Em implementação",
-      "description": "Contrato final padronizado para saída do sistema"
-    }
-  ],
-
-  "data_flow": [
-    "Transcript/Input",
-    "DiagnosisAgent",
-    "MatchingAgentV3",
-    "ERPSankhyaMapperV2",
-    "SolutionPack",
-    "SolutionPackV4 (target)",
-    "Exports (ERP / SharePoint)"
-  ],
-
-  "outputs": {
-    "primary": [
-      "solutionPack"
-    ],
-    "erp": [
-      "exports.erp.payload",
-      "exports.erp.blocked"
+  "preserved_modules": {
+    "note": "Estes módulos estão completos e NÃO devem ser alterados sem motivo explícito",
+    "modules": [
+      "packages/core — FallbackOrchestrator, agentes, tipos V4",
+      "apps/api/src/middleware — auth.ts, errorHandler.ts",
+      "apps/api/src/services/orchestrator.ts",
+      "apps/api/src/services/solutionPackV4.ts",
+      "apps/api/src/services/graph.ts",
+      "apps/api/src/routes/health.ts",
+      "apps/api/src/routes/analyze.ts",
+      "apps/api/src/routes/publish.ts",
+      "apps/api/__tests__ — toda a suite de testes"
     ]
   },
 
-  "business_rules": [
-    "Matching deve usar score (não fallback)",
-    "Dependências devem sempre ser incluídas",
-    "ERP deve bloquear quando houver 'A VALIDAR'",
-    "Integrador é obrigatório em cenários com integração",
-    "Produto só pode ser retornado se existir no catálogo Sankhya"
+  "new_modules_to_build": [
+    "schema.prisma — modelo Product (SPEC-PRODUTO.md)",
+    "apps/api/src/routes/products.ts — CRUD produtos",
+    "apps/api/src/routes/generateDocs.ts — POST /api/products/:slug/generate-docs",
+    "apps/api/src/routes/slides.ts — banco de slides",
+    "apps/api/src/routes/apresentacoes.ts — POST /api/apresentacoes/gerar",
+    "apps/api/src/services/docGenerator.ts — geração de .md/.html por público",
+    "apps/api/src/services/pptxGenerator.ts — geração de .pptx",
+    "apps/web/app/products/ — formulário de cadastro",
+    "apps/web/app/catalogo/ — listagem de produtos",
+    "apps/web/app/apresentacoes/ — formulário de geração"
   ],
 
-  "integrations": [
-    {
-      "name": "Sankhya ERP",
-      "type": "Produto",
-      "status": "Ativo",
-      "usage": "Código ERP e estrutura de produto"
-    },
-    {
-      "name": "Microsoft Graph",
-      "type": "Infra",
-      "status": "Configurado",
-      "usage": "Upload para SharePoint (pendente MFA resolution)"
-    },
-    {
-      "name": "SharePoint Online",
-      "type": "Destino",
-      "status": "Pronto",
-      "usage": "Armazenamento de documentos (será integrado em seguida)"
-    },
-    {
-      "name": "Local Filesystem",
-      "type": "Destino Temporário",
-      "status": "Ativo",
-      "usage": "Publicação local de arquivos (PIM/Opportunity_*/)"
-    }
+  "specs": {
+    "ativos": [
+      "SPEC-PRODUTO.md — modelo de cadastro completo",
+      "SPEC-GERACAO-DOCS.md — geração de .md e .html por público",
+      "SPEC-APRESENTACAO.md — banco de slides e geração de .pptx",
+      "SPEC-PRECIFICACAO.md — campos de preço fase 1",
+      "SPEC-API.md — endpoints (preservar /api/analyze e /api/publish)",
+      "SPEC-GRAPH.md — client Microsoft Graph",
+      "SPEC-DATA-MODEL.md — modelo de dados Prisma"
+    ],
+    "arquivados": [
+      "SPEC-AGENT-RUNTIME.md — motor de agentes (funcional, não é mais o foco)",
+      "SPEC-RENDERER.md — substituído por SPEC-GERACAO-DOCS.md",
+      "SPEC-EVALS.md — evals do agente (fase futura)",
+      "SPEC-SEED.md — substituído pelo seed de produtos",
+      "SPEC-SOLUTION-PACK-V4.md — contrato V4 (funcional, preservar)",
+      "SPEC-UI.md — UI de análise (preservar como referência para /analyze)"
+    ]
+  },
+
+  "sharepoint": {
+    "siteId": "eduproms.sharepoint.com,1765f30c-f095-456f-8c72-f6493f4f6ce3,40279f9a-77e8-49af-b7ae-a85f78a553d5",
+    "driveId": "b!DPNlF5Xwb0WMcvZJP09s45qfJ0Dod69Jt66oX3ilU9VslJOAf9OVToHJQ5dEGorE",
+    "baseFolder": "EduGest-PIM",
+    "centralProdutoFolder": "Central do Produto",
+    "apresentacoesFolder": "Central do Produto/_apresentacoes"
+  },
+
+  "business_rules": [
+    "ERP Sankhya é o master — produto nasce aqui, Ploomes consome",
+    "fiscalStatus = A_VALIDAR bloqueia export ERP",
+    "BB-SERV-SUP-001 (Suporte M365) sempre obrigatório em propostas",
+    "Produto com status = RASCUNHO não aparece em sugestões de proposta",
+    "codigo do produto é imutável após criação",
+    "Matching sem fallback — sempre score",
+    "Não inventar dados — campo vazio = A_VALIDAR ou campo em branco"
   ],
+
+  "perfis_cliente": {
+    "ESCOLA_PEQUENA": ["BB-SAAS-INT-001", "BB-SAAS-INTRA-001", "BB-SERV-FORM-001", "BB-SERV-SUP-001"],
+    "ESCOLA_MEDIA": ["BB-SAAS-INT-001", "BB-SAAS-INTRA-001", "BB-SAAS-PORT-001", "BB-SERV-FORM-001", "BB-SERV-SUP-001"],
+    "REDE_GRANDE": ["BB-SAAS-INT-001", "BB-SAAS-INTRA-001", "BB-SAAS-PORT-001", "BB-SAAS-CO-001", "BB-SAAS-HD-001", "BB-SAAS-INS-001", "BB-SERV-CONS-001", "BB-SERV-FORM-001", "BB-SERV-SUP-001"]
+  },
 
   "environment_variables": [
     "AZURE_TENANT_ID",
     "AZURE_CLIENT_ID",
     "AZURE_CLIENT_SECRET",
-    "SHAREPOINT_SITE_ID",
-    "SHAREPOINT_DRIVE_ID",
-    "SHAREPOINT_BASE_FOLDER",
+    "SHAREPOINT_SITE_ID=eduproms.sharepoint.com,1765f30c-f095-456f-8c72-f6493f4f6ce3,40279f9a-77e8-49af-b7ae-a85f78a553d5",
+    "SHAREPOINT_DRIVE_ID=b!DPNlF5Xwb0WMcvZJP09s45qfJ0Dod69Jt66oX3ilU9VslJOAf9OVToHJQ5dEGorE",
+    "SHAREPOINT_BASE_FOLDER=EduGest-PIM",
+    "ANTHROPIC_API_KEY",
     "PORT",
-    "NODE_ENV"
-  ],
-
-  "project_structure_target": [
-    "apps/api",
-    "apps/web",
-    "packages/core",
-    "docs/"
+    "NODE_ENV",
+    "API_KEY",
+    "DATABASE_URL"
   ],
 
   "risks": [
-    "Falta de definição fiscal (NBS/NCM/ISS) — revisar com Sankhya",
-    "MFA bloqueando SharePoint upload — usuario resolvendo Conditional Access",
-    "Dependência de contexto de agentes — robusto no orchestrador",
-    "Possível divergência entre V3 e V4 — validado em QA"
+    "Prisma schema atual não tem modelo Product — precisa adicionar sem quebrar o existente",
+    "pptxgenjs precisa ser adicionado ao package.json da API",
+    "Permissão Graph no SharePoint ainda pendente (403 ao tentar criar pasta via Service Principal)",
+    "Hub Docente e Insights existem no portfólio mas não têm slides cadastrados ainda"
   ],
 
-  "observability": {
-    "logs": "✅ Pino structured logging implementado",
-    "monitoring": "Pronto para integração com observabilidade",
-    "retry_strategy": "✅ Implementado no FallbackOrchestrator",
-    "health_check": "✅ GET /api/health com status de serviços"
-  },
-
   "notes": [
-    "Sistema já opera como motor de pré-vendas automatizado",
-    "Próximo passo é transformar em aplicação",
-    "CHECKPOINT.md deve ser usado como fonte principal de contexto",
-    "STATE.json guia o fluxo técnico dos agentes"
+    "O POST /api/analyze continua funcionando — coexiste com o novo foco",
+    "apps/web/app/analyze/page.tsx será mantido mas a home page será o catálogo de produtos",
+    "O SANKHYA_CATALOG do matchingAgentV3.ts deve ser mantido em sincronia com o banco",
+    "Cada sessão Claude Code deve iniciar lendo CHECKPOINT.md e STATE.json"
   ]
 }
