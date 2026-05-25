@@ -317,3 +317,37 @@ curl -X PUT "https://graph.microsoft.com/v1.0/drives/b!DPNlF5Xwb0WMcvZJP09s45qfJ
 1. Configurar `ANTHROPIC_API_KEY` em Azure Container Apps
 2. Redeployar para testar com IA real em produção
 3. Validar saída real vs. mock
+
+## 🚀 PHASE 3 — TAREFA 5: Frontend Next.js em Azure Static Web Apps (2026-05-25 23:56 UTC) ✅ CONCLUÍDA
+
+### Configuração & Deployment
+
+**Artefatos criados:**
+- `staticwebapp.config.json` — Configuração SPA do Azure Static Web Apps
+- `.github/workflows/deploy.yml` — Job `deploy-frontend` adicionado
+
+**Fluxo de Deploy:**
+1. GitHub Actions (build-and-deploy) constrói backend + Docker image ✅
+2. GitHub Actions (deploy-frontend) constrói Next.js + publica no Static Web Apps ✅
+3. Resultado final: Frontend ao vivo em produção
+
+**Correções Aplicadas:**
+- ✅ Erro TypeScript em DiagnosisCard.tsx (parâmetros sem tipo) — corrigido com tipos explícitos
+- ✅ Proxy API desnecessário removido (frontend usa NEXT_PUBLIC_API_URL diretamente)
+
+### URLs de Produção Validadas
+
+| Recurso | URL | Status |
+|---------|-----|--------|
+| **Frontend** | https://zealous-ground-0b995350f.7.azurestaticapps.net | ✅ HTTP 200 |
+| Pages | /products, /analyze, /apresentacoes | ✅ SPA routing funcional |
+| **Backend API** | https://ca-edugest-prod-backend.purpleground-cde5672b.brazilsouth.azurecontainerapps.io | ✅ HTTP 200 |
+| Health | /api/health | ✅ Operational |
+| Products | /api/products | ✅ Lista 20 produtos |
+
+### Notas Técnicas
+
+- Frontend faz chamadas diretas para backend (sem proxy) via `NEXT_PUBLIC_API_URL`
+- Static Web Apps configurado apenas para servir SPA (navigationFallback → index.html)
+- CORS não bloqueado entre frontend e backend
+- Build otimizado: ~3.2s no Turbopack

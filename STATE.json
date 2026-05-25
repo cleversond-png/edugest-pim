@@ -4,15 +4,15 @@
   "last_updated": "2026-05-25T20:55:00Z",
   "current_phase": "Phase 3 — Validação End-to-End & Resolução de Blockers",
 
-  "current_task": "Phase 3 Tarefa 4: AI Fallback para Mock — Sistema funciona sem ANTHROPIC_API_KEY",
+  "current_task": "Phase 3 Tarefa 5: Deploy Frontend Next.js no Azure Static Web Apps",
 
   "pivot_note": "Projeto reorientado em 2026-05-25. O foco principal é o cadastro de produto como fonte única de verdade. Motor de análise de transcrição (POST /api/analyze) é funcionalidade secundária. 2026-05-25 21:06 — Phase 2 concluída ✅. Phase 3 em progresso: Tarefa 3 (Resolver Graph 403) ANÁLISE COMPLETA ✓. Causa: Service Principal não tem permissão no site SharePoint; conta no-reply não existe. Solução: ações manuais no Azure Portal + ações manuais no SharePoint. Blocker 1 (ANTHROPIC_API_KEY) pendente. Sistema estável em prod: CRUD ✓, UI ✓, listagem ✓, data binding corrigido ✓.",
 
   "next_tasks": [
     "Configurar ANTHROPIC_API_KEY em Azure Container Apps para doc generation real",
-    "Testar fluxo completo em produção (REAL AI)",
-    "Testar POST /api/analyze em produção com dataset de oportunidade",
-    "Publicar no SharePoint com IA real (após configurar chave em Azure)"
+    "Validar fluxo E2E: form → API analyze → resultado com dados reais",
+    "Testar POST /api/products/:slug/generate-docs em produção (REAL AI)",
+    "Validar upload SharePoint com credenciais de Service Principal"
   ],
 
   "completed_tasks": [
@@ -35,7 +35,8 @@
     "9. UI — formulário de geração de apresentação ✅",
     "10. Publicação SharePoint em Central do Produto / Infraestrutura produção ✅",
     "Phase 3 Tarefa 3: Permissão Graph 403 — RESOLVIDA (Service Principal com acesso confirmado) ✅",
-    "Phase 3 Tarefa 4: AI Fallback to Mock — Sistema funciona 100% sem ANTHROPIC_API_KEY ✅"
+    "Phase 3 Tarefa 4: AI Fallback to Mock — Sistema funciona 100% sem ANTHROPIC_API_KEY ✅",
+    "Phase 3 Tarefa 5: Deploy Frontend Next.js no Azure Static Web Apps ✅"
   ],
 
   "preserved_modules": {
