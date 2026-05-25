@@ -4,17 +4,9 @@ const { spawn } = require("child_process");
 
 console.log("[App] Starting EduGest-PIM...");
 
-// Start backend API (Fastify on port 3001)
-console.log("[App] Starting API on port 3001...");
+// Start backend API (Fastify on port 3000)
+console.log("[App] Starting API on port 3000...");
 const apiProcess = spawn("node", ["./apps/api/dist/server.js"], {
-  env: { ...process.env, PORT: "3001" },
-  stdio: "inherit"
-});
-
-// Start frontend (Next.js on port 3000)
-console.log("[App] Starting Next.js frontend on port 3000...");
-const nextProcess = spawn("npm", ["run", "start", "-w", "web"], {
-  cwd: "/app",
   env: { ...process.env, PORT: "3000" },
   stdio: "inherit"
 });
@@ -23,6 +15,5 @@ const nextProcess = spawn("npm", ["run", "start", "-w", "web"], {
 process.on("SIGTERM", () => {
   console.log("[App] Shutting down gracefully...");
   apiProcess.kill();
-  nextProcess.kill();
   process.exit(0);
 });
