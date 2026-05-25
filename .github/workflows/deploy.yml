@@ -61,7 +61,8 @@ jobs:
         run: |
           az container restart \
             --resource-group ${{ secrets.CONTAINER_RESOURCE_GROUP }} \
-            --name ${{ secrets.CONTAINER_NAME }}
+            --name ${{ secrets.CONTAINER_NAME }} \
+            --no-wait || true
 
       - name: Azure Logout
         if: always()

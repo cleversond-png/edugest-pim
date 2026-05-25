@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation"
 import { SolutionPackV4 } from "@/lib/types"
 import { DiagnosisCard } from "@/components/result/DiagnosisCard"
 import { RecommendationCard } from "@/components/result/RecommendationCard"
