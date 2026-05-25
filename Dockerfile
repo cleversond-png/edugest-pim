@@ -2,10 +2,11 @@
 FROM node:20-alpine AS builder-backend
 WORKDIR /app
 COPY package*.json pnpm-lock.yaml* ./
+COPY schema.prisma ./
 COPY apps/api ./apps/api
 COPY packages/core ./packages/core
 
-RUN npm ci && npm run build --workspace=@edugest-pim/api
+RUN npm ci && npx prisma generate && npm run build --workspace=@edugest-pim/api
 
 # Multi-stage build: Frontend
 FROM node:20-alpine AS builder-frontend
