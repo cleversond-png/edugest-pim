@@ -1,14 +1,21 @@
 {
   "version": "v3",
   "project": "EDUGEST-PIM",
-  "last_updated": "2026-05-26T00:15:00Z",
-  "current_phase": "Fase 2 — Central do Produto (Cadastro + Docs + Apresentações)",
+  "last_updated": "2026-05-25T20:04:37Z",
+  "current_phase": "Phase 3 — Validação End-to-End",
 
-  "current_task": "Infraestrutura de produção estável — aguardando próximas tarefas",
+  "current_task": "Testar fluxo completo local: cadastrar produto → gerar docs → verificar arquivos .md gerados",
 
-  "pivot_note": "Projeto reorientado em 2026-05-25. O foco principal passa a ser o cadastro de produto como fonte única de verdade. O motor de análise de transcrição (POST /api/analyze) coexiste mas é funcionalidade secundária. 2026-05-25 19:45 — Deploy verificado com sucesso. Servidor respondendo em 20.242.211.155:3000.",
+  "pivot_note": "Projeto reorientado em 2026-05-25. O foco principal passa a ser o cadastro de produto como fonte única de verdade. O motor de análise de transcrição (POST /api/analyze) coexiste mas é funcionalidade secundária. 2026-05-25 20:04 — Deploy corrigido de Container Instance → Container Apps. URL de produção: ca-edugest-prod-backend.purpleground-cde5672b.brazilsouth.azurecontainerapps.io. Health check respondendo corretamente.",
 
-  "next_tasks": [],
+  "next_tasks": [
+    "Testar fluxo completo local: cadastrar produto → gerar docs → verificar arquivos .md gerados",
+    "Testar geração de .pptx com perfil Escola Pequena",
+    "Resolver permissão Graph 403 (publicação no SharePoint)",
+    "Testar publicação de docs no SharePoint",
+    "Configurar ANTHROPIC_API_KEY em produção",
+    "Testar POST /api/analyze em produção"
+  ],
 
   "completed_tasks": [
     "packages/core — orquestrador, agentes, tipos V4 ✅",
