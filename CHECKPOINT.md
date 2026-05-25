@@ -36,9 +36,30 @@
   - Security: Fixed API_KEY exposure (server-only, never in browser bundle)
   - Build: ✓ Next.js build successful
 
-## Em desenvolvimento
-- **Módulo 6**: Deploy em Azure
-  - Status: Próximo passo
+- **Módulo 6**: Deploy em Azure ✅
+  - Platform: Azure Container Instances
+  - URL: http://20.232.74.136:3000
+  - Image: acrpimplantaoti.azurecr.io/edugest-pim:latest
+  - CI/CD: GitHub Actions (automatic deploy on git push)
+  - Status: ✅ LIVE & OPERATIONAL
+
+## 🎯 MVP COMPLETADO
+
+**Todas as funcionalidades principais implementadas e deployadas:**
+- ✅ Backend API com orquestração de agentes
+- ✅ Transformação para SolutionPack V4
+- ✅ Publicação automática no SharePoint
+- ✅ Interface web completa (formulário + resultado)
+- ✅ Autenticação via API Key (servidor)
+- ✅ Health checks e logging estruturado
+- ✅ Deployment automático via GitHub Actions
+
+**Próximas fases (pós-MVP):**
+- [ ] Autenticação Azure AD (OAuth 2.0)
+- [ ] Persistência de dados (PostgreSQL via Prisma)
+- [ ] Fila de processamento assíncrono
+- [ ] Métricas e alertas (Application Insights)
+- [ ] Testes automatizados (Jest, E2E)
 
 ## Decisões críticas
 - Fase atual: Backend API + SharePoint Integration
