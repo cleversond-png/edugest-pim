@@ -20,7 +20,7 @@ export async function registerHealthRoute(app: FastifyInstance) {
     const services: HealthResponse['services'] = {}
 
     // Database check
-    services.database = process.env.DATABASE_URL ? 'ok' : 'ok'
+    services.database = process.env.DATABASE_URL ? 'ok' : 'unreachable'
 
     // Graph check
     if (!process.env.AZURE_CLIENT_ID || !process.env.SHAREPOINT_SITE_ID) {
