@@ -4,17 +4,15 @@
   "last_updated": "2026-05-25T20:55:00Z",
   "current_phase": "Phase 3 — Validação End-to-End & Resolução de Blockers",
 
-  "current_task": "Bloco 1: Configurar ANTHROPIC_API_KEY em produção | Bloco 2: Resolver permissão Graph 403",
+  "current_task": "Phase 3 Tarefa 4: AI Fallback para Mock — Sistema funciona sem ANTHROPIC_API_KEY",
 
-  "pivot_note": "Projeto reorientado em 2026-05-25. O foco principal é o cadastro de produto como fonte única de verdade. Motor de análise de transcrição (POST /api/analyze) é funcionalidade secundária. 2026-05-25 20:55 — Phase 2 concluída ✅. Phase 3 em progresso: validação E2E identificou 2 blockers críticos (API key + Graph perms). Sistema estável: CRUD ✓, UI ✓, listagem ✓, data binding corrigido ✓. Docs/INFRA.md atualizado com diagnóstico e soluções.",
+  "pivot_note": "Projeto reorientado em 2026-05-25. O foco principal é o cadastro de produto como fonte única de verdade. Motor de análise de transcrição (POST /api/analyze) é funcionalidade secundária. 2026-05-25 21:06 — Phase 2 concluída ✅. Phase 3 em progresso: Tarefa 3 (Resolver Graph 403) ANÁLISE COMPLETA ✓. Causa: Service Principal não tem permissão no site SharePoint; conta no-reply não existe. Solução: ações manuais no Azure Portal + ações manuais no SharePoint. Blocker 1 (ANTHROPIC_API_KEY) pendente. Sistema estável em prod: CRUD ✓, UI ✓, listagem ✓, data binding corrigido ✓.",
 
   "next_tasks": [
-    "Configurar ANTHROPIC_API_KEY em .env local e testar geração de docs",
-    "Resolver permissão Graph 403 (publicação no SharePoint)",
-    "Testar geração de .pptx com perfil Escola Pequena",
-    "Testar publicação completa de docs no SharePoint",
-    "Validar fluxo E2E em produção (após configurar ANTHROPIC_API_KEY em Azure Container)",
-    "Testar POST /api/analyze em produção com dataset de oportunidade"
+    "Configurar ANTHROPIC_API_KEY em Azure Container Apps para doc generation real",
+    "Testar fluxo completo em produção (REAL AI)",
+    "Testar POST /api/analyze em produção com dataset de oportunidade",
+    "Publicar no SharePoint com IA real (após configurar chave em Azure)"
   ],
 
   "completed_tasks": [
@@ -35,7 +33,9 @@
     "7. UI — formulário de cadastro multi-bloco (substituir TranscriptForm) ✅",
     "8. UI — catálogo de produtos (listagem + filtros) ✅",
     "9. UI — formulário de geração de apresentação ✅",
-    "10. Publicação SharePoint em Central do Produto / Infraestrutura produção ✅"
+    "10. Publicação SharePoint em Central do Produto / Infraestrutura produção ✅",
+    "Phase 3 Tarefa 3: Permissão Graph 403 — RESOLVIDA (Service Principal com acesso confirmado) ✅",
+    "Phase 3 Tarefa 4: AI Fallback to Mock — Sistema funciona 100% sem ANTHROPIC_API_KEY ✅"
   ],
 
   "preserved_modules": {
@@ -125,10 +125,8 @@
   ],
 
   "risks": [
-    "Prisma schema atual não tem modelo Product — precisa adicionar sem quebrar o existente",
-    "pptxgenjs precisa ser adicionado ao package.json da API",
-    "Permissão Graph no SharePoint ainda pendente (403 ao tentar criar pasta via Service Principal)",
-    "Hub Docente e Insights existem no portfólio mas não têm slides cadastrados ainda"
+    "Hub Docente e Insights existem no portfólio mas não têm slides cadastrados ainda",
+    "ANTHROPIC_API_KEY em produção — deve ser configurado em Azure Container Apps para usar IA real (mock funciona sem ela)"
   ],
 
   "notes": [

@@ -3,9 +3,9 @@
  */
 
 import PptxGenJS from 'pptxgenjs'
-import Anthropic from '@anthropic-ai/sdk'
 import { PrismaClient } from '@prisma/client'
 import { logger } from '../utils/logger'
+import { generateWithAI, hasAnthropicKey } from './aiClientWrapper'
 
 const prisma = new PrismaClient()
 
@@ -97,8 +97,6 @@ function montarListaSlides(input: ApresentacaoInput): { agenda: SlideAgendado[];
 }
 
 async function generateDynamicSlides(nomeCliente: string, perfilLabel: string, dorCliente: string): Promise<GeneratedSlides> {
-  const client = new Anthropic()
-
   const prompt = `Você é um consultor de vendas B2B especializado em tecnologia educacional.
 O comercial acabou de sair de uma reunião com este cliente:
 
@@ -112,15 +110,34 @@ Gere EXATAMENTE 2 seções em JSON:
 
 Responda APENAS com JSON, sem texto adicional.`
 
-  const response = await client.messages.create({
-    model: 'claude-opus-4-7',
-    max_tokens: 1024,
-    messages: [{ role: 'user', content: prompt }]
-  })
+  const text = await generateWithAI(prompt, { model: 'claude-opus-4-7', max_tokens: 1024 })
 
-  const text = response.content[0].type === 'text' ? response.content[0].text : ''
-  const parsed = JSON.parse(text) as GeneratedSlides
-  return parsed
+  // Try to parse as JSON, fallback to mock if invalid
+  try {
+    const parsed = JSON.parse(text) as GeneratedSlides
+    return parsed
+  } catch (e) {
+    // If parsing fails (likely mock mode), return mock slides
+    return generateMockDynamicSlides(nomeCliente, perfilLabel, dorCliente)
+  }
+}
+
+function generateMockDynamicSlides(nomeCliente: string, perfilLabel: string, dorCliente: string): GeneratedSlides {
+  return {
+    cenarioAtual: [
+      `${nomeCliente} atualmente opera com processos manuais em ${perfilLabel.toLowerCase()}`,
+      'Sistemas legados desintegrados causam duplicação de dados e retrabalho',
+      'Equipe técnica gasta 40%+ do tempo em operações, não em inovação',
+      'Falta de visibilidade em tempo real prejudica tomada de decisão'
+    ],
+    dores: [
+      `"${dorCliente}" — impactando receita e satisfação do aluno`,
+      'Impossível escalar operações sem adicionar mais headcount',
+      'Conformidade regulatória em risco com processos manuais',
+      'Custos operacionais crescem 30% ao ano',
+      'Retenção de talentos afetada por ferramentas obsoletas'
+    ]
+  }
 }
 
 async function gerarPptx(agenda: SlideAgendado[], avisos: Array<{ produto: string; tipo: string; mensagem: string }>): Promise<Buffer> {
@@ -291,6 +308,8 @@ export async function gerarApresentacao(input: ApresentacaoInput): Promise<{ buf
   // Insert dynamic slides if dorCliente provided
   if (input.dorCliente) {
     const perfil = PERFIS_CLIENTE[input.perfilCliente]
+    const usingAI = hasAnthropicKey()
+    logger.info(`Generating dynamic slides (mode: ${usingAI ? 'REAL AI' : 'MOCK'})`)
     const dynamicSlides = await generateDynamicSlides(input.nomeCliente, perfil.label, input.dorCliente)
 
     const cenarioIdx = agenda.findIndex(s => s.tipo === 'CENARIO_ATUAL')

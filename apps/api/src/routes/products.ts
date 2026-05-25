@@ -9,6 +9,7 @@ import {
   generatePartnerExport,
 } from '../services/docGenerator'
 import { publishProductDocuments } from '../services/graph'
+import { hasAnthropicKey } from '../services/aiClientWrapper'
 
 const prisma = new PrismaClient()
 
@@ -273,9 +274,11 @@ export async function registerProductsRoute(app: FastifyInstance) {
 
       // Generate vision documents
       const allHints: string[] = []
+      const usingAI = hasAnthropicKey()
+      console.log(`Generating vision documents (mode: ${usingAI ? 'REAL AI' : 'MOCK'})`)
 
       for (const publico of publicos) {
-        console.log(`Generating vision document: ${publico}`)
+        console.log(`  └─ Generating vision document: ${publico}`)
         const { content, hints } = await generateVisionDocument(publico, masterMd, product.nomeComercial)
 
         files.push({

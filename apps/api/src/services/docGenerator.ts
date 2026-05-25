@@ -1,7 +1,5 @@
 import { Product } from '@prisma/client'
-import Anthropic from '@anthropic-ai/sdk'
-
-const client = new Anthropic()
+import { generateWithAI, hasAnthropicKey } from './aiClientWrapper'
 
 type PublicoAlvo = 'FINANCEIRO' | 'COMERCIAL' | 'PRE_VENDA' | 'MARKETING' | 'SUPORTE' | 'ONBOARDING'
 
@@ -252,22 +250,10 @@ copilot-hints:
 Escreva o conteúdo Markdown a partir daqui.`
 }
 
-// Generate vision document using Claude
+// Generate vision document using Claude (or mock if key not available)
 export async function generateVisionDocument(publico: PublicoAlvo, master: string, produtoNome: string): Promise<{ content: string; hints: string[] }> {
   const prompt = buildDocGenerationPrompt(publico, master, produtoNome)
-
-  const response = await client.messages.create({
-    model: 'claude-opus-4-7',
-    max_tokens: 4096,
-    messages: [
-      {
-        role: 'user',
-        content: prompt,
-      },
-    ],
-  })
-
-  const content = response.content[0].type === 'text' ? response.content[0].text : ''
+  const content = await generateWithAI(prompt, { model: 'claude-opus-4-7', max_tokens: 4096 })
 
   // Extract copilot hints from frontmatter
   const frontmatterMatch = content.match(/---[\s\S]*?---/)
