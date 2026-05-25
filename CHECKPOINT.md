@@ -13,10 +13,18 @@
   - Health endpoint: GET `/api/health` com checks de database e Graph
   - Bug corrigido: database health check logic
 
+- **Módulo 3**: Implementar POST /api/analyze + transformação V4 ✓
+  - Route: `apps/api/src/routes/analyze.ts`
+  - Input validation: AJV com opportunityContext schema
+  - Orchestration: `executeOrchestrator()` com FallbackOrchestrator
+  - Transformation: `transformToV4()` para schema V4 completo
+  - Output validation: AJV com solution_pack schema
+  - Error handling: PARTIAL_SUCCESS com errors array
+
 ## Em desenvolvimento
-- **Módulo 3**: Implementar POST /api/analyze + transformação V4
+- **Módulo 4**: Implementar POST /api/publish/sharepoint + Graph client
   - Status: Análise de spec
-  - Entrega: Orquestração completa, validação de schema, transformação para SolutionPack V4
+  - Entrega: Upload de artefatos no SharePoint via Microsoft Graph
 
 ## Decisões críticas
 - Fase atual: Backend API + SharePoint Integration
