@@ -1,5 +1,5 @@
 // schema.prisma — EduGest-PIM (Central Inteligente de Produto)
-// Gerado a partir do SPEC-DATA-MODEL.
+// Fase 2: Cadastro de Produto com CompanyProfile + ProductSlides
 
 generator client {
   provider = "prisma-client-js"
@@ -10,10 +10,117 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ============================================================================
+// ENUMS — Tipos de produto, natureza, status, etc.
+// ============================================================================
+
+enum CompanySegment {
+  EDUCACAO
+  SAUDE
+  TECNOLOGIA
+  FINANCEIRO
+  OUTRO
+}
+
 enum ProductStatus {
   RASCUNHO
   ATIVO
+  INATIVO
   DESCONTINUADO
+}
+
+enum ProductType {
+  SAAS_BB
+  SERVICO_PROFISSIONAL
+  LICENCIAMENTO
+  CREDITO
+  HARDWARE
+}
+
+enum ProductNature {
+  CORE
+  MODULAR
+  DEPENDENTE
+}
+
+enum DependencyType {
+  NENHUMA
+  REQUER
+  RECOMENDADO
+  OPCIONAL
+}
+
+enum DeploymentModel {
+  CLOUD
+  HYBRID
+  ON_PREMISE
+}
+
+enum ClientProfile {
+  ESCOLA_PEQUENA
+  ESCOLA_MEDIA
+  REDE_GRANDE
+}
+
+enum ContractModel {
+  SUBSCRICAO
+  CREDITO
+  PONTUAL
+  CONSUMO
+}
+
+enum BillingModel {
+  RECORRENTE
+  PONTUAL
+  VARIAVEL
+}
+
+enum RevenueType {
+  ARR
+  NRR
+  PONTUAL
+  NA
+}
+
+enum UnitOfMeasure {
+  UNIDADE
+  HORA
+  LICENCA
+  USUARIO
+}
+
+enum FiscalStatus {
+  VALIDADO
+  A_VALIDAR
+}
+
+enum ISSTaxStatus {
+  SIM
+  NAO
+  A_VALIDAR
+}
+
+enum OriginType {
+  INTERNO
+  DOR_CLIENTE
+  PARCERIA
+  REGULATORIO
+}
+
+enum PricingStatus {
+  PUBLICADO
+  RASCUNHO
+  A_REVISAR
+}
+
+enum SlideType {
+  VISAO_GERAL
+  COMO_FUNCIONA
+  DIFERENCIAIS
+  CASES
+  INTEGRACAO
+  ROADMAP
+  PLACEHOLDER
 }
 
 enum ProductCategory {
@@ -22,6 +129,26 @@ enum ProductCategory {
   LICENCIAMENTO
   CREDITO
   PROJETO
+}
+
+// ============================================================================
+// COMPANY PROFILE — Contexto permanente injetado em todos os prompts
+// ============================================================================
+
+model CompanyProfile {
+  id                    String         @id @default(cuid())
+  nomeEmpresa           String
+  segmento              CompanySegment
+  missao                String         @db.Text
+  posicionamento        String         @db.Text
+  tecnologiasBase       String[]
+  segmentosCliente      String[]
+  tomDeVoz              String
+  concorrentesEvitar    String[]
+  informacoesAdicionais String?        @db.Text
+
+  configuradoEm DateTime @default(now())
+  atualizadoEm  DateTime @updatedAt
 }
 
 enum HostingModel {
@@ -79,50 +206,201 @@ enum OpportunityComplexity {
 }
 
 model Product {
-  id              String        @id @default(cuid())
-  name            String
-  slug            String        @unique
-  status          ProductStatus @default(RASCUNHO)
+  id String @id @default(cuid())
 
-  category        ProductCategory
+  // ============================================================================
+  // BLOCO IDENTIDADE (obrigatório — ERP Master)
+  // ============================================================================
+  codigo         String?       @unique
+  nomeComercial  String
+  nomeInterno    String?
+  slug           String        @unique
+  tipoProduto    ProductType   @default(SAAS_BB)
+  categoria      String?
+  subcategoria   String?
+  natureza       ProductNature @default(MODULAR)
+  status         ProductStatus @default(RASCUNHO)
+  produtoCore    Boolean       @default(false)
+  integraJornada Boolean       @default(false)
+  versao         String        @default("1.0.0")
+
+  // ============================================================================
+  // BLOCO COMERCIAL (obrigatório)
+  // ============================================================================
+  descricaoComercialCurta String?
+  shortPitch              String?
+  proposta_valor          String?         @db.Text
+  doresAtendidas          String[]
+  publicoAlvo             String[]
+  diferenciais            String[]
+  dependenciaComercial    DependencyType  @default(NENHUMA)
+  produtoBase             String? // slug do produto base
+  observacoesComerciais   String?         @db.Text
+  perfilCliente           ClientProfile[]
+
+  // ============================================================================
+  // BLOCO FINANCEIRO / ERP (obrigatório)
+  // ============================================================================
+  modeloContratado  ContractModel @default(SUBSCRICAO)
+  modeloFaturamento BillingModel  @default(RECORRENTE)
+  tipoReceita       RevenueType   @default(NA)
+  unidadeMedida     UnitOfMeasure @default(UNIDADE)
+  geraARR           Boolean       @default(false)
+  centroResultado   String?
+  grupoCodigo       String?
+  grupoDescricao    String?
+  ativo             Boolean       @default(true)
+
+  // ============================================================================
+  // BLOCO FISCAL (obrigatório — maior dor atual)
+  // ============================================================================
+  codigoNBS          String?
+  temISS             ISSTaxStatus @default(A_VALIDAR)
+  aliquotaISS        Decimal?     @db.Decimal(5, 2)
+  codigoServico      String?
+  regimeTributario   String?
+  observacoesFiscais String?      @db.Text
+  fiscalStatus       FiscalStatus @default(A_VALIDAR)
+
+  // ============================================================================
+  // BLOCO TÉCNICO (obrigatório para pré-venda)
+  // ============================================================================
+  arquiteturaHLD        String?         @db.Text
+  requisitosMinimos     String[]
+  tecnologiasBase       String[]
+  modeloDeployment      DeploymentModel @default(CLOUD)
+  integracoesSuportadas String[]
+  limitacoesConhecidas  String?         @db.Text
+  tempoImplementacao    String?
+
+  // ============================================================================
+  // BLOCO SUPORTE (obrigatório)
+  // ============================================================================
+  slaAtendimento      String?
+  faq                 Json? // array de { pergunta, resposta }
+  problemasConhecidos String[]
+  troubleshootingGuia String?  @db.Text
+  kbArticles          String[]
+
+  // ============================================================================
+  // BLOCO MARKETING (obrigatório)
+  // ============================================================================
+  cases             Json? // array de { cliente, desafio, solucao, resultado }
+  objecoesRespostas Json? // array de { objecao, resposta, contexto? }
+  scriptVenda       String?  @db.Text
+  tagsCopilot       String[]
+
+  // ============================================================================
+  // BLOCO ONBOARDING (obrigatório)
+  // ============================================================================
+  contextoGeral   String? @db.Text
+  porQueExiste    String? @db.Text
+  paraquemE       String? @db.Text
+  naoConfundirCom String? @db.Text
+  roadmapPublico  String? @db.Text
+
+  // ============================================================================
+  // BLOCO ORIGEM (rastreabilidade)
+  // ============================================================================
+  origemTipo            OriginType? @default(INTERNO)
+  origemDescricao       String?     @db.Text
+  origemClienteSegmento String?
+  origemData            DateTime?
+  origemResponsavel     String?
+
+  // ============================================================================
+  // BLOCO PRECIFICAÇÃO (Fase 1)
+  // ============================================================================
+  precificacaoStatus      PricingStatus @default(RASCUNHO)
+  moeda                   String        @default("BRL")
+  precoBaseUnitario       Decimal?      @db.Decimal(12, 2)
+  margemSugerida          Decimal?      @db.Decimal(5, 2)
+  descontoMaximo          Decimal?      @db.Decimal(5, 2)
+  requerAprovacaoDesconto Boolean       @default(false)
+  observacoesPrecificacao String?       @db.Text
+  precificacaoFase2       Boolean       @default(false)
+
+  // Campos específicos por modelo
+  precoMensalBase   Decimal? @db.Decimal(12, 2)
+  precoAnualBase    Decimal? @db.Decimal(12, 2)
+  descontoAnual     Decimal? @db.Decimal(5, 2)
+  unidadeCobranca   String?
+  minimoContratavel Int?
+
+  precoMinimoProjetoR    Decimal? @db.Decimal(12, 2)
+  precoMaximoProjetoR    Decimal? @db.Decimal(12, 2)
+  precoHoraR             Decimal? @db.Decimal(8, 2)
+  estimativaHorasProjeto Int?
+  composicaoPreco        String?
+
+  precoHoraCredito Decimal? @db.Decimal(8, 2)
+  pacoteMinHoras   Int?
+  faixasPreco      Json? // array de { perfil, qtdMinima, qtdMaxima, precoUnitario, descricaoFaixa }
+  pacotesCredito   Json? // array de { nome, horas, precoTotal, desconto }
+
+  // ============================================================================
+  // RELACIONAMENTOS E LEGACY
+  // ============================================================================
+  name            String? // legacy
+  category        ProductCategory?
   subcategory     String?
   productTypePM   String?
+  longDescription String?          @db.Text
+  personaJson     Json?
+  painsJson       Json?
+  valueProp       String?          @db.Text
+  differentiators Json?
 
-  shortPitch      String?
-  longDescription String?       @db.Text
+  capabilities    ProductCapability[]
+  dimensionDocs   ProductDimensionDoc[]
+  kits            ProductKit[]
+  pricingPolicies PricingPolicy[]
 
-  personaJson      Json?
-  painsJson        Json?
-  valueProp        String?      @db.Text
-  differentiators  Json?
-
-  capabilities     ProductCapability[]
-  dimensionDocs    ProductDimensionDoc[]
-  kits             ProductKit[]
-
-  pricingPolicies  PricingPolicy[]
-
+  productSlides    ProductSlide[]
   erpMapping       ERPMappingSankhya?
   partnerMapping   PartnerCenterMapping?
   sharepointConfig SharePointConfig?
-
   dependencyRules  DependencyRule[]
-
   versions         ProductVersion[]
   docBuildRuns     DocBuildRun[]
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================================================
+// PRODUCT SLIDE — Banco de slides por produto para geração de apresentações
+// ============================================================================
+
+model ProductSlide {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  titulo            String
+  tipo              SlideType
+  ordem             Int       @default(0)
+  conteudo          String    @db.Text
+  notasApresentador String?   @db.Text
+  imagemUrl         String?
+  pptxBase64        String?   @db.Text
+  ativo             Boolean   @default(true)
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  @@index([productId])
+  @@index([tipo])
 }
 
 model ProductVersion {
-  id        String   @id @default(cuid())
+  id        String  @id @default(cuid())
   productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  version   String
-  snapshot  Json
-  notes     String?  @db.Text
+  version  String
+  snapshot Json
+  notes    String? @db.Text
 
   createdAt DateTime @default(now())
 
@@ -131,23 +409,23 @@ model ProductVersion {
 }
 
 model Capability {
-  id          String @id @default(cuid())
-  code        String @unique
+  id          String  @id @default(cuid())
+  code        String  @unique
   name        String
   description String? @db.Text
 
-  products    ProductCapability[]
+  products ProductCapability[]
 }
 
 model ProductCapability {
-  id           String     @id @default(cuid())
+  id           String @id @default(cuid())
   productId    String
   capabilityId String
 
-  product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
-  capability   Capability @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
+  product    Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  capability Capability @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
 
-  weight       Int?
+  weight Int?
 
   @@unique([productId, capabilityId])
   @@index([productId])
@@ -155,53 +433,53 @@ model ProductCapability {
 }
 
 model ProductDimensionDoc {
-  id         String        @id @default(cuid())
-  productId  String
-  type       DimensionType
+  id        String        @id @default(cuid())
+  productId String
+  type      DimensionType
 
-  title      String
-  markdown   String?       @db.Text
-  html       String?       @db.Text
-  jsonData   Json?
+  title    String
+  markdown String? @db.Text
+  html     String? @db.Text
+  jsonData Json?
 
-  product    Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  updatedAt  DateTime @updatedAt
-  createdAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 
   @@index([productId])
   @@index([type])
 }
 
 model ProductKit {
-  id         String   @id @default(cuid())
-  productId  String
-  type       KitType
+  id        String  @id @default(cuid())
+  productId String
+  type      KitType
 
-  markdown   String?  @db.Text
-  jsonData   Json?
+  markdown String? @db.Text
+  jsonData Json?
 
-  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  updatedAt  DateTime @updatedAt
-  createdAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 
   @@unique([productId, type])
   @@index([productId])
 }
 
 model PricingPolicy {
-  id         String      @id @default(cuid())
-  productId  String
-  name       String
-  model      PricingModel
-  currency   String      @default("BRL")
+  id        String       @id @default(cuid())
+  productId String
+  name      String
+  model     PricingModel
+  currency  String       @default("BRL")
 
-  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
-  versions   PricingVersion[]
+  product  Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
+  versions PricingVersion[]
 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([productId])
 }
@@ -211,18 +489,18 @@ model PricingVersion {
   pricingPolicyId String
   pricingPolicy   PricingPolicy @relation(fields: [pricingPolicyId], references: [id], onDelete: Cascade)
 
-  version       String
-  active        Boolean      @default(true)
+  version String
+  active  Boolean @default(true)
 
-  tiers         PricingTier[]
-  adjustments   PricingAdjustment[]
+  tiers       PricingTier[]
+  adjustments PricingAdjustment[]
 
-  rulesJson     Json?
+  rulesJson Json?
 
-  validFrom     DateTime     @default(now())
-  validTo       DateTime?
+  validFrom DateTime  @default(now())
+  validTo   DateTime?
 
-  createdAt     DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@unique([pricingPolicyId, version])
   @@index([pricingPolicyId])
@@ -230,39 +508,39 @@ model PricingVersion {
 }
 
 model PricingTier {
-  id               String        @id @default(cuid())
+  id               String         @id @default(cuid())
   pricingVersionId String
   pricingVersion   PricingVersion @relation(fields: [pricingVersionId], references: [id], onDelete: Cascade)
 
-  hosting       HostingModel?
-  minQty        Int
-  maxQty        Int
+  hosting HostingModel?
+  minQty  Int
+  maxQty  Int
 
-  monthlyFee    Decimal  @db.Decimal(10,2)
-  planName      String?
+  monthlyFee Decimal @db.Decimal(10, 2)
+  planName   String?
 
-  includesJson  Json?
+  includesJson Json?
 
   @@index([pricingVersionId])
 }
 
 model PricingAdjustment {
-  id               String        @id @default(cuid())
+  id               String         @id @default(cuid())
   pricingVersionId String
   pricingVersion   PricingVersion @relation(fields: [pricingVersionId], references: [id], onDelete: Cascade)
 
-  code            String
-  factor          Decimal  @db.Decimal(6,3)
-  description     String?
+  code        String
+  factor      Decimal @db.Decimal(6, 3)
+  description String?
 
   @@unique([pricingVersionId, code])
   @@index([pricingVersionId])
 }
 
 model DependencyRule {
-  id           String @id @default(cuid())
-  productId    String
-  product      Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   dependencyType String
   baseProductRef String?
@@ -273,64 +551,64 @@ model DependencyRule {
 }
 
 model ERPMappingSankhya {
-  id         String  @id @default(cuid())
-  productId  String  @unique
-  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  productId String  @unique
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  tipoReceitaDespesa String @default("RECEITA")
+  tipoReceitaDespesa String  @default("RECEITA")
   ativo              Boolean @default(true)
 
-  grupoCodigo         String?
-  grupoDescricao      String?
+  grupoCodigo    String?
+  grupoDescricao String?
 
-  codigo              String?
-  descricao           String?
+  codigo    String?
+  descricao String?
 
   tipoServicoCodigo    String?
   tipoServicoDescricao String?
 
-  unidadePadrao       String?
-  unidadeDescricao    String?
+  unidadePadrao    String?
+  unidadeDescricao String?
 
-  temISS              String?
+  temISS String?
 
   calcularComissao     Boolean?
-  percComissaoVendedor Decimal? @db.Decimal(6,3)
-  percComissaoGerente  Decimal? @db.Decimal(6,3)
+  percComissaoVendedor Decimal? @db.Decimal(6, 3)
+  percComissaoGerente  Decimal? @db.Decimal(6, 3)
 
   bloquearVendaFracionada Boolean?
 
-  centroResultado      String?
-  codigoNBS            String?
-  ncmValido            String?
+  centroResultado String?
+  codigoNBS       String?
+  ncmValido       String?
 
-  fiscalStatus         ValidationStatus @default(A_VALIDAR)
-  cadastroStatus       ValidationStatus @default(A_VALIDAR)
+  fiscalStatus   ValidationStatus @default(A_VALIDAR)
+  cadastroStatus ValidationStatus @default(A_VALIDAR)
 
-  observacao           String? @db.Text
+  observacao String? @db.Text
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
 }
 
 model PartnerCenterMapping {
-  id         String  @id @default(cuid())
-  productId  String  @unique
-  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  productId String  @unique
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  offerType  String?
+  offerType String?
 
-  title      String?
+  title            String?
   shortDescription String?
   longDescription  String? @db.Text
 
   industries Json?
   categories Json?
 
-  markets    Json?
-  languages  Json?
+  markets   Json?
+  languages Json?
 
-  keywords   Json?
+  keywords      Json?
   solutionAreas Json?
 
   contactJson Json?
@@ -340,9 +618,9 @@ model PartnerCenterMapping {
 }
 
 model SharePointConfig {
-  id         String @id @default(cuid())
-  productId  String @unique
-  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  productId String  @unique
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   siteUrl     String
   libraryPath String?
@@ -355,9 +633,9 @@ model SharePointConfig {
 }
 
 model DocTemplate {
-  id        String @id @default(cuid())
-  name      String
-  type      String
+  id   String @id @default(cuid())
+  name String
+  type String
 
   templateMd   String? @db.Text
   templateHtml String? @db.Text
@@ -368,30 +646,30 @@ model DocTemplate {
 }
 
 model DocBuildRun {
-  id          String @id @default(cuid())
-  productId   String
-  product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  target      ExportTarget @default(SHAREPOINT_DOCS)
-  status      String
-  filesGenerated Int @default(0)
+  target         ExportTarget @default(SHAREPOINT_DOCS)
+  status         String
+  filesGenerated Int          @default(0)
 
-  outputPath  String?
-  logs        String? @db.Text
+  outputPath String?
+  logs       String? @db.Text
 
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([productId])
   @@index([target])
 }
 
 model Asset {
-  id        String @id @default(cuid())
-  name      String
-  kind      String
-  mimeType  String?
-  url       String?
-  base64    String? @db.Text
+  id       String  @id @default(cuid())
+  name     String
+  kind     String
+  mimeType String?
+  url      String?
+  base64   String? @db.Text
 
   ownerType String?
   ownerId   String?
@@ -400,17 +678,17 @@ model Asset {
 }
 
 model Opportunity {
-  id          String @id @default(cuid())
+  id String @id @default(cuid())
 
   externalRef String?
   name        String
 
-  crmPayload  Json?
+  crmPayload Json?
 
-  maturity    OpportunityMaturity @default(NAO_EVIDENCIADO)
-  complexity  OpportunityComplexity @default(NAO_EVIDENCIADO)
+  maturity   OpportunityMaturity   @default(NAO_EVIDENCIADO)
+  complexity OpportunityComplexity @default(NAO_EVIDENCIADO)
 
-  transcripts Transcript[]
+  transcripts   Transcript[]
   solutionPacks SolutionPack[]
 
   clientBranding Json?
@@ -420,13 +698,13 @@ model Opportunity {
 }
 
 model Transcript {
-  id            String @id @default(cuid())
+  id            String      @id @default(cuid())
   opportunityId String
   opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
 
-  source        String?
-  language      String?
-  rawText       String  @db.Text
+  source   String?
+  language String?
+  rawText  String  @db.Text
 
   createdAt DateTime @default(now())
 
@@ -434,23 +712,23 @@ model Transcript {
 }
 
 model SolutionPack {
-  id            String @id @default(cuid())
+  id            String      @id @default(cuid())
   opportunityId String
   opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
 
   inputSnapshot Json
 
-  diagnosis     Json
+  diagnosis      Json
   recommendation Json
-  presales      Json
-  sales         Json
-  marketing     Json
-  exports       Json
+  presales       Json
+  sales          Json
+  marketing      Json
+  exports        Json
 
   deckOutlineMd String? @db.Text
 
-  modelRouting  Json?
-  tokenUsage    Json?
+  modelRouting Json?
+  tokenUsage   Json?
 
   createdAt DateTime @default(now())
 
