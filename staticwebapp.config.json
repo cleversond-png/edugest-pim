@@ -3,7 +3,7 @@
     {
       "route": "/api/*",
       "proxy": {
-        "backendUri": "https://ca-edugest-prod-backend.purpleground-cde5672b.brazilsouth.azurecontainerapps.io/api/"
+        "backendUri": "https://ca-edugest-prod-backend.purpleground-cde5672b.brazilsouth.azurecontainerapps.io"
       }
     },
     {
