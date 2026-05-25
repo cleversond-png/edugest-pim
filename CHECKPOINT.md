@@ -21,10 +21,17 @@
   - Output validation: AJV com solution_pack schema
   - Error handling: PARTIAL_SUCCESS com errors array
 
+- **Módulo 4**: Implementar POST /api/publish/sharepoint + Graph client ✓
+  - Route: `apps/api/src/routes/publish.ts`
+  - Publisher factory: Suporta publicação local ou SharePoint conforme `PUBLISH_MODE`
+  - SharePoint client: Cliente Graph com token caching e upsert idempotente
+  - File generation: solutionPack.json, erp_payload.json, summary.md, recommendation.md
+  - Error handling: Falha isolada por arquivo, não cancela demais
+
 ## Em desenvolvimento
-- **Módulo 4**: Implementar POST /api/publish/sharepoint + Graph client
+- **Módulo 5**: Implementar Next.js + formulário + página de resultado
   - Status: Análise de spec
-  - Entrega: Upload de artefatos no SharePoint via Microsoft Graph
+  - Entrega: Interface web para /analyze e /result/[executionId]
 
 ## Decisões críticas
 - Fase atual: Backend API + SharePoint Integration

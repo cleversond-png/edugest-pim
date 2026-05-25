@@ -1,13 +1,13 @@
 {
   "current_phase": "Backend API + SharePoint Integration",
-  "current_task": "Implementar POST /api/publish/sharepoint + Graph client",
+  "current_task": "Implementar Next.js + formulário + página de resultado",
   "completed_tasks": [
     "Mover módulos para packages/core (orquestrador, agentes, types)",
     "Implementar servidor Fastify + middleware + health",
-    "Implementar POST /api/analyze + transformação V4"
+    "Implementar POST /api/analyze + transformação V4",
+    "Implementar POST /api/publish/sharepoint + Graph client"
   ],
   "next_tasks": [
-    "Implementar POST /api/publish/sharepoint + Graph client",
     "Implementar Next.js + formulário + página de resultado",
     "Deploy em Azure"
   ],
