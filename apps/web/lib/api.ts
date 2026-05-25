@@ -1,7 +1,7 @@
 import { SolutionPackV4 } from "./types"
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "http://localhost:3000"
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY || process.env.API_KEY || ""
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
+const API_KEY = process.env.API_KEY
 
 export interface CrmPayload {
   [key: string]: string | number | boolean | null
@@ -57,6 +57,10 @@ export interface PublishResponse {
 }
 
 export async function analyzeTranscript(req: AnalyzeRequest): Promise<AnalyzeResponse> {
+  if (!API_KEY) {
+    throw new Error("API_KEY not configured")
+  }
+
   const response = await fetch(`${API_URL}/api/analyze`, {
     method: "POST",
     headers: {
@@ -74,6 +78,10 @@ export async function analyzeTranscript(req: AnalyzeRequest): Promise<AnalyzeRes
 }
 
 export async function publishSolutionPack(req: PublishRequest): Promise<PublishResponse> {
+  if (!API_KEY) {
+    throw new Error("API_KEY not configured")
+  }
+
   const response = await fetch(`${API_URL}/api/publish`, {
     method: "POST",
     headers: {
