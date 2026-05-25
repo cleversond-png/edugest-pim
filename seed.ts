@@ -1,19 +1,257 @@
 /* seed.ts — EduGest-PIM (Central Inteligente de Produto)
  *
  * Seed inicializa:
+ * - Product (catálogo de produtos do SANKHYA_CATALOG)
  * - Capability (taxonomia)
  * - DocTemplate (templates de docs e exports)
  *
  * Importante (recomendação): definir `DocTemplate.name` como @unique no schema.prisma.
  * - Se `name` for @unique, você pode trocar a função upsertTemplate() para usar `upsert`.
  * - Nesta versão, usamos findFirst+create/update para funcionar mesmo sem @unique.
- *
- * Não cria produtos reais.
  */
 
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, ProductType, ContractModel, BillingModel, DependencyType, ProductStatus, ProductNature } from '@prisma/client'
 
 const prisma = new PrismaClient()
+
+// Mapa de tipos de produto PM → ProductType enum
+const PM_TYPE_MAP: Record<string, ProductType> = {
+  'SaaS BB': ProductType.SAAS_BB,
+  'Serviço Profissional': ProductType.SERVICO_PROFISSIONAL,
+  'Serviço Profissional / SharePoint': ProductType.SERVICO_PROFISSIONAL,
+  'Crédito / Banco de horas': ProductType.CREDITO,
+  'Licenciamento': ProductType.LICENCIAMENTO,
+  'SaaS BB / Solução Analítica': ProductType.SAAS_BB,
+}
+
+// Mapa de modelos de contratação
+const CONTRACT_MODEL_MAP: Record<string, ContractModel> = {
+  'Subscrição': ContractModel.SUBSCRICAO,
+  'Pontual': ContractModel.PONTUAL,
+  'Crédito': ContractModel.CREDITO,
+}
+
+// Mapa de modelos de faturamento
+const BILLING_MODEL_MAP: Record<string, BillingModel> = {
+  'Recorrente': BillingModel.RECORRENTE,
+  'Pontual': BillingModel.PONTUAL,
+  'Pontual ou Recorrente': BillingModel.RECORRENTE,
+}
+
+// Mapa de tipos de dependência
+const DEPENDENCY_TYPE_MAP: Record<string, DependencyType> = {
+  'Nenhuma': DependencyType.NENHUMA,
+  'Condicional': DependencyType.RECOMENDADO,
+}
+
+// Catálogo de produtos mapeados
+const PRODUCTS_TO_SEED = [
+  {
+    slug: 'integrador-provisionador',
+    nomeComercial: 'INTEGRADOR BIG BRAIN / PROVISIONADOR',
+    codigo: '105101',
+    grupoCodigo: '105001',
+    grupoDescricao: 'INTEGRADOR',
+    tipoProduto: ProductType.SAAS_BB,
+    modeloContratado: ContractModel.SUBSCRICAO,
+    modeloFaturamento: BillingModel.RECORRENTE,
+    dependenciaComercial: DependencyType.NENHUMA,
+    observacoesComerciais: 'Produto SaaS faturável que integra sistemas educacionais ao Microsoft 365/Office 365.',
+    status: ProductStatus.ATIVO,
+    natureza: ProductNature.CORE,
+  },
+  {
+    slug: 'agenda-inteligente',
+    nomeComercial: 'AGENDA INTELIGENTE',
+    codigo: '105102',
+    grupoCodigo: '105003',
+    grupoDescricao: 'AGENDA INTELIGENTE',
+    tipoProduto: ProductType.SAAS_BB,
+    modeloContratado: ContractModel.SUBSCRICAO,
+    modeloFaturamento: BillingModel.RECORRENTE,
+    dependenciaComercial: DependencyType.RECOMENDADO,
+    produtoBase: 'integrador-provisionador',
+    observacoesComerciais: 'Requer integração educacional ativa, preferencialmente via Integrador/Provisionador.',
+    status: ProductStatus.ATIVO,
+    natureza: ProductNature.MODULAR,
+  },
+  {
+    slug: 'relatorios-inteligentes',
+    nomeComercial: 'RELATORIOS INTELIGENTES',
+    codigo: '105103',
+    grupoCodigo: '105000',
+    grupoDescricao: 'PRODUTOS PRÓPRIOS (PLATAFORMAS & PRODUTOS CORE)',
+    tipoProduto: ProductType.SAAS_BB,
+    modeloContratado: ContractModel.SUBSCRICAO,
+    modeloFaturamento: BillingModel.RECORRENTE,
+    dependenciaComercial: DependencyType.RECOMENDADO,
+    produtoBase: 'integrador-provisionador',
+    observacoesComerciais: 'Requer integração educacional ativa, preferencialmente via Integrador/Provisionador.',
+    status: ProductStatus.ATIVO,
+    natureza: ProductNature.MODULAR,
+  },
+  {
+    slug: 'centro-operacoes',
+    nomeComercial: 'CENTRO DE OPERACOES',
+    codigo: '105104',
+    grupoCodigo: '105007',
+    grupoDescricao: 'CENTRO DE OPERAÇÕES',
+    tipoProduto: ProductType.SAAS_BB,
+    modeloContratado: ContractModel.SUBSCRICAO,
+    modeloFaturamento: BillingModel.RECORRENTE,
+    dependenciaComercial: DependencyType.RECOMENDADO,
+    produtoBase: 'integrador-provisionador',
+    observacoesComerciais: 'Requer integração educacional ativa, preferencialmente via Integrador/Provisionador.',
+    status: ProductStatus.ATIVO,
+    natureza: ProductNature.MODULAR,
+  },
+  {
+    slug: 'nucleo-experiencia',
+    nomeComercial: 'NUCLEO DE EXPERIENCIA',
+    codigo: '105105',
+    grupoCodigo: '105006',
+    grupoDescricao: 'NÚCLEO DE EXPERIÊNCIA',
+    tipoProduto: ProductType.SAAS_BB,
+    modeloContratado: ContractModel.SUBSCRICAO,
+    modeloFaturamento: BillingModel.RECORRENTE,
+    dependenciaComercial: DependencyType.NENHUMA,
+    observacoesComerciais: 'Produto/solução analítica independente. Não requer Integrador.',
+    status: ProductStatus.ATIVO,
+    natureza: ProductNature.CORE,
+  },
+  {
+    slug: 'portal-institucional-sharepoint',
+    nomeComercial: 'PORTAL INSTITUCIONAL SHAREPOINT',
+    codigo: '105201',
+    grupoCodigo: '108003',
+    grupoDescricao: 'SQUADS & PROJETOS ESTRUTURANTES',
+    tipoProduto: ProductType.SERVICO_PROFISSIONAL,
+    modeloContratado: ContractModel.PONTUAL,
+    modeloFaturamento: BillingModel.PONTUAL,
+    dependenciaComercial: DependencyType.NENHUMA,
+    observacoesComerciais: 'Página/estrutura em SharePoint. Não depende do Integrador.',
+    status: ProductStatus.ATIVO,
+    natureza: ProductNature.CORE,
+  },
+  {
+    slug: 'intranet-sharepoint',
+    nomeComercial: 'INTRANET SHAREPOINT',
+    codigo: '105202',
+    grupoCodigo: '105005',
+    grupoDescricao: 'INTRANET CORPORATIVA',
+    tipoProduto: ProductType.SERVICO_PROFISSIONAL,
+    modeloContratado: ContractModel.PONTUAL,
+    modeloFaturamento: BillingModel.PONTUAL,
+    dependenciaComercial: DependencyType.NENHUMA,
+    observacoesComerciais: 'Página/estrutura em SharePoint. Não depende do Integrador (mas pode exigir Integrador se houver integração citada na demanda).',
+    status: ProductStatus.ATIVO,
+    natureza: ProductNature.CORE,
+  },
+  {
+    slug: 'formacao-microsoft',
+    nomeComercial: 'FORMACAO MICROSOFT',
+    codigo: '102101',
+    grupoCodigo: '102001',
+    grupoDescricao: 'FORMACAO MICROSOFT',
+    tipoProduto: ProductType.SERVICO_PROFISSIONAL,
+    modeloContratado: ContractModel.PONTUAL,
+    modeloFaturamento: BillingModel.PONTUAL,
+    dependenciaComercial: DependencyType.NENHUMA,
+    status: ProductStatus.ATIVO,
+    natureza: ProductNature.CORE,
+  },
+  {
+    slug: 'suporte-m365',
+    nomeComercial: 'SUPORTE AMBIENTE MICROSOFT 365',
+    codigo: '109101',
+    grupoCodigo: '109001',
+    grupoDescricao: 'SUPORTE E ATENDIMENTO',
+    tipoProduto: ProductType.SERVICO_PROFISSIONAL,
+    modeloContratado: ContractModel.SUBSCRICAO,
+    modeloFaturamento: BillingModel.RECORRENTE,
+    dependenciaComercial: DependencyType.NENHUMA,
+    status: ProductStatus.ATIVO,
+    natureza: ProductNature.CORE,
+  },
+  {
+    slug: 'consultoria-especializada',
+    nomeComercial: 'CONSULTORIA ESPECIALIZADA',
+    codigo: '109501',
+    grupoCodigo: '109501',
+    grupoDescricao: 'CONSULTORIA',
+    tipoProduto: ProductType.SERVICO_PROFISSIONAL,
+    modeloContratado: ContractModel.PONTUAL,
+    modeloFaturamento: BillingModel.PONTUAL,
+    dependenciaComercial: DependencyType.NENHUMA,
+    status: ProductStatus.ATIVO,
+    natureza: ProductNature.CORE,
+  },
+  {
+    slug: 'booking-horas',
+    nomeComercial: 'BOOKING DE HORAS',
+    codigo: '108101',
+    grupoCodigo: '108001',
+    grupoDescricao: 'HORAS TECNICAS',
+    tipoProduto: ProductType.CREDITO,
+    modeloContratado: ContractModel.CREDITO,
+    modeloFaturamento: BillingModel.RECORRENTE,
+    dependenciaComercial: DependencyType.NENHUMA,
+    status: ProductStatus.ATIVO,
+    natureza: ProductNature.CORE,
+  },
+  {
+    slug: 'licenciamento-m365-a1',
+    nomeComercial: 'LICENCIAMENTO MICROSOFT OFFICE 365 A1',
+    codigo: '40001',
+    grupoCodigo: '104005',
+    grupoDescricao: 'LICENCIMANETO M 365',
+    tipoProduto: ProductType.LICENCIAMENTO,
+    modeloContratado: ContractModel.SUBSCRICAO,
+    modeloFaturamento: BillingModel.RECORRENTE,
+    dependenciaComercial: DependencyType.NENHUMA,
+    status: ProductStatus.ATIVO,
+    natureza: ProductNature.CORE,
+  },
+  {
+    slug: 'licenciamento-m365-a3',
+    nomeComercial: 'LICENCIAMENTO MICROSOFT OFFICE 365 A3',
+    codigo: '40002',
+    grupoCodigo: '104005',
+    grupoDescricao: 'LICENCIMANETO M 365',
+    tipoProduto: ProductType.LICENCIAMENTO,
+    modeloContratado: ContractModel.SUBSCRICAO,
+    modeloFaturamento: BillingModel.RECORRENTE,
+    dependenciaComercial: DependencyType.NENHUMA,
+    status: ProductStatus.ATIVO,
+    natureza: ProductNature.CORE,
+  },
+  {
+    slug: 'licenciamento-m365-a5',
+    nomeComercial: 'LICENCIAMENTO MICROSOFT OFFICE 365 A5',
+    codigo: '40003',
+    grupoCodigo: '104005',
+    grupoDescricao: 'LICENCIMANETO M 365',
+    tipoProduto: ProductType.LICENCIAMENTO,
+    modeloContratado: ContractModel.SUBSCRICAO,
+    modeloFaturamento: BillingModel.RECORRENTE,
+    dependenciaComercial: DependencyType.NENHUMA,
+    status: ProductStatus.ATIVO,
+    natureza: ProductNature.CORE,
+  },
+  {
+    slug: 'copilot-m365',
+    nomeComercial: 'COPILOT MICROSOFT 365',
+    codigo: '40004',
+    grupoCodigo: '104005',
+    grupoDescricao: 'LICENCIMANETO M 365',
+    tipoProduto: ProductType.LICENCIAMENTO,
+    modeloContratado: ContractModel.SUBSCRICAO,
+    modeloFaturamento: BillingModel.RECORRENTE,
+    dependenciaComercial: DependencyType.NENHUMA,
+    status: ProductStatus.ATIVO,
+    natureza: ProductNature.CORE,
+  },
+]
 
 type CapabilitySeed = {
   code: string
@@ -330,14 +568,34 @@ async function upsertTemplates() {
   }
 }
 
+async function upsertProducts() {
+  for (const p of PRODUCTS_TO_SEED) {
+    const existing = await prisma.product.findUnique({ where: { slug: p.slug } })
+
+    if (existing) {
+      await prisma.product.update({
+        where: { slug: p.slug },
+        data: p,
+      })
+      console.log(`  ✓ Atualizado: ${p.nomeComercial}`)
+    } else {
+      await prisma.product.create({ data: p })
+      console.log(`  ✓ Criado: ${p.nomeComercial}`)
+    }
+  }
+}
+
 async function main() {
+  console.log('Seeding: products (SANKHYA_CATALOG)...')
+  await upsertProducts()
+
   console.log('Seeding: capabilities...')
   await upsertCapabilities()
 
   console.log('Seeding: doc templates...')
   await upsertTemplates()
 
-  console.log('Seed concluído com sucesso.')
+  console.log('\n✅ Seed concluído com sucesso.')
 }
 
 main()

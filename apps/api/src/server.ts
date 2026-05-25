@@ -10,6 +10,9 @@ import { errorHandler } from './middleware/errorHandler'
 import { registerHealthRoute } from './routes/health'
 import { registerAnalyzeRoute } from './routes/analyze'
 import { registerPublishRoute } from './routes/publish'
+import { registerProductsRoute } from './routes/products'
+import { registerSlidesRoute } from './routes/slides'
+import { registerApresentacoesRoute } from './routes/apresentacoes'
 import { initializeGraphClient } from './services/graph'
 
 const PORT = parseInt(process.env.PORT || '3000', 10)
@@ -53,6 +56,9 @@ async function main() {
 
     await registerAnalyzeRoute(fastify)
     await registerPublishRoute(fastify)
+    await registerProductsRoute(fastify)
+    await registerSlidesRoute(fastify)
+    await registerApresentacoesRoute(fastify)
 
     fastify.get('/api/status', async () => ({
       message: 'API is ready',

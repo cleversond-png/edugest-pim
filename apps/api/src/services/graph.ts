@@ -114,6 +114,30 @@ export class GraphClient {
     }
   }
 
+  async uploadBinaryFile(
+    folderPath: string,
+    fileName: string,
+    buffer: Buffer
+  ): Promise<{ id: string; webUrl: string }> {
+    if (!this.client) throw new Error('Graph client not initialized')
+
+    try {
+      const itemPath = `${folderPath}/${fileName}`
+      const response = await this.client
+        .api(`/drives/${this.config.driveId}/root:${itemPath}:/content`)
+        .put(buffer)
+
+      logger.debug({ fileName, folderPath }, 'Binary file uploaded to SharePoint')
+      return {
+        id: response.id,
+        webUrl: response.webUrl,
+      }
+    } catch (err: any) {
+      logger.error({ error: err.message, fileName, folderPath }, 'Failed to upload binary file')
+      throw err
+    }
+  }
+
   async createFolder(folderPath: string): Promise<{ id: string }> {
     if (!this.client) throw new Error('Graph client not initialized')
 
@@ -175,4 +199,33 @@ export function getGraphClient(): GraphClient {
     throw new Error('Graph client not initialized. Call initializeGraphClient first.')
   }
   return graphClientInstance
+}
+
+// Publish product documents to SharePoint
+export async function publishProductDocuments(
+  productSlug: string,
+  files: Array<{ name: string; content: string; folder: string }>
+): Promise<string> {
+  try {
+    const client = getGraphClient()
+    const baseFolder = process.env.SHAREPOINT_BASE_FOLDER || 'EduGest-PIM'
+    const centralFolder = `${baseFolder}/Central do Produto/${productSlug}`
+
+    // Create base folder structure
+    await client.createFolder(centralFolder)
+    await client.createFolder(`${centralFolder}/visoes`)
+    await client.createFolder(`${centralFolder}/exports`)
+
+    // Upload all files
+    for (const file of files) {
+      const filePath = file.folder ? `${centralFolder}/${file.folder}/${file.name}` : `${centralFolder}/${file.name}`
+      await client.uploadFile(centralFolder + (file.folder ? `/${file.folder}` : ''), file.name, file.content)
+      logger.info({ filePath }, 'Product document published')
+    }
+
+    return `${baseFolder}/Central do Produto/${productSlug}`
+  } catch (error: any) {
+    logger.error({ error: error.message, productSlug }, 'Failed to publish product documents')
+    throw error
+  }
 }

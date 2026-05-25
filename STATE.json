@@ -1,21 +1,14 @@
 {
   "version": "v3",
   "project": "EDUGEST-PIM",
-  "last_updated": "2026-05-25T17:30:00Z",
+  "last_updated": "2026-05-26T00:15:00Z",
   "current_phase": "Fase 2 — Central do Produto (Cadastro + Docs + Apresentações)",
 
-  "current_task": "2. Seed — migrar SANKHYA_CATALOG atual para banco (20 produtos)",
+  "current_task": "10. Publicação SharePoint em Central do Produto/ (SPEC-GERACAO-DOCS.md)",
 
   "pivot_note": "Projeto reorientado em 2026-05-25. O foco principal passa a ser o cadastro de produto como fonte única de verdade. O motor de análise de transcrição (POST /api/analyze) coexiste mas é funcionalidade secundária.",
 
   "next_tasks": [
-    "3. API /api/products — CRUD completo (POST, GET, PUT, GET/:slug)",
-    "4. API /api/products/:slug/generate-docs — geração de .md/.html por público",
-    "5. API /api/products/:slug/slides — banco de slides (SPEC-APRESENTACAO.md)",
-    "6. API /api/apresentacoes/gerar — geração de .pptx (SPEC-APRESENTACAO.md)",
-    "7. UI — formulário de cadastro multi-bloco (substituir TranscriptForm)",
-    "8. UI — catálogo de produtos (listagem + filtros)",
-    "9. UI — formulário de geração de apresentação",
     "10. Publicação SharePoint em Central do Produto/ (SPEC-GERACAO-DOCS.md)"
   ],
 
@@ -28,7 +21,15 @@
     "apps/web — estrutura Next.js, formulário básico ✅",
     "SharePoint — Site ID e Drive ID configurados ✅",
     "Especificação completa da nova fase (SPEC-PRODUTO, SPEC-GERACAO-DOCS, SPEC-APRESENTACAO, SPEC-PRECIFICACAO) ✅",
-    "1. Prisma schema — modelo Product + CompanyProfile + ProductSlide (SPEC-PRODUTO.md) ✅"
+    "1. Prisma schema — modelo Product + CompanyProfile + ProductSlide (SPEC-PRODUTO.md) ✅",
+    "2. Seed — migrar SANKHYA_CATALOG atual para banco (15 produtos) ✅",
+    "3. API /api/products — CRUD completo (POST, GET, PUT, GET/:slug) + 10 testes ✅",
+    "4. API /api/products/:slug/generate-docs — geração MASTER + 6 visões + 3 exports + 10 testes ✅",
+    "5. API /api/products/:slug/slides — CRUD completo (POST, GET, PUT, DELETE, reorder) + 11 testes ✅",
+    "6. API /api/apresentacoes/gerar — geração de .pptx + upload SharePoint + 10 testes ✅",
+    "7. UI — formulário de cadastro multi-bloco (substituir TranscriptForm) ✅",
+    "8. UI — catálogo de produtos (listagem + filtros) ✅",
+    "9. UI — formulário de geração de apresentação ✅"
   ],
 
   "preserved_modules": {

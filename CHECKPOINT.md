@@ -43,6 +43,75 @@
   - CI/CD: GitHub Actions (automatic deploy on git push)
   - Status: ✅ LIVE & OPERATIONAL
 
+## 🔄 FASE 2 EM PROGRESSO (Central do Produto)
+
+- **Módulo 1**: Prisma schema — modelo Product + CompanyProfile + ProductSlide ✅
+  - Schema: `schema.prisma` com Product model completo
+  - Enums: ProductType, ContractModel, BillingModel, DependencyType, etc.
+  - Relacionamentos: ProductSlide, ProductVersion, ProductCapability, ERPMappingSankhya, etc.
+
+- **Módulo 2**: Seed — migrar SANKHYA_CATALOG para banco ✅
+  - Script: `seed.ts` com função `upsertProducts()`
+  - Dados: 15 produtos do SANKHYA_CATALOG (Integrador, Agenda, Relatórios, etc.)
+  - Database: PostgreSQL (Azure)
+  - Status: Todos os 15 produtos criados com sucesso
+
+- **Módulo 3**: API /api/products — CRUD completo ✅
+  - Routes: `apps/api/src/routes/products.ts`
+  - Endpoints: POST (create), GET (list), GET/:slug (detail), PUT/:slug (update), GET/:slug/export/erp
+  - Validações: slug auto-gerado, codigo immutável, bloco fiscal valida export
+  - Testes: 10 testes coverage CRUD, dependências, fiscal status
+  - Status: Compilação ✓ | 10 testes ✓
+
+- **Módulo 4**: API /api/products/:slug/generate-docs — Geração de Documentos ✅
+  - Generator: `apps/api/src/services/docGenerator.ts`
+  - Arquivos: MASTER.md/html + 6 visões (Financeiro, Comercial, PreVenda, Marketing, Suporte, Onboarding) + 3 exports (ERP, CRM, Partner)
+  - IA: Claude API para 6 visões com frontmatter e copilot-hints
+  - PublishGraphClient: integração com Microsoft Graph para SharePoint
+  - Testes: 10 testes para export, masterMd, masterHtml, blocking rules
+  - Status: Compilação ✓ | 10 testes ✓
+
+- **Módulo 5**: API /api/products/:slug/slides — CRUD de Slides ✅
+  - Routes: `apps/api/src/routes/slides.ts`
+  - Endpoints: POST (create), GET (list), GET/:id (detail), PUT/:id (update), DELETE/:id (delete), POST/reorder
+  - Modelos: ProductSlide com tipos (VISAO_GERAL, COMO_FUNCIONA, DIFERENCIAIS, CASES, INTEGRACAO, ROADMAP, PLACEHOLDER)
+  - Validações: ordem automática, referência a produto, cascade delete
+  - Testes: 11 testes coverage CRUD, reordering, cascade, filtering
+  - Status: Compilação ✓ | 11 testes ✓
+
+- **Módulo 6**: API /api/apresentacoes/gerar — Geração de Apresentações ✅
+  - Generator: `apps/api/src/services/pptxGenerator.ts`
+  - Fluxo: monta lista de slides por perfil → gera dinâmicas via Claude (CENARIO_ATUAL, DORES) → monta .pptx via pptxgenjs → upload SharePoint
+  - Endpoints: POST /api/apresentacoes/gerar, POST /api/apresentacoes/gerar-e-publicar, GET /api/apresentacoes/download/:fileName
+  - Regras: BB-SERV-SUP-001 sempre obrigatório; produto sem slides = aviso + placeholder; templates fixos (CAPA, PROXIMOS_PASSOS, CONTATO)
+  - Testes: 10 testes para perfis, remoções, adições, sanitização, PPTX válido
+  - Status: Compilação ✓ | 10 testes ✓
+
+- **Módulo 7**: UI — Formulário de Cadastro Multi-Bloco ✅
+  - Componente: `apps/web/components/forms/ProductForm.tsx` (1.100+ linhas)
+  - Blocos: Identidade, Comercial, Financeiro, Fiscal, Técnico, Suporte, Marketing, Onboarding, Origem
+  - Features: Validação por bloco, avisos (fiscalStatus A_VALIDAR), componentes reutilizáveis para inputs/selects/tags/FAQ/Cases/Objections
+  - Pages: `apps/web/app/products/new/page.tsx` com ProductForm integrado
+  - Actions: `apps/web/app/products/new/actions.ts` com createProductAction para POST /api/products
+  - Status: Compilação ✓ (Next.js build com sucesso)
+
+- **Módulo 8**: UI — Catálogo de Produtos ✅
+  - Página: `apps/web/app/products/page.tsx` (listagem + filtros)
+  - Filtros: tipo, status, natureza, perfil de cliente
+  - Search: por nome, código, descrição
+  - Cards: ProductCard com badges, status visual (ATIVO/RASCUNHO/INATIVO)
+  - API: Integração com GET /api/products com query params
+  - Home: / agora redireciona para /products em vez de /analyze
+  - Status: Compilação ✓ (Next.js build com sucesso, 7 rotas geradas)
+
+- **Módulo 9**: UI — Formulário de Geração de Apresentação ✅
+  - Componente: `apps/web/components/forms/ApresentacaoForm.tsx`
+  - Campos: nomeCliente*, perfilCliente*, logoCliente, dorCliente, nomeComercial*, emailComercial*
+  - Lógica: Produtos pré-selecionados por perfil; adicionar/remover; BB-SERV-SUP-001 locked
+  - Página: `apps/web/app/apresentacoes/page.tsx` com resultado (download + SharePoint)
+  - Actions: `apps/web/app/apresentacoes/actions.ts` com POST /api/apresentacoes/gerar
+  - Status: Compilação ✓ (Next.js build com sucesso, 8 rotas geradas)
+
 ## 🎯 MVP COMPLETADO
 
 **Todas as funcionalidades principais implementadas e deployadas:**
