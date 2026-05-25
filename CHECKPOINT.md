@@ -6,11 +6,17 @@
   - Compilação: ✓ (tsc sem erros)
   - Imports: ✓ (@edugest-pim/core em apps/api e apps/web)
   - Limpeza: Removidos arquivos duplicados da raiz
+- **Módulo 2**: Servidor Fastify + middleware + health ✓
+  - Server: `apps/api/src/server.ts` com Bootstrap Fastify, registro de rotas
+  - Middleware: `auth.ts` (X-Api-Key), `errorHandler.ts` (normalização de erros)
+  - Logger: Pino configurado com estrutura JSON
+  - Health endpoint: GET `/api/health` com checks de database e Graph
+  - Bug corrigido: database health check logic
 
 ## Em desenvolvimento
-- **Módulo 2**: Servidor Fastify + middleware + health
+- **Módulo 3**: Implementar POST /api/analyze + transformação V4
   - Status: Análise de spec
-  - Entrega: `apps/api/src/server.ts` com health, auth, error handling
+  - Entrega: Orquestração completa, validação de schema, transformação para SolutionPack V4
 
 ## Decisões críticas
 - Fase atual: Backend API + SharePoint Integration
