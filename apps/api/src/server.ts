@@ -44,10 +44,13 @@ async function main() {
 
   app.setErrorHandler(errorHandler)
 
+  // Health check (public, no auth required)
+  await registerHealthRoute(app)
+
+  // Protected API routes with authentication
   app.register(async (fastify) => {
     fastify.addHook('onRequest', authMiddleware)
 
-    await registerHealthRoute(fastify)
     await registerAnalyzeRoute(fastify)
     await registerPublishRoute(fastify)
 
