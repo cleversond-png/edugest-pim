@@ -1,12 +1,12 @@
 {
   "version": "v3",
   "project": "EDUGEST-PIM",
-  "last_updated": "2026-05-25T20:04:37Z",
-  "current_phase": "Phase 3 — Validação End-to-End",
+  "last_updated": "2026-05-25T20:55:00Z",
+  "current_phase": "Phase 3 — Validação End-to-End & Resolução de Blockers",
 
-  "current_task": "Validação E2E: Fluxo funcional, bloqueado por ANTHROPIC_API_KEY e Graph perms",
+  "current_task": "Bloco 1: Configurar ANTHROPIC_API_KEY em produção | Bloco 2: Resolver permissão Graph 403",
 
-  "pivot_note": "Projeto reorientado em 2026-05-25. O foco principal passa a ser o cadastro de produto como fonte única de verdade. O motor de análise de transcrição (POST /api/analyze) coexiste mas é funcionalidade secundária. 2026-05-25 20:50 — Testes E2E locais: criação de produtos ✓, UI page load ✓, data binding corrigido ✓. Blockers: ANTHROPIC_API_KEY vazio (doc generation), Graph 403 (SharePoint publish).",
+  "pivot_note": "Projeto reorientado em 2026-05-25. O foco principal é o cadastro de produto como fonte única de verdade. Motor de análise de transcrição (POST /api/analyze) é funcionalidade secundária. 2026-05-25 20:55 — Phase 2 concluída ✅. Phase 3 em progresso: validação E2E identificou 2 blockers críticos (API key + Graph perms). Sistema estável: CRUD ✓, UI ✓, listagem ✓, data binding corrigido ✓. Docs/INFRA.md atualizado com diagnóstico e soluções.",
 
   "next_tasks": [
     "Configurar ANTHROPIC_API_KEY em .env local e testar geração de docs",
