@@ -44,5 +44,6 @@ node_modules
 CREDENCIAIS-*.md
 *-PRODUCAO.md
 *-SECRET*.md
+docs/INFRA.md
 .env*
 !.env.example
