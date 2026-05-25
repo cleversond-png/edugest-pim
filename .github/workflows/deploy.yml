@@ -56,13 +56,12 @@ jobs:
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:${{ github.sha }}
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:latest
 
-      - name: Deploy to Azure App Service
+      - name: Restart Azure Container Instance
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ secrets.APP_SERVICE_NAME }}
-          images: ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:${{ github.sha }}
-          slot-name: production
+        run: |
+          az container restart \
+            --resource-group ${{ secrets.CONTAINER_RESOURCE_GROUP }} \
+            --name ${{ secrets.CONTAINER_NAME }}
 
       - name: Azure Logout
         if: always()
