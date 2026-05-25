@@ -3,6 +3,20 @@ import { SolutionPackV4 } from "./types"
 const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "http://localhost:3000"
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY || process.env.API_KEY || ""
 
+export interface CrmPayload {
+  [key: string]: string | number | boolean | null
+}
+
+export interface Constraints {
+  [key: string]: string | number | boolean | null
+}
+
+export interface ClientBranding {
+  clientName?: string
+  color?: string
+  [key: string]: string | undefined
+}
+
 export interface AnalyzeRequest {
   opportunityId: string
   transcript: {
@@ -10,9 +24,9 @@ export interface AnalyzeRequest {
     language?: string
     source?: string
   }
-  crmPayload?: any
-  constraints?: any
-  clientBranding?: any
+  crmPayload?: CrmPayload
+  constraints?: Constraints
+  clientBranding?: ClientBranding
 }
 
 export interface AnalyzeResponse {

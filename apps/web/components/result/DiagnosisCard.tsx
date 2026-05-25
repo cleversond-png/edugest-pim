@@ -1,5 +1,5 @@
 import { DiagnosisOutput } from "@/lib/types"
-import { AlertCircle, Target, CheckCircle2, ZapOff } from "lucide-react"
+import { AlertCircle, Target, ZapOff } from "lucide-react"
 
 interface DiagnosisCardProps {
   diagnosis: DiagnosisOutput
