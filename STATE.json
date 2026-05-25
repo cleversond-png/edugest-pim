@@ -1,14 +1,14 @@
 {
   "current_phase": "Backend API + SharePoint Integration",
-  "current_task": "Implementar Next.js + formulário + página de resultado",
+  "current_task": "Deploy em Azure",
   "completed_tasks": [
     "Mover módulos para packages/core (orquestrador, agentes, types)",
     "Implementar servidor Fastify + middleware + health",
     "Implementar POST /api/analyze + transformação V4",
-    "Implementar POST /api/publish/sharepoint + Graph client"
+    "Implementar POST /api/publish/sharepoint + Graph client",
+    "Implementar Next.js + formulário + página de resultado"
   ],
   "next_tasks": [
-    "Implementar Next.js + formulário + página de resultado",
     "Deploy em Azure"
   ],
   "last_updated": "2026-05-25",

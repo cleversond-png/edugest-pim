@@ -28,10 +28,17 @@
   - File generation: solutionPack.json, erp_payload.json, summary.md, recommendation.md
   - Error handling: Falha isolada por arquivo, não cancela demais
 
+- **Módulo 5**: Implementar Next.js + formulário + página de resultado ✓
+  - Pages: `app/analyze/page.tsx`, `app/result/[executionId]/page.tsx`
+  - Components: TranscriptForm, DiagnosisCard, RecommendationCard, ExportsCard, TelemetryCard, PublishButton
+  - Server Actions: `analyze/actions.ts` (execute analyze), `result/[executionId]/publish/actions.ts` (publish to SharePoint)
+  - API integration: `lib/api.ts` com analyzeTranscript() e publishSolutionPack()
+  - Security: Fixed API_KEY exposure (server-only, never in browser bundle)
+  - Build: ✓ Next.js build successful
+
 ## Em desenvolvimento
-- **Módulo 5**: Implementar Next.js + formulário + página de resultado
-  - Status: Análise de spec
-  - Entrega: Interface web para /analyze e /result/[executionId]
+- **Módulo 6**: Deploy em Azure
+  - Status: Próximo passo
 
 ## Decisões críticas
 - Fase atual: Backend API + SharePoint Integration
