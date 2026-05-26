@@ -237,6 +237,36 @@ Service Principal `EduGest-PIM-API` tem acesso de escrita confirmado no site Sha
 - ✅ ANTHROPIC_API_KEY configurada no container correto: `ca-edugest-prod-backend` (rg-edugest-prod)
 - ✅ Confirmação: Health check responde com database ok
 - ✅ Doc generation agora com IA real em produção (não mock)
+
+---
+
+## 📱 PHASE 3 — TAREFA 7.6 & 7.7: Fix Edit/Delete Buttons (2026-05-26 18:02 UTC) ✅ CONCLUÍDA
+
+### Problema 1: Edição falhava com erro 500
+- **Erro**: Prisma validation — campo `descricaoComercialCompleta` não existe no schema
+- **Causa**: Formulário tentava enviar campo que não estava no banco
+- **Fix**: Removido `descricaoComercialCompleta` da interface EditFormData e do modal
+- **Resultado**: PUT /api/products/:slug ✅ 200 OK
+
+### Problema 2: Deleção retornava 404 HTML
+- **Erro**: Endpoint DELETE não estava implementado
+- **Causa**: Frontend chamava DELETE mas API retornava 404 (rota não existia)
+- **Fix**: Implementado `DELETE /api/products/:slug` em apps/api/src/routes/products.ts
+- **Resultado**: DELETE /api/products/:slug ✅ 204 No Content
+
+### Testes Validados
+```
+✅ PUT — produto editado com sucesso (nomeComercial, versao)
+✅ DELETE — produto deletado (HTTP 204)
+✅ Verificação — GET retorna 404 (produto não existe mais)
+✅ Frontend — Botões Editar (verde) e Excluir (vermelho) funcionando
+```
+
+### Commits
+- `fix: Remove descricaoComercialCompleta field that doesn't exist in schema`
+- `feat: Implement DELETE /api/products/:slug endpoint`
+
+**Status**: Frontend operacional com edição e deleção de produtos funcionando 100%
 - ✅ Apresentações com IA real em produção
 
 **Containers:**
