@@ -116,6 +116,24 @@ export async function registerProductsRoute(app: FastifyInstance) {
     }
   })
 
+  // DELETE /api/products/:slug — Delete product
+  app.delete('/api/products/:slug', async (req: FastifyRequest, res: FastifyReply) => {
+    try {
+      const { slug } = req.params as { slug: string }
+
+      const product = await prisma.product.findUnique({ where: { slug } })
+      if (!product) {
+        return res.status(404).send({ errorCode: 'NOT_FOUND', message: `Product with slug "${slug}" not found` })
+      }
+
+      await prisma.product.delete({ where: { slug } })
+      res.status(204).send()
+    } catch (error) {
+      console.error('Error deleting product:', error)
+      res.status(500).send({ errorCode: 'INTERNAL_ERROR', message: 'Failed to delete product' })
+    }
+  })
+
   // GET /api/products — List products
   app.get('/api/products', async (req: FastifyRequest, res: FastifyReply) => {
     try {
