@@ -19,7 +19,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@edugest-pim/core": ["../../packages/core/dist/index.d.ts"],
+      "@edugest-pim/core/*": ["../../packages/core/dist/*"]
     }
   },
   "include": [
