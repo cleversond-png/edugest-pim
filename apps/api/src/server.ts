@@ -83,7 +83,7 @@ async function main() {
 
   // SPA fallback: 404 routes → /index.html (for client-side routing)
   app.setNotFoundHandler((req, reply) => {
-    reply.sendFile('index.html')
+    reply.sendFile('index.html', frontendPath)
   })
 
   try {
