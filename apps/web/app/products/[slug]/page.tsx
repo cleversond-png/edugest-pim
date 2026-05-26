@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter, useParams } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft, AlertCircle } from "lucide-react"
+import { ArrowLeft, AlertCircle, Edit2, Trash2, X, Check } from "lucide-react"
 
 interface Product {
   id: string
@@ -21,6 +21,16 @@ interface Product {
   atualizadoEm?: string
 }
 
+interface EditFormData {
+  nomeComercial: string
+  descricaoComercialCurta: string
+  descricaoComercialCompleta: string
+  tipoProduto: string
+  natureza: string
+  status: string
+  versao: string
+}
+
 export default function ProductDetailsPage() {
   const router = useRouter()
   const params = useParams()
@@ -29,6 +39,19 @@ export default function ProductDetailsPage() {
   const [product, setProduct] = useState<Product | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [editForm, setEditForm] = useState<EditFormData>({
+    nomeComercial: "",
+    descricaoComercialCurta: "",
+    descricaoComercialCompleta: "",
+    tipoProduto: "",
+    natureza: "",
+    status: "",
+    versao: "",
+  })
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -63,6 +86,74 @@ export default function ProductDetailsPage() {
       fetchProduct()
     }
   }, [slug])
+
+  const openEditModal = () => {
+    if (product) {
+      setEditForm({
+        nomeComercial: product.nomeComercial,
+        descricaoComercialCurta: product.descricaoComercialCurta,
+        descricaoComercialCompleta: product.descricaoComercialCompleta || "",
+        tipoProduto: product.tipoProduto,
+        natureza: product.natureza,
+        status: product.status,
+        versao: product.versao || "",
+      })
+      setIsEditModalOpen(true)
+    }
+  }
+
+  const handleEditChange = (field: keyof EditFormData, value: string) => {
+    setEditForm((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleSaveEdit = async () => {
+    setIsSaving(true)
+    try {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
+      const response = await fetch(`${API_BASE}/api/products/${slug}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Api-Key": process.env.NEXT_PUBLIC_API_KEY || "",
+        },
+        body: JSON.stringify(editForm),
+      })
+
+      if (!response.ok) {
+        throw new Error(`Erro ao atualizar: ${response.status}`)
+      }
+
+      const data = await response.json()
+      setProduct(data.data || data)
+      setIsEditModalOpen(false)
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Erro ao salvar produto")
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    setIsDeleting(true)
+    try {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
+      const response = await fetch(`${API_BASE}/api/products/${slug}`, {
+        method: "DELETE",
+        headers: {
+          "X-Api-Key": process.env.NEXT_PUBLIC_API_KEY || "",
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(`Erro ao deletar: ${response.status}`)
+      }
+
+      router.push("/products")
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Erro ao deletar produto")
+      setIsDeleting(false)
+    }
+  }
 
   if (isLoading) {
     return (
@@ -193,14 +284,191 @@ export default function ProductDetailsPage() {
           >
             Voltar
           </Link>
-          <Link
-            href={`/`}
-            className="flex-1 bg-gray-200 text-gray-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition text-center"
+          <button
+            onClick={openEditModal}
+            className="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2"
           >
-            Ir para home
-          </Link>
+            <Edit2 className="w-4 h-4" />
+            Editar
+          </button>
+          <button
+            onClick={() => setIsDeleteModalOpen(true)}
+            className="flex-1 bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition flex items-center justify-center gap-2"
+          >
+            <Trash2 className="w-4 h-4" />
+            Excluir
+          </button>
         </div>
       </div>
+
+      {/* Edit Modal */}
+      {isEditModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Editar Produto</h2>
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 mb-1">
+                  Nome Comercial
+                </label>
+                <input
+                  type="text"
+                  value={editForm.nomeComercial}
+                  onChange={(e) => handleEditChange("nomeComercial", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 mb-1">
+                  Descrição Curta
+                </label>
+                <textarea
+                  value={editForm.descricaoComercialCurta}
+                  onChange={(e) => handleEditChange("descricaoComercialCurta", e.target.value)}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 mb-1">
+                  Descrição Completa
+                </label>
+                <textarea
+                  value={editForm.descricaoComercialCompleta}
+                  onChange={(e) => handleEditChange("descricaoComercialCompleta", e.target.value)}
+                  rows={4}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-900 mb-1">
+                    Tipo de Produto
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.tipoProduto}
+                    onChange={(e) => handleEditChange("tipoProduto", e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-900 mb-1">
+                    Natureza
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.natureza}
+                    onChange={(e) => handleEditChange("natureza", e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-900 mb-1">
+                    Status
+                  </label>
+                  <select
+                    value={editForm.status}
+                    onChange={(e) => handleEditChange("status", e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Selecionar</option>
+                    <option value="ATIVO">ATIVO</option>
+                    <option value="RASCUNHO">RASCUNHO</option>
+                    <option value="INATIVO">INATIVO</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-900 mb-1">
+                    Versão
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.versao}
+                    onChange={(e) => handleEditChange("versao", e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 border-t flex gap-4">
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                className="flex-1 bg-gray-200 text-gray-900 px-4 py-2 rounded-lg font-semibold hover:bg-gray-300 transition"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleSaveEdit}
+                disabled={isSaving}
+                className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {isSaving ? "Salvando..." : <>
+                  <Check className="w-4 h-4" />
+                  Salvar
+                </>}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg max-w-md w-full">
+            <div className="p-6 border-b">
+              <h2 className="text-xl font-bold text-red-600 flex items-center gap-2">
+                <AlertCircle className="w-6 h-6" />
+                Confirmar exclusão
+              </h2>
+            </div>
+
+            <div className="p-6">
+              <p className="text-gray-700 mb-4">
+                Tem certeza que deseja excluir o produto "<strong>{product?.nomeComercial}</strong>"?
+              </p>
+              <p className="text-sm text-gray-500">
+                Esta ação não pode ser desfeita.
+              </p>
+            </div>
+
+            <div className="p-6 border-t flex gap-4">
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="flex-1 bg-gray-200 text-gray-900 px-4 py-2 rounded-lg font-semibold hover:bg-gray-300 transition"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition disabled:opacity-50"
+              >
+                {isDeleting ? "Deletando..." : "Deletar"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
