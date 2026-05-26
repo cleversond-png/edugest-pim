@@ -301,6 +301,62 @@ Service Principal `EduGest-PIM-API` tem acesso de escrita confirmado no site Sha
 
 ---
 
+## 🚀 PHASE 3 — TAREFA 7.9: Correção GitHub Actions & ACR Authentication (2026-05-26 20:02 UTC) ✅ CONCLUÍDA
+
+### Problemas Resolvidos
+
+**1. Azure Login Failure (Python Error)**
+- **Causa**: Secret `AZURE_CREDENTIALS` em formato incorreto
+- **Fix**: Regenerado novo Service Principal com formato correto (clientId, clientSecret, subscriptionId, tenantId)
+- **Resultado**: ✅ Azure CLI login agora funciona
+
+**2. ACR Image Pull Unauthorized**
+- **Causa**: Container App Managed Identity não tinha permissão de pull no ACR
+- **Problema manifesto**: `UNAUTHORIZED: authentication required` ao tentar pull de `edugest-pim:latest`
+- **Fix**: Confirmado que role `AcrPull` estava já atribuído; forçado redeploy manual via CLI
+- **Resultado**: ✅ Imagem deploy sucesso após redeploy
+
+**3. Workflow Dispatch Trigger**
+- **Problema**: Workflow não tinha trigger `workflow_dispatch` para execução manual
+- **Fix**: Adicionado `workflow_dispatch:` em `.github/workflows/deploy.yml`
+- **Resultado**: ✅ Workflow agora pode ser disparado manualmente
+
+### Validação Final (2026-05-26 20:02 UTC)
+
+**✅ API Backend**
+```
+GET /api/health → HTTP 200 OK
+{
+  "status": "ok",
+  "version": "1.0.0",
+  "services": {
+    "database": "ok",
+    "graph": "not_configured"
+  }
+}
+```
+
+**✅ Frontend**
+```
+https://ca-edugest-pim-web.purpleground-cde5672b.brazilsouth.azurecontainerapps.io → HTTP 307 (redirect)
+```
+
+**✅ Container Image**
+```
+Current: edugestacrprod.azurecr.io/edugest-pim:latest
+Status: Provisioned
+Replicas: 1/1 Active
+```
+
+### Commits Relacionados
+- `ci: Add workflow_dispatch trigger to deploy workflow`
+- `ci: Retry deployment with updated Azure credentials`
+
+### Status
+🟢 **SISTEMA OPERACIONAL** — Phase 3 completo e validado em produção
+
+---
+
 ## 🤖 PHASE 3 — TAREFA 4: AI Fallback to Mock (2026-05-25 23:15 UTC) ✅ CONCLUÍDA
 
 ### Diagnóstico Completo
