@@ -24,7 +24,6 @@ interface Product {
 interface EditFormData {
   nomeComercial: string
   descricaoComercialCurta: string
-  descricaoComercialCompleta: string
   tipoProduto: string
   natureza: string
   status: string
@@ -46,7 +45,6 @@ export default function ProductDetailsPage() {
   const [editForm, setEditForm] = useState<EditFormData>({
     nomeComercial: "",
     descricaoComercialCurta: "",
-    descricaoComercialCompleta: "",
     tipoProduto: "",
     natureza: "",
     status: "",
@@ -92,7 +90,6 @@ export default function ProductDetailsPage() {
       setEditForm({
         nomeComercial: product.nomeComercial,
         descricaoComercialCurta: product.descricaoComercialCurta,
-        descricaoComercialCompleta: product.descricaoComercialCompleta || "",
         tipoProduto: product.tipoProduto,
         natureza: product.natureza,
         status: product.status,
@@ -255,17 +252,6 @@ export default function ProductDetailsPage() {
               <p className="text-gray-700 mb-4">
                 {product.descricaoComercialCurta || "Sem descrição"}
               </p>
-
-              {product.descricaoComercialCompleta && (
-                <>
-                  <h3 className="text-sm font-semibold text-gray-900 mb-2">
-                    Descrição completa
-                  </h3>
-                  <p className="text-gray-700">
-                    {product.descricaoComercialCompleta}
-                  </p>
-                </>
-              )}
             </div>
 
             {/* Timestamps */}
@@ -336,18 +322,6 @@ export default function ProductDetailsPage() {
                   value={editForm.descricaoComercialCurta}
                   onChange={(e) => handleEditChange("descricaoComercialCurta", e.target.value)}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-1">
-                  Descrição Completa
-                </label>
-                <textarea
-                  value={editForm.descricaoComercialCompleta}
-                  onChange={(e) => handleEditChange("descricaoComercialCompleta", e.target.value)}
-                  rows={4}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
