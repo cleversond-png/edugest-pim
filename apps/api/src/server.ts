@@ -26,6 +26,25 @@ async function main() {
     logger: false,
   })
 
+  // Enable CORS for frontend via onSend hook
+  app.addHook('onSend', async (request, reply) => {
+    const origin = request.headers.origin || '*'
+    reply.header('Access-Control-Allow-Origin', origin)
+    reply.header('Access-Control-Allow-Credentials', 'true')
+    reply.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
+    reply.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Api-Key')
+  })
+
+  // Handle preflight requests
+  app.options('*', async (request, reply) => {
+    const origin = request.headers.origin || '*'
+    reply.header('Access-Control-Allow-Origin', origin)
+    reply.header('Access-Control-Allow-Credentials', 'true')
+    reply.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
+    reply.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Api-Key')
+    return ''
+  })
+
   // Initialize Graph client if credentials available (optional — for future SharePoint integration)
   const hasGraphCreds = process.env.AZURE_TENANT_ID && process.env.AZURE_CLIENT_ID &&
     (process.env.AZURE_CLIENT_SECRET || (process.env.GRAPH_USERNAME && process.env.GRAPH_PASSWORD))
