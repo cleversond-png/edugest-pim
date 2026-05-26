@@ -273,27 +273,31 @@ Service Principal `EduGest-PIM-API` tem acesso de escrita confirmado no site Sha
 - DEV (rg-edugest-pim): não possui container (archived)
 - PROD (rg-edugest-prod): ca-edugest-prod-backend ← ÚNICO CONTAINER, com API key configurada
 
-## 🎨 PHASE 3 — TAREFA 7.8: Aumentar Contraste de Placeholders (2026-05-26 18:41 UTC) ✅ CONCLUÍDA
+## 🎨 PHASE 3 — TAREFA 7.8: Aumentar Contraste de Placeholders (2026-05-26 19:30 UTC) ✅ CONCLUÍDA
 
 ### Melhoria: Placeholders com Melhor Contraste
 - **Problema**: Placeholders nos inputs de formulário tinham contraste muito baixo, quase invisíveis
-- **Solução**: Aplicado `placeholder:text-gray-400` a todos os campos de texto (Input, TextArea, Select)
-- **Escopo**: 
-  - Input component (7 instances)
-  - TextArea component (7 instances)
-  - Select component (3 instances)
-  - TagInput (1 instance)
-  - FAQInput (pergunta + resposta)
-  - CasesInput (cliente, desafio, solução, resultado)
-  - ObjectionsInput (objeção, resposta, contexto)
+- **Solução**: 
+  1. Aplicado `placeholder:text-gray-600` a todos os campos (ProductForm.tsx)
+  2. Adicionado CSS global em globals.css: `input::placeholder, textarea::placeholder { color: rgb(75 85 99) !important; }`
 
-### Validação
-✅ Local dev server: Verificado que classe `placeholder:text-gray-400` é renderizada corretamente no HTML
-✅ Git commit: `style: Increase placeholder contrast to text-gray-400 in product form`
-✅ GitHub Actions: Deploy automático em progresso
+### Correções Aplicadas
+1. ✅ ProductForm.tsx: 13 ocorrências de `placeholder:text-gray-400` → `placeholder:text-gray-600`
+2. ✅ globals.css: Regra CSS global para garantir visibilidade em todo o app
+3. ✅ GitHub Actions workflow: Removido lógica desatualizada de cópia de arquivos estáticos
+4. ✅ Dockerfile: Removido lógica obsoleta que tentava copiar `apps/web/out/`
+
+### Commits
+- `style: Increase placeholder contrast to text-gray-400 in product form`
+- `style: Use darker placeholder color (text-gray-600) for better visibility`
+- `style: Add global CSS rule for placeholder visibility with gray-600 color`
+- `fix: Update GitHub Actions workflow to use Azure Container Apps`
+- `fix: Remove Next.js static export logic from Dockerfile`
 
 ### Resultado Final
-Placeholders agora com contraste visível: `text-gray-400` em vez do padrão (muito claro)
+✅ Placeholders agora com contraste máximo: `rgb(75 85 99)` (cinza-600) em vez do padrão invisível
+✅ Validação local confirmada em dev server
+✅ GitHub Actions workflow corrigido e em deploy
 
 ---
 
