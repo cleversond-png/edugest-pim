@@ -86,7 +86,7 @@ export function PublishButton({
           {webUrls && (
             <div className="mt-4 space-y-2 border-t border-green-200 pt-4">
               <p className="text-xs font-medium text-green-700">Links dos arquivos:</p>
-              {Object.entries(webUrls).map(([name, url]) => (
+              {Object.entries(webUrls).map(([name, url]: [string, string]) => (
                 <a
                   key={name}
                   href={url}

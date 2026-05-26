@@ -449,7 +449,7 @@ export function ProductForm({ onSubmit, isLoading }: Props) {
                 { value: "ESCOLA_PEQUENA", label: "Escola Pequena" },
                 { value: "ESCOLA_MEDIA", label: "Escola Média" },
                 { value: "REDE_GRANDE", label: "Rede / Grande" },
-              ].map((option) => (
+              ].map((option: { value: string; label: string }) => (
                 <Checkbox
                   key={option.value}
                   label={option.label}
@@ -1119,7 +1119,7 @@ function Select({
         {...props}
         className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
       >
-        {options.map((opt) => (
+        {options.map((opt: { value: string; label: string }) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}
           </option>
@@ -1196,7 +1196,7 @@ function TagInput({
           </button>
         </div>
         <div className="flex flex-wrap gap-2">
-          {values.map((tag) => (
+          {values.map((tag: string) => (
             <div
               key={tag}
               className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-700"
@@ -1226,7 +1226,7 @@ function FAQInput({
 }) {
   return (
     <div className="space-y-3">
-      {faqs.map((faq, idx) => (
+      {faqs.map((faq: { pergunta: string; resposta: string }, idx: number) => (
         <div key={idx} className="rounded border border-gray-300 p-3 space-y-2">
           <input
             type="text"
@@ -1293,7 +1293,7 @@ function CasesInput({
 }) {
   return (
     <div className="space-y-3">
-      {cases.map((cse, idx) => (
+      {cases.map((cse: { cliente: string; desafio: string; solucao: string; resultado: string }, idx: number) => (
         <div key={idx} className="rounded border border-gray-300 p-3 space-y-2">
           <input
             type="text"
@@ -1375,7 +1375,7 @@ function ObjectionsInput({
 }) {
   return (
     <div className="space-y-3">
-      {objections.map((obj, idx) => (
+      {objections.map((obj: { objecao: string; resposta: string; contexto?: string }, idx: number) => (
         <div key={idx} className="rounded border border-gray-300 p-3 space-y-2">
           <input
             type="text"

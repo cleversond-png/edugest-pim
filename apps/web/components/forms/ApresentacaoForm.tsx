@@ -244,7 +244,7 @@ export function ApresentacaoForm({
                     (typeof PERFIS_CLIENTE)["ESCOLA_PEQUENA"],
                   ]
                 >
-              ).map(([value, profile]) => (
+              ).map(([value, profile]: ["ESCOLA_PEQUENA" | "ESCOLA_MEDIA" | "REDE_GRANDE", typeof PERFIS_CLIENTE["ESCOLA_PEQUENA"]]) => (
                 <label
                   key={value}
                   className="flex items-start gap-3 rounded-lg border border-gray-200 p-3 cursor-pointer hover:bg-blue-50"
@@ -280,7 +280,7 @@ export function ApresentacaoForm({
         subtitle={`${formData.perfilCliente === "ESCOLA_PEQUENA" ? "4" : formData.perfilCliente === "ESCOLA_MEDIA" ? "5" : "9"} produtos sugeridos para este perfil`}
       >
         <div className="space-y-3">
-          {produtosUnicos.map((slug) => {
+          {produtosUnicos.map((slug: string) => {
             const isObrigatorio = slug === PRODUTO_OBRIGATORIO
             const isAdicional = formData.produtosAdicionais.includes(slug)
 
@@ -339,7 +339,7 @@ export function ApresentacaoForm({
         <div className="space-y-2">
           {availableProducts
             .filter((p) => !produtosUnicos.includes(p.slug))
-            .map((produto) => (
+            .map((produto: typeof TODOS_PRODUTOS[0]) => (
               <button
                 key={produto.slug}
                 type="button"
