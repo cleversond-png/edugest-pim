@@ -22,11 +22,12 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy built app and dependencies from builder (standalone already contains apps/web structure)
-COPY --from=builder /app/apps/web/.next/standalone .
-# Copy static assets into the expected location
-COPY --from=builder /app/apps/web/.next/static ./apps/web/.next/static
-COPY --from=builder /app/apps/web/public ./apps/web/public
+# Copy built app and dependencies from builder
+COPY --from=builder /app/apps/web/.next/standalone /app
+# Copy static assets - standalone expects them at .next/static
+COPY --from=builder /app/apps/web/.next/static /app/.next/static
+# Copy public files
+COPY --from=builder /app/apps/web/public /app/public
 
 # Expose port
 EXPOSE 3001
@@ -37,4 +38,4 @@ ENV NODE_ENV=production \
     HOSTNAME=0.0.0.0
 
 # Start Next.js server
-CMD ["node", "apps/web/server.js"]
+CMD ["node", "server.js"]
