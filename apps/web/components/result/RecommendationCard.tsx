@@ -1,4 +1,4 @@
-import { RecommendationOutput } from "@/lib/types"
+import { RecommendationOutput, Candidate } from "@/lib/types"
 import { Lightbulb, Package, Zap } from "lucide-react"
 
 interface RecommendationCardProps {
@@ -40,7 +40,7 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
             <div>
               <p className="mb-2 text-xs font-medium text-blue-700">Candidatos:</p>
               <div className="space-y-1">
-                {recommendation.intelligence.candidates.map((candidate) => (
+                {recommendation.intelligence.candidates.map((candidate: Candidate) => (
                   <div
                     key={candidate.product_id}
                     className="flex items-center justify-between text-sm text-blue-800"
