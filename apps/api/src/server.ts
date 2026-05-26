@@ -70,7 +70,7 @@ async function main() {
   })
 
   // Serve frontend as static files (export from Next.js build)
-  const frontendPath = path.join(__dirname, '../../web/out')
+  const frontendPath = path.join(__dirname, '../public')
   try {
     await app.register(fastifyStatic, {
       root: frontendPath,
