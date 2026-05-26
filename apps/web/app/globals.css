@@ -25,10 +25,10 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-@supports (color: rgb(75 85 99)) {
-  input::placeholder,
-  textarea::placeholder {
-    color: rgb(75 85 99);
-    opacity: 1;
-  }
+/* Force placeholder text visibility */
+:where(input)::placeholder,
+:where(textarea)::placeholder {
+  color: rgb(75 85 99) !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: rgb(75 85 99) !important;
 }
