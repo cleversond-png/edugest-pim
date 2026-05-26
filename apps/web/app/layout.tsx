@@ -27,6 +27,15 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <style>{`
+          input::placeholder,
+          textarea::placeholder {
+            color: rgb(75 85 99) !important;
+            opacity: 1 !important;
+          }
+        `}</style>
+      </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
