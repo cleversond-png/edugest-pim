@@ -1,4 +1,4 @@
-import { RecommendationOutput, Candidate } from "@/lib/types"
+import { RecommendationOutput, Candidate, SankhyaProduct } from "@/lib/types"
 import { Lightbulb, Package, Zap } from "lucide-react"
 
 interface RecommendationCardProps {
@@ -67,7 +67,7 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
             <div className="mb-4">
               <p className="mb-2 text-xs font-medium text-green-700">Produtos:</p>
               <div className="space-y-2">
-                {recommendation.business.products.map((product) => (
+                {recommendation.business.products.map((product: SankhyaProduct) => (
                   <div
                     key={product.product_id}
                     className="rounded border border-green-200 bg-white p-2 text-sm text-green-900"
@@ -84,7 +84,7 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
             <div>
               <p className="mb-2 text-xs font-medium text-green-700">Dependências:</p>
               <div className="space-y-1">
-                {recommendation.business.required_dependencies.map((dep, i: number) => (
+                {recommendation.business.required_dependencies.map((dep: string, i: number) => (
                   <div key={i} className="text-xs text-green-800">
                     • {dep}
                   </div>
