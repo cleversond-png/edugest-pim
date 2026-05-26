@@ -28,7 +28,7 @@ export function ExportsCard({ exports }: ExportsCardProps) {
               </p>
               {exports?.erp?.blockedReasons && exports.erp.blockedReasons.length > 0 && (
                 <ul className="mt-2 space-y-1">
-                  {exports.erp.blockedReasons.map((reason, i: number) => (
+                  {exports.erp.blockedReasons.map((reason: string, i: number) => (
                     <li key={i} className="text-xs text-yellow-700">
                       • {reason}
                     </li>
