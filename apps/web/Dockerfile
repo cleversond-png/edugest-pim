@@ -29,6 +29,9 @@ COPY --from=builder /app/apps/web/.next/static /app/.next/static
 # Copy public files
 COPY --from=builder /app/apps/web/public /app/public
 
+# Remove test server to ensure only Next.js runs
+RUN rm -f /app/test-server.js 2>/dev/null || true
+
 # Expose port
 EXPOSE 3001
 
