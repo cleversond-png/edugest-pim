@@ -381,6 +381,31 @@ curl -X PUT "https://graph.microsoft.com/v1.0/drives/b!DPNlF5Xwb0WMcvZJP09s45qfJ
 - ✅ Deploy validado (HTTP 200, SPA routing OK)
 - ⏳ GitHub Actions token para deploy automático pronto (aguarda configuração de secret no GitHub)
 
+## 🔴 PHASE 3 — TAREFA 7: Frontend Deploy Issue (2026-05-26 02:40 UTC) CORRIGINDO
+
+### Problema Inicial: Upload Timeout (2026-05-26 02:40 UTC)
+- **Deploy-frontend job:** Falhando há ~16 runs consecutivos
+- **Erro original:** Upload Timed Out (599+ segundos) para Azure Static Web Apps
+- **Causa:** Artefatos Next.js muito grandes (374MB, 2482 arquivos)
+
+### Correção 1: Otimização de Artifacts (Commit 8d82e70)
+- ✅ Otimizações no `next.config.ts`:
+  - `productionBrowserSourceMaps: false` — remove source maps
+  - `compress: true` — ativa compressão
+  - `optimizePackageImports` — otimiza imports
+- ✅ Resultado: 374MB → 48MB (87% redução), 2482 → 1547 arquivos
+- ❌ Deploy ainda falhou (diferente: "Web app warm up timed out")
+
+### Problema Secundário: Web App Warm Up Timeout (2026-05-26 02:18 UTC)
+- **Novo erro:** "Web app warm up timed out" após upload bem-sucedido
+- **Causa raiz:** `staticwebapp.config.json` na raiz, não lido pelo Azure
+- **Resultado:** Azure não conseguiu configurar SPA routing, app falhou ao iniciar
+
+### Correção 2: Configuração Corrigida (Commit 16ddd20)
+- ✅ Movido `staticwebapp.config.json` para `apps/web/public/` (local esperado)
+- ✅ Azure Static Web Apps agora encontrará e usará a configuração SPA
+- ⏳ Deploy #49 rodando (commit 16ddd20)
+
 ## ✅ PHASE 3 — TAREFA 7: Validação E2E Completa (2026-05-26 01:57 UTC) CONCLUÍDA
 
 ### E2E Validation Local (2026-05-25 20:50 - 23:50 UTC)

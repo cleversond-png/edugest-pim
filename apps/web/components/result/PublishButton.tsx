@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { SolutionPackV4 } from "@/lib/types"
 import { Upload, Loader2, CheckCircle2, AlertCircle } from "lucide-react"
-import { publishAction } from "@/app/result/[executionId]/publish/actions"
+import { publishAction } from "@/app/result/publish-actions"
 
 interface PublishButtonProps {
   executionId: string

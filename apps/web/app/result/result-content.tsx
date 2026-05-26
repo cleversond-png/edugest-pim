@@ -1,3 +1,7 @@
+'use client'
+
+import { useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { SolutionPackV4 } from "@/lib/types"
 import { DiagnosisCard } from "@/components/result/DiagnosisCard"
 import { RecommendationCard } from "@/components/result/RecommendationCard"
@@ -7,31 +11,26 @@ import { PublishButton } from "@/components/result/PublishButton"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
-interface ResultPageProps {
-  params: {
-    executionId: string
-  }
-  searchParams: {
-    data?: string
-  }
-}
+export default function ResultPageContent() {
+  const searchParams = useSearchParams()
+  const executionId = searchParams.get("id") || "unknown"
 
-export default function ResultPage({ params, searchParams }: ResultPageProps) {
-  const { executionId } = params
+  const [solutionPack, setSolutionPack] = useState<SolutionPackV4 | null>(null)
+  const [opportunityId, setOpportunityId] = useState("")
 
-  // Decode SolutionPackV4 from URL params (passed from server action redirect)
-  let solutionPack: SolutionPackV4 | null = null
-  let opportunityId = ""
-
-  if (searchParams.data) {
-    try {
-      const decoded = JSON.parse(Buffer.from(searchParams.data, "base64").toString("utf-8"))
-      solutionPack = decoded.solutionPack
-      opportunityId = decoded.opportunityId
-    } catch (e) {
-      console.error("Failed to decode solution pack", e)
+  useEffect(() => {
+    // Get data from URL params (passed from analyze action)
+    const data = searchParams.get("data")
+    if (data) {
+      try {
+        const decoded = JSON.parse(Buffer.from(data, "base64").toString("utf-8"))
+        setSolutionPack(decoded.solutionPack)
+        setOpportunityId(decoded.opportunityId)
+      } catch (e) {
+        console.error("Failed to decode solution pack from URL", e)
+      }
     }
-  }
+  }, [searchParams])
 
   // If no data found, show error
   if (!solutionPack) {

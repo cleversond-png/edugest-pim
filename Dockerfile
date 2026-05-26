@@ -31,7 +31,7 @@ COPY package.json package-lock.json ./
 COPY --from=builder-backend /app/apps/api/dist ./apps/api/dist
 COPY --from=builder-backend /app/apps/api/package.json ./apps/api/
 
-# Copy built frontend
+# Copy built frontend (output: standalone generates .next/ folder)
 COPY --from=builder-frontend /app/apps/web/.next ./apps/web/.next
 COPY --from=builder-frontend /app/apps/web/public ./apps/web/public
 COPY --from=builder-frontend /app/apps/web/package.json ./apps/web/

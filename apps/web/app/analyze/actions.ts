@@ -31,7 +31,7 @@ export async function analyzeAction(
     const encoded = Buffer.from(JSON.stringify(dataPayload)).toString("base64")
 
     // Redirect to result page with data embedded
-    redirect(`/result/${result.executionId}?data=${encoded}`)
+    redirect(`/result?id=${result.executionId}&data=${encoded}`)
   } catch (error) {
     throw new Error(
       error instanceof Error ? error.message : "Erro ao analisar transcrição"
