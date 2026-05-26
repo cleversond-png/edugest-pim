@@ -115,6 +115,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Build Core package
+        run: npm run build --workspace=@edugest-pim/core
+
       - name: Build Next.js
         run: npm run build --workspace=web
         env:
