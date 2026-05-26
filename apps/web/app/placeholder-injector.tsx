@@ -9,9 +9,9 @@ export function PlaceholderInjector() {
     style.textContent = `
       input::placeholder,
       textarea::placeholder {
-        color: rgb(75 85 99) !important;
+        color: rgb(55 65 81) !important;
         opacity: 1 !important;
-        -webkit-text-fill-color: rgb(75 85 99) !important;
+        -webkit-text-fill-color: rgb(55 65 81) !important;
       }
     `;
     document.head.appendChild(style);

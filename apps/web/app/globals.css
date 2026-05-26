@@ -30,7 +30,7 @@ body {
 /* Force placeholder text visibility */
 :where(input)::placeholder,
 :where(textarea)::placeholder {
-  color: rgb(75 85 99) !important;
+  color: rgb(55 65 81) !important;
   opacity: 1 !important;
-  -webkit-text-fill-color: rgb(75 85 99) !important;
+  -webkit-text-fill-color: rgb(55 65 81) !important;
 }
