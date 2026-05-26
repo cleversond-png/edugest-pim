@@ -30,7 +30,7 @@ COPY --from=builder /app/apps/web/.next/static /app/.next/static
 COPY --from=builder /app/apps/web/public /app/public
 
 # Remove test server to ensure only Next.js runs
-RUN rm -f /app/test-server.js 2>/dev/null || true
+RUN rm -f /app/test-server.js /app/apps/web/test-server.js 2>/dev/null || true
 
 # Expose port
 EXPOSE 3001
@@ -40,5 +40,5 @@ ENV NODE_ENV=production \
     PORT=3001 \
     HOSTNAME=0.0.0.0
 
-# Start Next.js server
-CMD ["node", "server.js"]
+# Start Next.js server with explicit path
+CMD ["/bin/sh", "-c", "exec node /app/apps/web/server.js"]
