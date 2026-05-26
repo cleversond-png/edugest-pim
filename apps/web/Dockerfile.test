@@ -1,0 +1,11 @@
+FROM node:20-alpine
+
+WORKDIR /app
+COPY apps/web/test-server.js .
+
+EXPOSE 3001
+ENV NODE_ENV=production \
+    PORT=3001 \
+    HOSTNAME=0.0.0.0
+
+CMD ["node", "test-server.js"]
