@@ -9,8 +9,23 @@ COPY packages/core ./packages/core
 
 RUN npm ci && npx prisma generate && npm run build --workspace=@edugest-pim/core && npm run build --workspace=@edugest-pim/api && npm run build --workspace=web
 
+# Debug: Check if out folder was created
+RUN echo "=== Checking web build output ===" && \
+    ls -la apps/web/ && \
+    echo "---" && \
+    [ -d apps/web/out ] && echo "✓ out folder EXISTS" || echo "✗ out folder MISSING" && \
+    [ -d apps/web/out ] && ls -la apps/web/out/ | head -20 || echo "Cannot list out"
+
 # Copy frontend static export to API public folder
-RUN mkdir -p apps/api/public && cp -r apps/web/out/* apps/api/public/
+RUN mkdir -p apps/api/public && \
+    if [ -d apps/web/out ]; then \
+        echo "Copying frontend files to api/public..."; \
+        cp -rv apps/web/out/* apps/api/public/; \
+        echo "Copy successful"; \
+    else \
+        echo "ERROR: apps/web/out does not exist!"; \
+        exit 1; \
+    fi
 
 # Production stage
 FROM node:20-alpine
