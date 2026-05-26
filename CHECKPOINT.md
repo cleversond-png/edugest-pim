@@ -273,6 +273,28 @@ Service Principal `EduGest-PIM-API` tem acesso de escrita confirmado no site Sha
 - DEV (rg-edugest-pim): não possui container (archived)
 - PROD (rg-edugest-prod): ca-edugest-prod-backend ← ÚNICO CONTAINER, com API key configurada
 
+## 🎨 PHASE 3 — TAREFA 7.8: Aumentar Contraste de Placeholders (2026-05-26 18:41 UTC) ✅ CONCLUÍDA
+
+### Melhoria: Placeholders com Melhor Contraste
+- **Problema**: Placeholders nos inputs de formulário tinham contraste muito baixo, quase invisíveis
+- **Solução**: Aplicado `placeholder:text-gray-400` a todos os campos de texto (Input, TextArea, Select)
+- **Escopo**: 
+  - Input component (7 instances)
+  - TextArea component (7 instances)
+  - Select component (3 instances)
+  - TagInput (1 instance)
+  - FAQInput (pergunta + resposta)
+  - CasesInput (cliente, desafio, solução, resultado)
+  - ObjectionsInput (objeção, resposta, contexto)
+
+### Validação
+✅ Local dev server: Verificado que classe `placeholder:text-gray-400` é renderizada corretamente no HTML
+✅ Git commit: `style: Increase placeholder contrast to text-gray-400 in product form`
+✅ GitHub Actions: Deploy automático em progresso
+
+### Resultado Final
+Placeholders agora com contraste visível: `text-gray-400` em vez do padrão (muito claro)
+
 ---
 
 ## 🤖 PHASE 3 — TAREFA 4: AI Fallback to Mock (2026-05-25 23:15 UTC) ✅ CONCLUÍDA
