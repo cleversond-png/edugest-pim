@@ -405,6 +405,30 @@ curl -X PUT "https://graph.microsoft.com/v1.0/drives/b!DPNlF5Xwb0WMcvZJP09s45qfJ
 - ✅ Assets carregando (CSS, JS chunks)
 - ✅ Conexão com backend API configurada
 
+## 🚀 PHASE 3 — TAREFA 7.5: Correção Dockerfile & Redeployment (2026-05-26 16:44 UTC) ✅ CONCLUÍDA
+
+### Bug Identificado e Corrigido
+**Problema:** Container crashava com `Cannot find module '/app/server.js'`
+- Causa: Next.js standalone mantém estrutura de pasta (`/app/apps/web/server.js`, não `/app/server.js`)
+- Dockerfile original: `CMD ["node", "/app/server.js"]` ❌
+- Dockerfile corrigido: WORKDIR `/app/apps/web` + `CMD ["node", "server.js"]` ✅
+
+**Solução Aplicada:**
+1. ✅ Editado `apps/web/Dockerfile`:
+   - Mantém estrutura de cópia (standalone com nesting)
+   - COPY estáticos corrigido: `/app/apps/web/.next/static` e `/app/apps/web/public`
+   - WORKDIR alterado para `/app/apps/web`
+   - CMD simplificado
+2. ✅ Rebuild sem cache + push para ACR
+3. ✅ Deletar/recriar Container App ca-edugest-pim-web
+4. ✅ Validação: HTTP 307 (redirect) + HTML completo
+
+**Status Final:** 🟢 **OPERACIONAL E ESTÁVEL**
+- ✅ Next.js 16.2.6 iniciando em 0ms
+- ✅ HTTP 200 com assets carregando
+- ✅ Redirect `/` → `/products` (prerendered)
+- ✅ Headers corretos (x-nextjs-cache: HIT)
+
 ## ✅ PHASE 3 — TAREFA 7: Validação E2E Completa (2026-05-26 01:57 UTC) CONCLUÍDA
 
 ### E2E Validation Local (2026-05-25 20:50 - 23:50 UTC)

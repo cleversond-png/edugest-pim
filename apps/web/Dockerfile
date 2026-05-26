@@ -25,9 +25,9 @@ WORKDIR /app
 # Copy built app and dependencies from builder
 COPY --from=builder /app/apps/web/.next/standalone /app
 # Copy static assets - standalone expects them at .next/static
-COPY --from=builder /app/apps/web/.next/static /app/.next/static
+COPY --from=builder /app/apps/web/.next/static /app/apps/web/.next/static
 # Copy public files
-COPY --from=builder /app/apps/web/public /app/public
+COPY --from=builder /app/apps/web/public /app/apps/web/public
 
 # Remove test server to ensure only Next.js runs
 RUN rm -f /app/test-server.js /app/apps/web/test-server.js 2>/dev/null || true
@@ -40,5 +40,6 @@ ENV NODE_ENV=production \
     PORT=3001 \
     HOSTNAME=0.0.0.0
 
-# Start Next.js server with explicit path
-CMD ["/bin/sh", "-c", "exec node /app/apps/web/server.js"]
+# Start Next.js server (standalone puts everything under /app/apps/web/)
+WORKDIR /app/apps/web
+CMD ["node", "server.js"]
