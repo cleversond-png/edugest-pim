@@ -4,7 +4,7 @@
   "last_updated": "2026-05-26T01:50:00Z",
   "current_phase": "Phase 3 — Validação End-to-End & Resolução de Blockers",
 
-  "current_task": "Phase 3 Tarefa 7.2: Testar POST /api/products/:slug/generate-docs em produção",
+  "current_task": "Phase 3 Tarefa 7 — COMPLETA ✅ (E2E, Docs, Presentations validated)",
 
   "pivot_note": "Projeto reorientado em 2026-05-25. O foco principal é o cadastro de produto como fonte única de verdade. Motor de análise de transcrição (POST /api/analyze) é funcionalidade secundária. 2026-05-26 01:50 — Phase 3 Tarefa 7.1 COMPLETA ✅: E2E validation passed (Analyze → Recommendation → Docs). Tarefa 7.2 em progresso: Validar doc generation em produção com REAL IA.",
 
@@ -38,7 +38,9 @@
     "Phase 3 Tarefa 4: AI Fallback to Mock — Sistema funciona 100% sem ANTHROPIC_API_KEY ✅",
     "Phase 3 Tarefa 5: Deploy Backend API em Azure Container Apps ✅",
     "Phase 3 Tarefa 6: Deploy Frontend Next.js no Azure Static Web Apps — Corrigido com standalone output + core build step ✅",
-    "Phase 3 Tarefa 7.1: Validação E2E — Analyze → Recommendation → Docs (SUCCESS) ✅"
+    "Phase 3 Tarefa 7.1: Validação E2E — Analyze → Recommendation → Docs (SUCCESS) ✅",
+    "Phase 3 Tarefa 7.2: Doc Generation API — 11 files, 6 views, 3 exports (SUCCESS) ✅",
+    "Phase 3 Tarefa 7.3: Presentation Generation — PPTX, profiles, slides, AI analysis (SUCCESS) ✅"
   ],
 
   "preserved_modules": {
