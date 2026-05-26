@@ -37,5 +37,8 @@ ENV NODE_ENV=production \
     PORT=3001 \
     HOSTNAME=0.0.0.0
 
+# Set working directory to where server.js resides
+WORKDIR /app/apps/web
+
 # Start Next.js server
-CMD ["node", "apps/web/server.js"]
+CMD ["node", "server.js"]
