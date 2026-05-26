@@ -1077,7 +1077,7 @@ function Input({
       </label>
       <input
         {...props}
-        className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+        className="w-full rounded border border-gray-300 px-3 py-2 text-sm placeholder:text-gray-400 focus:border-blue-500 focus:outline-none"
       />
     </div>
   )
@@ -1096,7 +1096,7 @@ function TextArea({
       </label>
       <textarea
         {...props}
-        className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+        className="w-full rounded border border-gray-300 px-3 py-2 text-sm placeholder:text-gray-400 focus:border-blue-500 focus:outline-none"
       />
     </div>
   )
@@ -1117,7 +1117,7 @@ function Select({
       </label>
       <select
         {...props}
-        className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+        className="w-full rounded border border-gray-300 px-3 py-2 text-sm placeholder:text-gray-400 focus:border-blue-500 focus:outline-none"
       >
         {options.map((opt: { value: string; label: string }) => (
           <option key={opt.value} value={opt.value}>
@@ -1185,7 +1185,7 @@ function TagInput({
                 handleAdd()
               }
             }}
-            className="flex-1 rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+            className="flex-1 rounded border border-gray-300 px-3 py-2 text-sm placeholder:text-gray-400 focus:border-blue-500 focus:outline-none"
           />
           <button
             type="button"
@@ -1237,7 +1237,7 @@ function FAQInput({
               onChange(newFaqs)
             }}
             placeholder="Pergunta"
-            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+            className="w-full rounded border border-gray-300 px-2 py-1 text-sm placeholder:text-gray-400"
           />
           <textarea
             value={faq.resposta}
@@ -1248,7 +1248,7 @@ function FAQInput({
             }}
             placeholder="Resposta"
             rows={2}
-            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+            className="w-full rounded border border-gray-300 px-2 py-1 text-sm placeholder:text-gray-400"
           />
           <button
             type="button"
@@ -1304,7 +1304,7 @@ function CasesInput({
               onChange(newCases)
             }}
             placeholder="Cliente"
-            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+            className="w-full rounded border border-gray-300 px-2 py-1 text-sm placeholder:text-gray-400"
           />
           <textarea
             value={cse.desafio}
@@ -1315,7 +1315,7 @@ function CasesInput({
             }}
             placeholder="Desafio"
             rows={2}
-            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+            className="w-full rounded border border-gray-300 px-2 py-1 text-sm placeholder:text-gray-400"
           />
           <textarea
             value={cse.solucao}
@@ -1326,7 +1326,7 @@ function CasesInput({
             }}
             placeholder="Solução"
             rows={2}
-            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+            className="w-full rounded border border-gray-300 px-2 py-1 text-sm placeholder:text-gray-400"
           />
           <textarea
             value={cse.resultado}
@@ -1337,7 +1337,7 @@ function CasesInput({
             }}
             placeholder="Resultado"
             rows={2}
-            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+            className="w-full rounded border border-gray-300 px-2 py-1 text-sm placeholder:text-gray-400"
           />
           <button
             type="button"
@@ -1386,7 +1386,7 @@ function ObjectionsInput({
               onChange(newObjs)
             }}
             placeholder="Objeção"
-            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+            className="w-full rounded border border-gray-300 px-2 py-1 text-sm placeholder:text-gray-400"
           />
           <textarea
             value={obj.resposta}
@@ -1397,7 +1397,7 @@ function ObjectionsInput({
             }}
             placeholder="Resposta"
             rows={2}
-            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+            className="w-full rounded border border-gray-300 px-2 py-1 text-sm placeholder:text-gray-400"
           />
           <input
             type="text"
@@ -1408,7 +1408,7 @@ function ObjectionsInput({
               onChange(newObjs)
             }}
             placeholder="Contexto (opcional)"
-            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+            className="w-full rounded border border-gray-300 px-2 py-1 text-sm placeholder:text-gray-400"
           />
           <button
             type="button"
