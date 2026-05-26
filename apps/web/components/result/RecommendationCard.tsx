@@ -84,7 +84,7 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
             <div>
               <p className="mb-2 text-xs font-medium text-green-700">Dependências:</p>
               <div className="space-y-1">
-                {recommendation.business.required_dependencies.map((dep, i) => (
+                {recommendation.business.required_dependencies.map((dep, i: number) => (
                   <div key={i} className="text-xs text-green-800">
                     • {dep}
                   </div>

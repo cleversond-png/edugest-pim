@@ -1045,7 +1045,7 @@ function Block({
             <div className="flex items-start gap-2 rounded bg-red-50 p-3 text-sm text-red-700">
               <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
               <div>
-                {errors.map((err, i) => (
+                {errors.map((err, i: number) => (
                   <div key={i}>{err}</div>
                 ))}
               </div>
