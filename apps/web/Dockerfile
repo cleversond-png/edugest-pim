@@ -24,8 +24,7 @@ WORKDIR /app
 
 # Copy built app and dependencies from builder
 COPY --from=builder /app/apps/web/.next/standalone /app
-# Copy static assets - standalone expects them at .next/static
-COPY --from=builder /app/apps/web/.next/static /app/.next/static
+
 # Copy public files
 COPY --from=builder /app/apps/web/public /app/public
 
@@ -37,8 +36,5 @@ ENV NODE_ENV=production \
     PORT=3001 \
     HOSTNAME=0.0.0.0
 
-# Set working directory to where server.js resides
-WORKDIR /app/apps/web
-
 # Start Next.js server
-CMD ["node", "server.js"]
+CMD ["node", "apps/web/server.js"]
