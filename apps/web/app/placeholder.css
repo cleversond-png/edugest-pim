@@ -1,0 +1,12 @@
+/* Placeholder text color - override */
+input::placeholder {
+  color: rgb(75 85 99) !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: rgb(75 85 99) !important;
+}
+
+textarea::placeholder {
+  color: rgb(75 85 99) !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: rgb(75 85 99) !important;
+}
