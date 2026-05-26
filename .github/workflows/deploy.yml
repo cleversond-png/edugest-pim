@@ -51,8 +51,8 @@ jobs:
       - name: Build Docker image
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:${{ github.sha }} .
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:latest .
+          docker build --no-cache -t ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:${{ github.sha }} .
+          docker build --no-cache -t ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:latest .
 
       - name: Push to Azure Container Registry
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
