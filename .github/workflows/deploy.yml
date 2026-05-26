@@ -59,22 +59,6 @@ jobs:
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:${{ github.sha }}
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:latest
 
-      - name: Deploy to Azure Container Apps (Backend)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          az containerapp update \
-            --resource-group rg-edugest-prod \
-            --name ca-edugest-prod-backend \
-            --image ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:latest
-
-      - name: Deploy to Azure Container Apps (Frontend)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          az containerapp update \
-            --resource-group rg-edugest-prod \
-            --name ca-edugest-pim-web \
-            --image ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim-web:latest
-
       - name: Azure Logout
         if: always()
         run: az logout
