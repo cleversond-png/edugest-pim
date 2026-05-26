@@ -25,10 +25,8 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-@layer base {
-  input::placeholder,
-  textarea::placeholder {
-    color: rgb(75 85 99) !important;
-    opacity: 1;
-  }
+input::placeholder,
+textarea::placeholder {
+  color: rgb(75 85 99) !important;
+  opacity: 1 !important;
 }
