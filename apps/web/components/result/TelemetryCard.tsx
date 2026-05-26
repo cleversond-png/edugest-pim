@@ -64,7 +64,7 @@ export function TelemetryCard({ durationMs, telemetry }: TelemetryCardProps) {
           <div>
             <p className="mb-3 text-sm font-medium text-gray-700">Modelos Utilizados</p>
             <div className="space-y-2">
-              {Object.entries(telemetry.modelRouting).map(([step, model]: [string, string]) => (
+              {(Object.entries(telemetry.modelRouting) as [string, string][]).map(([step, model]) => (
                 <div
                   key={step}
                   className="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-2 text-sm"
