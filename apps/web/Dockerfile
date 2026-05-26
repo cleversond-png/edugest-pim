@@ -22,10 +22,11 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy built app and dependencies from builder
-COPY --from=builder /app/apps/web/.next/standalone ./
-COPY --from=builder /app/apps/web/.next/static ./.next/static
-COPY --from=builder /app/apps/web/public ./public
+# Copy built app and dependencies from builder (standalone already contains apps/web structure)
+COPY --from=builder /app/apps/web/.next/standalone .
+# Copy static assets into the expected location
+COPY --from=builder /app/apps/web/.next/static ./apps/web/.next/static
+COPY --from=builder /app/apps/web/public ./apps/web/public
 
 # Expose port
 EXPOSE 3001
