@@ -4,6 +4,8 @@
 
 import 'dotenv/config'
 import Fastify from 'fastify'
+import fastifyStatic from '@fastify/static'
+import path from 'path'
 import { logger } from './utils/logger'
 import { authMiddleware } from './middleware/auth'
 import { errorHandler } from './middleware/errorHandler'
@@ -65,6 +67,23 @@ async function main() {
     fastify.get('/api/status', async () => ({
       message: 'API is ready',
     }))
+  })
+
+  // Serve frontend as static files (export from Next.js build)
+  const frontendPath = path.join(__dirname, '../../web/out')
+  try {
+    await app.register(fastifyStatic, {
+      root: frontendPath,
+      prefix: '/',
+    })
+    logger.info(`Frontend static files registered from ${frontendPath}`)
+  } catch (err: any) {
+    logger.warn({ error: err.message }, 'Frontend static files not found — SPA routing disabled')
+  }
+
+  // SPA fallback: 404 routes → /index.html (for client-side routing)
+  app.setNotFoundHandler((req, reply) => {
+    reply.sendFile('index.html')
   })
 
   try {

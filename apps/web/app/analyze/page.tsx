@@ -1,10 +1,12 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { TranscriptForm } from "@/components/form/TranscriptForm"
-import { analyzeAction } from "./actions"
+import { analyzeTranscript } from "@/lib/api"
 
 export default function AnalyzePage() {
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [globalError, setGlobalError] = useState<string | null>(null)
 
@@ -17,7 +19,25 @@ export default function AnalyzePage() {
     setGlobalError(null)
 
     try {
-      await analyzeAction(data.transcriptText, data.clientName, data.colorScheme)
+      const opportunityId = `opp-${Date.now()}`
+      const result = await analyzeTranscript({
+        opportunityId,
+        transcript: {
+          text: data.transcriptText,
+          language: "pt-BR",
+        },
+        clientBranding: {
+          clientName: data.clientName,
+          colorScheme: data.colorScheme,
+        },
+      })
+
+      const dataPayload = {
+        solutionPack: result.solutionPack,
+        opportunityId,
+      }
+      const encoded = Buffer.from(JSON.stringify(dataPayload)).toString("base64")
+      router.push(`/result?id=${result.executionId}&data=${encoded}`)
     } catch (error) {
       setGlobalError(
         error instanceof Error

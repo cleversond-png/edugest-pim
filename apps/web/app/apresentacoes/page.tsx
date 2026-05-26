@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { ApresentacaoForm } from "@/components/forms/ApresentacaoForm"
-import { gerarApresentacaoAction } from "./actions"
+import { generatePresentation } from "@/lib/api"
 import { Download, ExternalLink, AlertCircle } from "lucide-react"
 
 interface ApresentacaoResult {
@@ -28,7 +28,7 @@ export default function ApresentacoesPage() {
     setResult(null)
 
     try {
-      const result = await gerarApresentacaoAction(formData)
+      const result = await generatePresentation(formData)
       setResult(result)
     } catch (error) {
       setGlobalError(

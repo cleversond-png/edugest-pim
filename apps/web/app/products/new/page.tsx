@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { ProductForm } from "@/components/forms/ProductForm"
-import { createProductAction } from "./actions"
+import { createProduct } from "@/lib/api"
 
 export default function NewProductPage() {
   const router = useRouter()
@@ -17,7 +17,7 @@ export default function NewProductPage() {
     setSuccessMessage(null)
 
     try {
-      const result = await createProductAction(formData)
+      const result = await createProduct(formData)
       setSuccessMessage(`Produto "${result.nomeComercial}" criado com sucesso!`)
 
       // Redirect to product detail after 2 seconds

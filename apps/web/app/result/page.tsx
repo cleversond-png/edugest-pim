@@ -1,8 +1,6 @@
 import { Suspense } from "react"
 import ResultPageContent from "./result-content"
 
-export const dynamic = 'force-dynamic'
-
 export default function ResultPage() {
   return (
     <Suspense fallback={<LoadingFallback />}>

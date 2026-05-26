@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { SolutionPackV4 } from "@/lib/types"
 import { Upload, Loader2, CheckCircle2, AlertCircle } from "lucide-react"
-import { publishAction } from "@/app/result/publish-actions"
+import { publishSolutionPack } from "@/lib/api"
 
 interface PublishButtonProps {
   executionId: string
@@ -27,7 +27,11 @@ export function PublishButton({
     setStatus("idle")
 
     try {
-      const result = await publishAction(executionId, opportunityId, solutionPack)
+      const result = await publishSolutionPack({
+        executionId,
+        opportunityId,
+        solutionPack,
+      })
       setWebUrls(result.webUrls || null)
       setStatus("success")
     } catch (err) {
