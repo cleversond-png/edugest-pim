@@ -113,8 +113,8 @@ jobs:
               FRONTEND_BUILD=${{ github.sha }}
 
       - name: Azure Logout
-        if: always()
-        run: az logout
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: az logout || true
 
   notify:
     runs-on: ubuntu-latest
