@@ -90,14 +90,6 @@ jobs:
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --image ${{ env.ACR_LOGIN_SERVER }}/edugest-pim-api:${{ github.sha }}
 
-      - name: Configure frontend secrets
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          az containerapp secret set \
-            --name ${{ env.WEB_CONTAINER_APP }} \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --secrets api-key=${{ secrets.API_KEY }}
-
       - name: Deploy frontend Container App
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
