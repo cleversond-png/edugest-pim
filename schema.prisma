@@ -124,14 +124,6 @@ enum SlideType {
   PLACEHOLDER
 }
 
-enum ProductCategory {
-  SOFTWARE
-  SERVICO
-  LICENCIAMENTO
-  CREDITO
-  PROJETO
-}
-
 // ============================================================================
 // COMPANY PROFILE — Contexto permanente injetado em todos os prompts
 // ============================================================================
@@ -212,31 +204,23 @@ model Product {
   // ============================================================================
   // BLOCO IDENTIDADE (obrigatório — ERP Master)
   // ============================================================================
-  codigo         String?       @unique
-  nomeComercial  String
-  nomeInterno    String?
-  slug           String        @unique
-  tipoProduto    ProductType   @default(SAAS_BB)
-  categoria      String?
-  subcategoria   String?
-  natureza       ProductNature @default(MODULAR)
-  status         ProductStatus @default(RASCUNHO)
-  produtoCore    Boolean       @default(false)
-  integraJornada Boolean       @default(false)
-  versao         String        @default("1.0.0")
+  codigo        String?       @unique
+  nomeComercial String
+  slug          String        @unique
+  tipoProduto   ProductType   @default(SAAS_BB)
+  natureza      ProductNature @default(MODULAR)
+  status        ProductStatus @default(RASCUNHO)
 
   // ============================================================================
   // BLOCO COMERCIAL (obrigatório)
   // ============================================================================
   descricaoComercialCurta String?
-  shortPitch              String?
   proposta_valor          String?         @db.Text
   doresAtendidas          String[]
   publicoAlvo             String[]
   diferenciais            String[]
   dependenciaComercial    DependencyType  @default(NENHUMA)
   produtoBase             String? // slug do produto base
-  observacoesComerciais   String?         @db.Text
   perfilCliente           ClientProfile[]
 
   // ============================================================================
@@ -246,10 +230,6 @@ model Product {
   modeloFaturamento BillingModel  @default(RECORRENTE)
   tipoReceita       RevenueType   @default(NA)
   unidadeMedida     UnitOfMeasure @default(UNIDADE)
-  geraARR           Boolean       @default(false)
-  centroResultado   String?
-  grupoCodigo       String?
-  grupoDescricao    String?
   ativo             Boolean       @default(true)
 
   // ============================================================================
@@ -258,8 +238,6 @@ model Product {
   codigoNBS          String?
   temISS             ISSTaxStatus @default(A_VALIDAR)
   aliquotaISS        Decimal?     @db.Decimal(5, 2)
-  codigoServico      String?
-  regimeTributario   String?
   observacoesFiscais String?      @db.Text
   fiscalStatus       FiscalStatus @default(A_VALIDAR)
 
@@ -310,7 +288,7 @@ model Product {
   origemResponsavel     String?
 
   // ============================================================================
-  // BLOCO PRECIFICAÇÃO (Fase 1)
+  // BLOCO PRECIFICAÇÃO (Gerado por IA)
   // ============================================================================
   precificacaoStatus      PricingStatus @default(RASCUNHO)
   moeda                   String        @default("BRL")
@@ -319,39 +297,12 @@ model Product {
   descontoMaximo          Decimal?      @db.Decimal(5, 2)
   requerAprovacaoDesconto Boolean       @default(false)
   observacoesPrecificacao String?       @db.Text
-  precificacaoFase2       Boolean       @default(false)
-
-  // Campos específicos por modelo
-  precoMensalBase   Decimal? @db.Decimal(12, 2)
-  precoAnualBase    Decimal? @db.Decimal(12, 2)
-  descontoAnual     Decimal? @db.Decimal(5, 2)
-  unidadeCobranca   String?
-  minimoContratavel Int?
-
-  precoMinimoProjetoR    Decimal? @db.Decimal(12, 2)
-  precoMaximoProjetoR    Decimal? @db.Decimal(12, 2)
-  precoHoraR             Decimal? @db.Decimal(8, 2)
-  estimativaHorasProjeto Int?
-  composicaoPreco        String?
-
-  precoHoraCredito Decimal? @db.Decimal(8, 2)
-  pacoteMinHoras   Int?
-  faixasPreco      Json? // array de { perfil, qtdMinima, qtdMaxima, precoUnitario, descricaoFaixa }
-  pacotesCredito   Json? // array de { nome, horas, precoTotal, desconto }
+  faixasPreco             Json? // array de { perfil, qtdMinima, qtdMaxima, precoUnitario, descricaoFaixa }
+  pacotesCredito          Json? // array de { nome, horas, precoTotal, desconto }
 
   // ============================================================================
-  // RELACIONAMENTOS E LEGACY
+  // RELACIONAMENTOS
   // ============================================================================
-  name            String? // legacy
-  category        ProductCategory?
-  subcategory     String?
-  productTypePM   String?
-  longDescription String?          @db.Text
-  personaJson     Json?
-  painsJson       Json?
-  valueProp       String?          @db.Text
-  differentiators Json?
-
   capabilities    ProductCapability[]
   dimensionDocs   ProductDimensionDoc[]
   kits            ProductKit[]

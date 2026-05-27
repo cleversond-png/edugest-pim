@@ -12,7 +12,6 @@ export function generateMasterMd(product: Product): string {
 produto: ${product.nomeComercial}
 codigo: ${product.codigo}
 slug: ${product.slug}
-versao: ${product.versao}
 status: ${product.status}
 atualizado: ${product.updatedAt.toISOString()}
 geradoEm: ${new Date().toISOString()}
@@ -27,10 +26,6 @@ geradoEm: ${new Date().toISOString()}
 ## Identidade
 
 - **Nome Comercial**: ${product.nomeComercial}
-- **Nome Interno**: ${product.nomeInterno || 'Não informado'}
-- **Categoria**: ${product.categoria}/${product.subcategoria || 'N/A'}
-- **Produto Core**: ${product.produtoCore ? 'Sim' : 'Não'}
-- **Integra Jornada**: ${product.integraJornada ? 'Sim' : 'Não'}
 
 ## Descrição Comercial
 
@@ -56,7 +51,6 @@ ${formatArray(product.diferenciais)}
 
 - **Tipo**: ${product.dependenciaComercial}
 - **Produto Base**: ${product.produtoBase || 'Nenhuma'}
-- **Observações**: ${product.observacoesComerciais || 'Não informadas'}
 
 ## Perfis de Cliente
 
@@ -70,9 +64,6 @@ ${formatArray(product.perfilCliente)}
 - **Modelo Faturamento**: ${product.modeloFaturamento}
 - **Tipo de Receita**: ${product.tipoReceita}
 - **Unidade de Medida**: ${product.unidadeMedida}
-- **Gera ARR**: ${product.geraARR ? 'Sim' : 'Não'}
-- **Centro de Resultado**: ${product.centroResultado || 'Não informado'}
-- **Grupo Código**: ${product.grupoCodigo} — ${product.grupoDescricao}
 
 ---
 
@@ -81,7 +72,6 @@ ${formatArray(product.perfilCliente)}
 - **Código NBS**: ${product.codigoNBS || 'A_VALIDAR'}
 - **Tem ISS**: ${product.temISS}
 - **Alíquota ISS**: ${product.aliquotaISS || 'N/A'}%
-- **Código de Serviço**: ${product.codigoServico || 'A_VALIDAR'}
 - **Status Fiscal**: ${product.fiscalStatus}
 - **Observações Fiscais**: ${product.observacoesFiscais || 'Não informadas'}
 
@@ -110,7 +100,6 @@ ${formatArray(product.perfilCliente)}
 
 ## Marketing
 
-- **Short Pitch**: ${product.shortPitch || 'Não informado'}
 - **Cases**: ${formatJson(product.cases)}
 - **Objeções**: ${formatJson(product.objecoesRespostas)}
 - **Script de Venda**: ${product.scriptVenda || 'Não informado'}
@@ -286,15 +275,12 @@ export function generateErpExport(product: Product): any {
       codigo: product.codigo,
       nomeComercial: product.nomeComercial,
       tipoProduto: product.tipoProduto,
-      grupoCodigo: product.grupoCodigo,
-      grupoDescricao: product.grupoDescricao,
       modeloContratado: product.modeloContratado,
       modeloFaturamento: product.modeloFaturamento,
       unidadeMedida: product.unidadeMedida,
       tipoReceita: product.tipoReceita,
       codigoNBS: product.codigoNBS || 'A_VALIDAR',
       temISS: product.temISS,
-      centroResultado: product.centroResultado,
       ativo: product.ativo,
     },
   }

@@ -44,12 +44,10 @@ describe('Products API', () => {
         where: { id: createdProductId },
         data: {
           descricaoComercialCurta: 'Updated description',
-          shortPitch: 'New pitch',
         },
       })
 
       expect(updated.descricaoComercialCurta).toBe('Updated description')
-      expect(updated.shortPitch).toBe('New pitch')
     })
 
     it('should fetch a product by slug', async () => {

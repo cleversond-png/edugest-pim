@@ -88,7 +88,7 @@ export async function publishSolutionPack(req: PublishRequest): Promise<PublishR
 }
 
 export async function createProduct(formData: Record<string, any>): Promise<any> {
-  const response = await fetch(`${API_URL}/api/products`, {
+  const response = await fetch(`/api/products`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -107,7 +107,7 @@ export async function createProduct(formData: Record<string, any>): Promise<any>
 }
 
 export async function generatePresentation(formData: Record<string, any>): Promise<any> {
-  const response = await fetch(`${API_URL}/api/apresentacoes/gerar`, {
+  const response = await fetch(`/api/apresentacoes/gerar`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

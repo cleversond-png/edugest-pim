@@ -10,6 +10,7 @@ import {
 } from '../services/docGenerator'
 import { publishProductDocuments } from '../services/graph'
 import { hasAnthropicKey } from '../services/aiClientWrapper'
+import { completeProductWithAI } from '../services/productAiCompleter'
 
 const prisma = new PrismaClient()
 
@@ -46,6 +47,85 @@ async function generateNextProductCode(): Promise<string> {
   return 'BB-SAAS-PRD-001'
 }
 
+// Helper: Generate AI content and docs asynchronously (fire-and-forget)
+async function generateProductContentInBackground(slug: string) {
+  try {
+    console.log(`[BG] Starting content generation for product: ${slug}`)
+
+    const product = await prisma.product.findUnique({ where: { slug } })
+    if (!product) {
+      console.error(`[BG] Product not found: ${slug}`)
+      return
+    }
+
+    // Step 1: Generate AI content
+    console.log(`[BG] Step 1/2: Generating AI content...`)
+    const updated = await completeProductWithAI(prisma, product.id)
+    console.log(`[BG] Step 1 completed: AI content generated`)
+
+    // Step 2: Generate documentation and publish to SharePoint
+    console.log(`[BG] Step 2/2: Generating documentation and publishing to SharePoint...`)
+    const publicos: ('FINANCEIRO' | 'COMERCIAL' | 'PRE_VENDA' | 'MARKETING' | 'SUPORTE' | 'ONBOARDING')[] =
+      ['FINANCEIRO', 'COMERCIAL', 'PRE_VENDA', 'MARKETING', 'SUPORTE', 'ONBOARDING']
+
+    const files: any[] = []
+
+    // Generate MASTER files
+    const masterMd = generateMasterMd(updated)
+    const masterHtml = generateMasterHtml(updated)
+
+    files.push(
+      { name: `${slug}-MASTER.md`, content: masterMd, folder: '' },
+      { name: `${slug}-MASTER.html`, content: masterHtml, folder: '' }
+    )
+
+    // Generate vision documents
+    const allHints: string[] = []
+    const usingAI = hasAnthropicKey()
+    console.log(`[BG] Generating vision documents (mode: ${usingAI ? 'REAL AI' : 'MOCK'})`)
+
+    for (const publico of publicos) {
+      const { content, hints } = await generateVisionDocument(publico, masterMd, updated.nomeComercial)
+      files.push({
+        name: `${slug}-${publico}.md`,
+        content,
+        folder: 'visoes',
+      })
+      allHints.push(...hints)
+    }
+
+    // Generate export files
+    const erpExport = generateErpExport(updated)
+    const crmExport = generateCrmExport(updated)
+    const partnerExport = generatePartnerExport(updated)
+
+    files.push(
+      { name: `${slug}-ERP.json`, content: JSON.stringify(erpExport, null, 2), folder: 'exports' },
+      { name: `${slug}-CRM.json`, content: JSON.stringify(crmExport, null, 2), folder: 'exports' },
+      { name: `${slug}-Partner.json`, content: JSON.stringify(partnerExport, null, 2), folder: 'exports' }
+    )
+
+    // Update product with copilot hints
+    const uniqueHints = Array.from(new Set(allHints))
+    await prisma.product.update({
+      where: { slug },
+      data: { tagsCopilot: uniqueHints },
+    })
+
+    // Publish to SharePoint
+    try {
+      const sharepointFolder = await publishProductDocuments(slug, files)
+      console.log(`[BG] Step 2 completed: ${files.length} files published to SharePoint at ${sharepointFolder}`)
+    } catch (spError) {
+      console.error(`[BG] SharePoint publish failed: ${spError}`, spError)
+    }
+
+    console.log(`[BG] ✅ Complete! Product "${slug}" is now ready for Copilot indexing`)
+  } catch (error) {
+    console.error(`[BG] Error in background generation for ${slug}:`, error)
+  }
+}
+
 export async function registerProductsRoute(app: FastifyInstance) {
   // POST /api/products — Create product
   app.post('/api/products', async (req: FastifyRequest, res: FastifyReply) => {
@@ -77,7 +157,16 @@ export async function registerProductsRoute(app: FastifyInstance) {
         },
       })
 
-      res.status(201).send(product)
+      // Trigger background content generation (fire-and-forget)
+      generateProductContentInBackground(slug).catch(err =>
+        console.error(`[BG] Uncaught error in generateProductContentInBackground:`, err)
+      )
+
+      res.status(201).send({
+        ...product,
+        _status: 'GENERATING_CONTENT',
+        _message: 'Produto criado. IA e documentação sendo gerados automaticamente...',
+      })
     } catch (error) {
       console.error('Error creating product:', error)
       res.status(500).send({ errorCode: 'INTERNAL_ERROR', message: 'Failed to create product' })
@@ -113,6 +202,44 @@ export async function registerProductsRoute(app: FastifyInstance) {
     } catch (error) {
       console.error('Error updating product:', error)
       res.status(500).send({ errorCode: 'INTERNAL_ERROR', message: 'Failed to update product' })
+    }
+  })
+
+  // POST /api/products/:slug/regenerate-financial — Regenerate financial fields with AI
+  app.post('/api/products/:slug/regenerate-financial', async (req: FastifyRequest, res: FastifyReply) => {
+    try {
+      const { slug } = req.params as { slug: string }
+
+      const product = await prisma.product.findUnique({ where: { slug } })
+      if (!product) {
+        return res.status(404).send({ errorCode: 'NOT_FOUND', message: `Product with slug "${slug}" not found` })
+      }
+
+      // Regenerate financeiro with AI
+      const { generateFinanceiroFields } = await import('../services/productAiCompleter')
+      const financeiro = await generateFinanceiroFields(product)
+
+      // Update product with new financial fields
+      const updateData: any = {
+        precoBaseUnitario: financeiro.precoBaseUnitario,
+        margemSugerida: financeiro.margemSugerida,
+        descontoMaximo: financeiro.descontoMaximo,
+        faixasPreco: financeiro.faixasPreco,
+      }
+
+      if (financeiro.pacotesCredito && financeiro.pacotesCredito.length > 0) {
+        updateData.pacotesCredito = financeiro.pacotesCredito
+      }
+
+      const updated = await prisma.product.update({
+        where: { slug },
+        data: updateData,
+      })
+
+      res.send(updated)
+    } catch (error) {
+      console.error('Error regenerating financial fields:', error)
+      res.status(500).send({ errorCode: 'INTERNAL_ERROR', message: 'Failed to regenerate financial fields' })
     }
   })
 
@@ -164,10 +291,12 @@ export async function registerProductsRoute(app: FastifyInstance) {
             slug: true,
             codigo: true,
             nomeComercial: true,
-            shortPitch: true,
+            descricaoComercialCurta: true,
             status: true,
             tipoProduto: true,
+            natureza: true,
             createdAt: true,
+            updatedAt: true,
           },
         }),
         prisma.product.count({ where }),
@@ -236,19 +365,14 @@ export async function registerProductsRoute(app: FastifyInstance) {
       const erpPayload = {
         codigo: product.codigo,
         nomeComercial: product.nomeComercial,
-        nomeInterno: product.nomeInterno,
         tipoProduto: product.tipoProduto,
         modeloContratado: product.modeloContratado,
         modeloFaturamento: product.modeloFaturamento,
-        grupoCodigo: product.grupoCodigo,
-        grupoDescricao: product.grupoDescricao,
         ativo: product.ativo,
         fiscalStatus: product.fiscalStatus,
         codigoNBS: product.codigoNBS,
         temISS: product.temISS,
         aliquotaISS: product.aliquotaISS,
-        codigoServico: product.codigoServico,
-        regimeTributario: product.regimeTributario,
         erpMapping: product.erpMapping || {},
       }
 
@@ -349,6 +473,41 @@ export async function registerProductsRoute(app: FastifyInstance) {
       res.status(500).send({
         errorCode: 'GENERATION_ERROR',
         message: error.message || 'Failed to generate documents',
+      })
+    }
+  })
+
+  // PUT /api/products/:slug/generate-ai-content — Generate content via IA
+  app.put('/api/products/:slug/generate-ai-content', async (req: FastifyRequest, res: FastifyReply) => {
+    try {
+      const { slug } = req.params as { slug: string }
+
+      const product = await prisma.product.findUnique({ where: { slug } })
+      if (!product) {
+        return res.status(404).send({ errorCode: 'NOT_FOUND', message: `Product with slug "${slug}" not found` })
+      }
+
+      if (product.status !== 'RASCUNHO') {
+        return res.status(400).send({
+          errorCode: 'INVALID_STATUS',
+          message: 'Product must be in RASCUNHO status to generate AI content',
+        })
+      }
+
+      console.log(`[AI] Generating content for product: ${slug}`)
+
+      const updated = await completeProductWithAI(prisma, product.id)
+
+      res.status(200).send({
+        status: 'SUCCESS',
+        message: 'AI content generated successfully',
+        data: updated,
+      })
+    } catch (error: any) {
+      console.error('Error generating AI content:', error)
+      res.status(500).send({
+        errorCode: 'AI_GENERATION_ERROR',
+        message: error.message || 'Failed to generate AI content',
       })
     }
   })

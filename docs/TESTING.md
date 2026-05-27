@@ -160,3 +160,12 @@ npx tsc --noEmit
 ```bash
 npm test -- --coverage --clearCache
 ```
+# Frontend production smoke test
+
+Run after frontend deploy:
+
+```bash
+bash scripts/qa-frontend-production.sh
+```
+
+This checks that `/products/new` loads, the public HTML does not expose API key markers, the generated Tailwind CSS includes core visual classes and dropdown contrast rules, and the frontend `/api/products` proxy works without sending an API key from the browser.

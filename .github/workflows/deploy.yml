@@ -1,4 +1,4 @@
-name: Deploy to Azure App Service
+name: Deploy to Azure Container Apps
 
 on:
   push:
@@ -40,24 +40,77 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: 'https://ca-edugest-prod-backend.purpleground-cde5672b.brazilsouth.azurecontainerapps.io'
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
       - name: Azure Login
         uses: azure/login@v1
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Build Docker image
+      - name: Login to Azure Container Registry
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          docker build --no-cache -t ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:${{ github.sha }} .
-          docker build --no-cache -t ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:latest .
+        run: az acr login --name ${{ secrets.ACR_NAME }}
 
-      - name: Push to Azure Container Registry
+      - name: Build and push backend image
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          az acr login --name ${{ secrets.ACR_NAME }}
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:${{ github.sha }}
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:latest
+          docker buildx build \
+            --platform linux/amd64 \
+            --push \
+            -t ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:${{ github.sha }} \
+            -t ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:latest \
+            .
+
+      - name: Build and push frontend image
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          docker buildx build \
+            --platform linux/amd64 \
+            --push \
+            -f apps/web/Dockerfile \
+            -t ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim-web:${{ github.sha }} \
+            -t ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim-web:latest \
+            .
+
+      - name: Deploy backend Container App
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          az containerapp update \
+            --name ca-edugest-prod-backend \
+            --resource-group rg-edugest-prod \
+            --image ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:${{ github.sha }}
+
+      - name: Configure frontend secrets
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          az containerapp secret set \
+            --name ca-edugest-pim-web \
+            --resource-group rg-edugest-prod \
+            --secrets api-key=${{ secrets.API_KEY }}
+
+      - name: Deploy frontend Container App
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          az containerapp revision set-mode \
+            --name ca-edugest-pim-web \
+            --resource-group rg-edugest-prod \
+            --mode single
+
+          az containerapp update \
+            --name ca-edugest-pim-web \
+            --resource-group rg-edugest-prod \
+            --image ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim-web:${{ github.sha }} \
+            --set-env-vars \
+              NODE_ENV=production \
+              PORT=3001 \
+              HOSTNAME=0.0.0.0 \
+              API_URL=https://ca-edugest-prod-backend.purpleground-cde5672b.brazilsouth.azurecontainerapps.io \
+              NEXT_PUBLIC_API_URL=https://ca-edugest-prod-backend.purpleground-cde5672b.brazilsouth.azurecontainerapps.io \
+              API_KEY=secretref:api-key \
+              FRONTEND_BUILD=${{ github.sha }}
 
       - name: Azure Logout
         if: always()
@@ -73,7 +126,7 @@ jobs:
         run: |
           echo "Deployment Result: ${{ needs.build-and-deploy.result }}"
           if [ "${{ needs.build-and-deploy.result }}" == "success" ]; then
-            echo "✅ Deployment successful! Frontend served by Fastify."
+            echo "✅ Deployment successful! Backend and frontend Container Apps updated."
           else
             echo "⚠️  Check deployment logs above."
           fi

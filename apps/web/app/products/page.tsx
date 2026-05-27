@@ -65,14 +65,8 @@ export default function ProductsCatalogPage() {
       if (selectedStatus) params.append("status", selectedStatus)
       if (selectedPerfil) params.append("perfil", selectedPerfil)
 
-      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
       const response = await fetch(
-        `${API_BASE}/api/products?${params.toString()}`,
-        {
-          headers: {
-            "X-Api-Key": process.env.NEXT_PUBLIC_API_KEY || "",
-          },
-        }
+        `/api/products?${params.toString()}`
       )
 
       if (!response.ok) {
@@ -99,8 +93,8 @@ export default function ProductsCatalogPage() {
     const searchLower = searchTerm.toLowerCase()
     return (
       product.nomeComercial.toLowerCase().includes(searchLower) ||
-      product.codigo.toLowerCase().includes(searchLower) ||
-      product.descricaoComercialCurta.toLowerCase().includes(searchLower)
+      (product.codigo || "").toLowerCase().includes(searchLower) ||
+      (product.descricaoComercialCurta || "").toLowerCase().includes(searchLower)
     )
   })
 

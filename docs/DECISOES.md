@@ -145,6 +145,66 @@
 
 ---
 
+## 2026-05-26 — Fontes do sistema no frontend
+
+**Decisão**: Remover `next/font/google` do frontend e usar fontes do sistema em `apps/web/app/globals.css`.
+
+**Motivo**: O build do Next.js não deve depender de download externo do Google Fonts para publicar correções visuais ou manter a URL externa operacional.
+
+**Impacto**: Frontend builda de forma mais previsível em CI/CD e ambientes sem rede externa; aparência usa Arial/Helvetica e fonte monospace do sistema. A imagem do frontend deve ser publicada como `linux/amd64` para Azure Container Apps.
+
+**Alternativa descartada**: Manter Geist via Google Fonts — preservaria a tipografia anterior, mas deixaria o deploy vulnerável a falhas de rede durante `next build`.
+
+---
+
+## 2026-05-26 — Tailwind v4 via CSS-first
+
+**Decisão**: Usar `@import "tailwindcss"` em `apps/web/app/globals.css`, com `@source "../app"` e `@source "../components"`.
+
+**Motivo**: Em Tailwind CSS v4, o formato antigo `@tailwind base/components/utilities` gerou CSS parcial neste build, sem classes visuais de tema como cores, espaçamentos e radius.
+
+**Impacto**: O CSS de produção volta a incluir os utilitários esperados (`bg-blue-600`, `text-gray-900`, `rounded-lg`, etc.) e fica menos dependente de autodetecção.
+
+**Alternativa descartada**: Voltar para Tailwind v3 — exigiria downgrade de dependências e aumentaria o risco de regressão no Next.js 16.
+
+---
+
+## 2026-05-26 — Contraste nativo de selects
+
+**Decisão**: Definir estilos globais para `select`, `option` e `option:checked` em `apps/web/app/globals.css`.
+
+**Motivo**: O dropdown nativo herdava estilos/tema com contraste insuficiente, deixando as opções quase invisíveis em produção.
+
+**Impacto**: Todos os campos dropdown usam texto escuro e fundo claro de forma consistente, independente do estilo nativo do navegador.
+
+**Alternativa descartada**: Corrigir cada componente individualmente — deixaria risco de novos selects nascerem com o mesmo problema.
+
+---
+
+## 2026-05-26 — API Key somente no servidor Next
+
+**Decisão**: Remover `NEXT_PUBLIC_API_KEY` do frontend e rotear chamadas protegidas por proxies Next server-side.
+
+**Motivo**: Variáveis `NEXT_PUBLIC_*` entram no bundle/browser e violam a regra do projeto de manter `API_KEY` somente no servidor.
+
+**Impacto**: Páginas client-side chamam `/api/products`, `/api/products/[slug]` e `/api/apresentacoes/gerar` no próprio frontend; esses handlers injetam `X-Api-Key` no servidor.
+
+**Alternativa descartada**: Manter chamadas diretas do browser para a API com header público — simplifica integração, mas expõe credencial.
+
+---
+
+## 2026-05-26 — Deploy linux/amd64 e single revision
+
+**Decisão**: Padronizar build Docker com `buildx --platform linux/amd64` e manter o frontend Container App em `single revision`.
+
+**Motivo**: Azure Container Apps falhou ao puxar imagem sem plataforma compatível; modo multiple também permitiu revisões saudáveis ficarem sem tráfego.
+
+**Impacto**: Deploy automático passa a publicar imagens compatíveis com o runtime e novas revisões recebem tráfego automaticamente.
+
+**Alternativa descartada**: Build Docker padrão local — pode gerar manifest incompatível dependendo da máquina executora.
+
+---
+
 ## Próximas decisões esperadas
 
 - **SharePoint integration**: Quando MFA + Conditional Access forem resolvidos
