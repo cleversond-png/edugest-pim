@@ -205,6 +205,80 @@
 
 ---
 
+## 2026-05-27 — Backend EduGest-PIM como imagem canônica
+
+**Decisão**: O Container App `ca-edugest-pim-api` deve rodar a imagem `acredgestpimprod.azurecr.io/edugest-pim-api:*`.
+
+**Motivo**: O PIM precisa de backend dedicado com as rotas de catálogo, incluindo `/api/products`, sem depender de imagens ou automações de outro projeto.
+
+**Impacto**: Deploys e rollbacks devem validar explicitamente a imagem ativa do backend antes de considerar produção saudável.
+
+**Alternativa descartada**: Ajustar o frontend para contornar o 404 — o problema era a imagem errada no backend, não o contrato do frontend.
+
+---
+
+## 2026-05-27 — Prisma Client validado no build Docker
+
+**Decisão**: O Dockerfile do backend deve gerar Prisma Client com `--schema=./schema.prisma` e validar o DMMF do modelo `Product` durante o build.
+
+**Motivo**: A produção retornou 500 em `/api/products/:slug` porque o client gerado esperava a coluna legada `Product.name`, enquanto o schema/banco atual usam `nomeComercial`.
+
+**Impacto**: Builds de backend falham cedo se o Prisma Client ficar incompatível com o schema atual, evitando publicar imagem que lista produtos mas quebra no detalhe.
+
+**Alternativa descartada**: Migrar o banco para recriar `Product.name` — isso reintroduziria campo legado removido na Phase 4 e mascararia a inconsistência de build.
+
+---
+
+## 2026-05-27 — Página canônica de detalhe em `/products/:slug`
+
+**Decisão**: Manter `/products/[slug]/page.tsx` como página canônica de detalhe e deixar `/products/[slug]/edit-ai-content` apenas para revisão/edição assistida por IA.
+
+**Motivo**: A listagem de catálogo navega para `/products/:slug`; remover essa página quebrou o fluxo natural de clique no produto.
+
+**Impacto**: O usuário volta a abrir detalhes ao clicar no card, com opção explícita para revisar IA; chamadas protegidas continuam passando por proxy server-side.
+
+**Alternativa descartada**: Alterar os cards para abrir direto `/edit-ai-content` — resolveria o clique, mas misturaria visualização de catálogo com fluxo de revisão.
+
+---
+
+## 2026-05-27 — Ações primárias no detalhe de produto
+
+**Decisão**: A tela `/products/:slug` deve expor explicitamente as ações `Voltar`, `Editar` e `Excluir`.
+
+**Motivo**: O usuário espera operar o produto a partir da tela de detalhe; remover esses botões gerou regressão funcional apesar da rota carregar.
+
+**Impacto**: `Editar` direciona para o fluxo Phase 4 em `/products/:slug/edit-ai-content`; `Excluir` usa o proxy server-side `DELETE /api/products/:slug` e retorna ao catálogo.
+
+**Alternativa descartada**: Manter só o link `Revisar IA` no topo — ele não substitui as ações operacionais do detalhe.
+
+---
+
+## 2026-05-27 — Params assíncronos em páginas dinâmicas Next
+
+**Decisão**: Páginas dinâmicas server-side em `apps/web/app/**/[slug]/**/page.tsx` devem tratar `params` como `Promise` e resolver antes de acessar `slug`.
+
+**Motivo**: `/products/:slug/edit-ai-content` retornou 404 porque a página acessava `params.slug` diretamente, resultando em busca sem slug e `notFound()`.
+
+**Impacto**: Rotas dinâmicas server-side ficam compatíveis com o comportamento atual do Next.js 16; rotas client-side com `useParams()` não são afetadas.
+
+**Alternativa descartada**: Converter a tela de revisão para client component apenas para ler params — aumentaria JS no browser sem necessidade.
+
+---
+
+## 2026-05-27 — Infraestrutura dedicada EDUGEST-PIM
+
+**Decisão**: Produção do EDUGEST-PIM deve usar Resource Group, ACR, Managed Identity, Container Apps e Log Analytics próprios: `rg-edugest-pim-prod`, `acredgestpimprod.azurecr.io`, `id-edugest-pim-prod`, `ca-edugest-pim-api`, `ca-edugest-pim-web-prod` e `log-edugest-pim-prod`.
+
+**Motivo**: O ambiente anterior recebia atualizações de automações externas ao PIM, o que causava regressões como 404 em `/api/products`.
+
+**Impacto**: Workflow, scripts de QA e documentação operacional passam a apontar somente para a infra dedicada do PIM.
+
+**Exceção temporária**: A assinatura Azure bloqueou a criação de um segundo Container Apps Managed Environment. Os apps usam o Managed Environment existente até aumento de quota ou migração para outro runtime.
+
+**Alternativa descartada**: Continuar restaurando manualmente após cada overwrite — resolve o incidente imediato, mas mantém a produção instável.
+
+---
+
 ## Próximas decisões esperadas
 
 - **SharePoint integration**: Quando MFA + Conditional Access forem resolvidos

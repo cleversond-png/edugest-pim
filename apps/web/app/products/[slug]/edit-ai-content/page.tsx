@@ -2,7 +2,7 @@ import { notFound } from "next/navigation"
 import { GenerationStatusBanner } from "@/components/product/GenerationStatusBanner"
 import { FinancialEditPanel } from "@/components/product/FinancialEditPanel"
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
+const API_BASE = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
 const API_KEY = process.env.API_KEY
 
 interface FaixaPreco {
@@ -50,7 +50,7 @@ interface ApiResponse {
 
 async function getProduct(slug: string): Promise<ProductData | null> {
   try {
-    const response = await fetch(`${API_BASE}/api/products/${slug}`, {
+    const response = await fetch(`${API_BASE}/api/products/${encodeURIComponent(slug)}`, {
       headers: {
         "X-Api-Key": API_KEY || "",
       },
@@ -61,15 +61,20 @@ async function getProduct(slug: string): Promise<ProductData | null> {
       return null
     }
 
-    const result: ApiResponse = await response.json()
-    return result.data
+    const result: ApiResponse | ProductData = await response.json()
+    return "data" in result ? result.data : result
   } catch {
     return null
   }
 }
 
-export default async function EditAiContentPage({ params }: { params: { slug: string } }) {
-  const product = await getProduct(params.slug)
+export default async function EditAiContentPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
+  const { slug } = await params
+  const product = await getProduct(slug)
 
   if (!product) {
     notFound()
@@ -86,11 +91,11 @@ export default async function EditAiContentPage({ params }: { params: { slug: st
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-8 space-y-6">
         {/* Generation Status Banner */}
-        <GenerationStatusBanner slug={params.slug} />
+        <GenerationStatusBanner slug={slug} />
 
         {/* Financial Panel — DESTAQUE PRINCIPAL */}
         <FinancialEditPanel
-          slug={params.slug}
+          slug={slug}
           modeloContratado={product.modeloContratado || "SUBSCRICAO"}
           initialData={{
             precoBaseUnitario: product.precoBaseUnitario,

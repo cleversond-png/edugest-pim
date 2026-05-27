@@ -10,6 +10,13 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      AZURE_RESOURCE_GROUP: rg-edugest-pim-prod
+      ACR_NAME: acredgestpimprod
+      ACR_LOGIN_SERVER: acredgestpimprod.azurecr.io
+      API_CONTAINER_APP: ca-edugest-pim-api
+      WEB_CONTAINER_APP: ca-edugest-pim-web-prod
+      API_URL: https://ca-edugest-pim-api.purpleground-cde5672b.brazilsouth.azurecontainerapps.io
 
     steps:
       - uses: actions/checkout@v4
@@ -38,7 +45,7 @@ jobs:
       - name: Build Web (standalone)
         run: npm run build --workspace=web
         env:
-          NEXT_PUBLIC_API_URL: 'https://ca-edugest-prod-backend.purpleground-cde5672b.brazilsouth.azurecontainerapps.io'
+          NEXT_PUBLIC_API_URL: ${{ env.API_URL }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -52,7 +59,7 @@ jobs:
 
       - name: Login to Azure Container Registry
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: az acr login --name ${{ secrets.ACR_NAME }}
+        run: az acr login --name ${{ env.ACR_NAME }}
 
       - name: Build and push backend image
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -60,8 +67,8 @@ jobs:
           docker buildx build \
             --platform linux/amd64 \
             --push \
-            -t ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:${{ github.sha }} \
-            -t ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:latest \
+            -t ${{ env.ACR_LOGIN_SERVER }}/edugest-pim-api:${{ github.sha }} \
+            -t ${{ env.ACR_LOGIN_SERVER }}/edugest-pim-api:latest \
             .
 
       - name: Build and push frontend image
@@ -71,46 +78,50 @@ jobs:
             --platform linux/amd64 \
             --push \
             -f apps/web/Dockerfile \
-            -t ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim-web:${{ github.sha }} \
-            -t ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim-web:latest \
+            -t ${{ env.ACR_LOGIN_SERVER }}/edugest-pim-web:${{ github.sha }} \
+            -t ${{ env.ACR_LOGIN_SERVER }}/edugest-pim-web:latest \
             .
 
       - name: Deploy backend Container App
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           az containerapp update \
-            --name ca-edugest-prod-backend \
-            --resource-group rg-edugest-prod \
-            --image ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim:${{ github.sha }}
+            --name ${{ env.API_CONTAINER_APP }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --image ${{ env.ACR_LOGIN_SERVER }}/edugest-pim-api:${{ github.sha }}
 
       - name: Configure frontend secrets
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           az containerapp secret set \
-            --name ca-edugest-pim-web \
-            --resource-group rg-edugest-prod \
+            --name ${{ env.WEB_CONTAINER_APP }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --secrets api-key=${{ secrets.API_KEY }}
 
       - name: Deploy frontend Container App
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           az containerapp revision set-mode \
-            --name ca-edugest-pim-web \
-            --resource-group rg-edugest-prod \
+            --name ${{ env.WEB_CONTAINER_APP }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --mode single
 
           az containerapp update \
-            --name ca-edugest-pim-web \
-            --resource-group rg-edugest-prod \
-            --image ${{ secrets.ACR_LOGIN_SERVER }}/edugest-pim-web:${{ github.sha }} \
+            --name ${{ env.WEB_CONTAINER_APP }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --image ${{ env.ACR_LOGIN_SERVER }}/edugest-pim-web:${{ github.sha }} \
             --set-env-vars \
               NODE_ENV=production \
               PORT=3001 \
               HOSTNAME=0.0.0.0 \
-              API_URL=https://ca-edugest-prod-backend.purpleground-cde5672b.brazilsouth.azurecontainerapps.io \
-              NEXT_PUBLIC_API_URL=https://ca-edugest-prod-backend.purpleground-cde5672b.brazilsouth.azurecontainerapps.io \
+              API_URL=${{ env.API_URL }} \
+              NEXT_PUBLIC_API_URL=${{ env.API_URL }} \
               API_KEY=secretref:api-key \
               FRONTEND_BUILD=${{ github.sha }}
+
+      - name: Production smoke test
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: bash scripts/qa-frontend-production.sh https://${{ env.WEB_CONTAINER_APP }}.purpleground-cde5672b.brazilsouth.azurecontainerapps.io
 
       - name: Azure Logout
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'

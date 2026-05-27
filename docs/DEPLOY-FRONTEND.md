@@ -1,82 +1,59 @@
-# 🚀 Deployment — Frontend Next.js no Azure Static Web Apps
+# Deployment — Frontend EDUGEST-PIM
 
-## Configuração Inicial (One-time)
+O frontend de produção do EDUGEST-PIM roda em Azure Container Apps, não em Static Web Apps.
 
-### 1. Adicionar GitHub Secret: AZURE_STATIC_WEB_APPS_TOKEN
+## Produção Atual
 
-O token de deployment já foi fornecido. Adicione no GitHub:
+| Item | Valor |
+|---|---|
+| Resource Group | `rg-edugest-pim-prod` |
+| Container App | `ca-edugest-pim-web-prod` |
+| URL | `https://ca-edugest-pim-web-prod.purpleground-cde5672b.brazilsouth.azurecontainerapps.io` |
+| Imagem | `acredgestpimprod.azurecr.io/edugest-pim-web:*` |
+| Backend | `https://ca-edugest-pim-api.purpleground-cde5672b.brazilsouth.azurecontainerapps.io` |
 
-**URL**: https://github.com/cleversond-png/edugest-pim/settings/secrets/actions
+## Deploy Automático
 
-**Passo:**
-1. Clique em "New repository secret"
-2. Nome: `AZURE_STATIC_WEB_APPS_TOKEN`
-3. Valor (copie exatamente):
-```
-08f5430d86a28128062ed19be6e6784b229849f80b9c2c103cbde098326065a007-d092a5d8-452a-4a77-96f5-b80ea3c430b000f31060b995350f
-```
-4. Clique em "Add secret"
+O workflow `.github/workflows/deploy.yml` faz:
 
-### 2. Variáveis de Ambiente
+1. Build da API e do frontend.
+2. Push das imagens para `acredgestpimprod.azurecr.io`.
+3. Update do backend `ca-edugest-pim-api`.
+4. Update do frontend `ca-edugest-pim-web-prod`.
+5. Smoke test do frontend publicado.
 
-O workflow já está configurado para usar:
+## Variáveis do Frontend
+
+O Container App recebe:
+
 ```env
-NEXT_PUBLIC_API_URL=https://ca-edugest-prod-backend.purpleground-cde5672b.brazilsouth.azurecontainerapps.io
+NODE_ENV=production
+PORT=3001
+HOSTNAME=0.0.0.0
+API_URL=https://ca-edugest-pim-api.purpleground-cde5672b.brazilsouth.azurecontainerapps.io
+NEXT_PUBLIC_API_URL=https://ca-edugest-pim-api.purpleground-cde5672b.brazilsouth.azurecontainerapps.io
+API_KEY=secretref:api-key
 ```
 
-Se precisar alterar, editar em `.github/workflows/deploy.yml` linha 119.
-
-### 3. Configuração do Static Web Apps
-
-O arquivo `staticwebapp.config.json` já foi criado com:
-- Roteamento de `/api/*` para o backend em produção
-- Fallback para SPA (rota 404 → index.html)
-
-## Deploy — Fluxo Automático
-
-O frontend fará deploy automaticamente quando:
-1. Fazer `git push origin main`
-2. GitHub Actions executa:
-   - Build do Core package
-   - Build do Next.js (apps/web)
-   - Deploy no Azure Static Web Apps
-
-**URL de Produção**: https://zealous-ground-0b995350f.7.azurestaticapps.net
-
-## Validação Após Deploy
+## Validação
 
 ```bash
-# 1. Testar página de produtos
-curl -s https://zealous-ground-0b995350f.7.azurestaticapps.net/products | head -50
+bash scripts/qa-frontend-production.sh
+```
 
-# 2. Testar rota dinâmica
-curl -s https://zealous-ground-0b995350f.7.azurestaticapps.net/result/test-id | head -50
+Ou diretamente:
 
-# 3. Testar proxy de API
-curl -s -H "X-Api-Key: chave-local-teste-123" \
-  https://zealous-ground-0b995350f.7.azurestaticapps.net/api/products | jq .
-
-# 4. Verificar saúde do frontend
-curl -I https://zealous-ground-0b995350f.7.azurestaticapps.io/
-# Esperado: HTTP 200 OK
+```bash
+curl -sS https://ca-edugest-pim-web-prod.purpleground-cde5672b.brazilsouth.azurecontainerapps.io/api/products
 ```
 
 ## Troubleshooting
 
-| Problema | Solução |
+| Problema | Verificar |
 |---|---|
-| Deploy falha com token inválido | Verificar token em GitHub Settings → Secrets |
-| API retorna 502 Bad Gateway | Backend em produção está down; verificar `ca-edugest-prod-backend` |
-| Página carrega mas API falha | Verificar `NEXT_PUBLIC_API_URL` no workflow |
-| Build falha | Verificar logs em GitHub Actions → Workflows |
+| `/api/products` retorna 404 | Imagem ativa do backend em `ca-edugest-pim-api` |
+| Frontend carrega mas API falha | `API_URL`, `NEXT_PUBLIC_API_URL` e secret `api-key` no Container App |
+| Deploy falha ao puxar imagem | `AcrPull` da Managed Identity `id-edugest-pim-prod` no ACR |
+| Revisão não fica saudável | Logs do Container App no resource group `rg-edugest-pim-prod` |
 
-## Monitoramento
-
-**GitHub Actions**: https://github.com/cleversond-png/edugest-pim/actions  
-**Azure Portal**: https://portal.azure.com → Static Web Apps → zealous-ground-0b995350f  
-**Logs de Deployment**: Azure Portal → Static Web Apps → Overview → Latest deployment
-
----
-
-**Última atualização**: 2026-05-25  
-**Mantido por**: Claude Code (Fase 3)
+Última atualização: 2026-05-27.

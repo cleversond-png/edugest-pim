@@ -7,7 +7,11 @@ COPY apps/api ./apps/api
 COPY apps/web ./apps/web
 COPY packages/core ./packages/core
 
-RUN npm ci && npx prisma generate && npm run build --workspace=@edugest-pim/core && npm run build --workspace=@edugest-pim/api
+RUN npm ci && \
+    npx prisma generate --schema=./schema.prisma && \
+    node -e "const {Prisma}=require('@prisma/client'); const fields=Prisma.dmmf.datamodel.models.find(m=>m.name==='Product').fields.map(f=>f.name); if (fields.includes('name') || !fields.includes('nomeComercial')) throw new Error('Invalid Prisma Product model generated');" && \
+    npm run build --workspace=@edugest-pim/core && \
+    npm run build --workspace=@edugest-pim/api
 
 # Production stage
 FROM node:20-alpine
@@ -29,6 +33,7 @@ COPY packages/core ./packages/core
 # Copy node_modules
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/apps/api/node_modules ./apps/api/node_modules
+COPY --from=builder /app/schema.prisma ./schema.prisma
 
 # Copy production startup script
 COPY start.js ./

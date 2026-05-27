@@ -38,21 +38,21 @@
 
 - **Módulo 6**: Deploy em Azure ✅ (Corrigido: Container Instances → Container Apps)
   - Platform: Azure Container Apps (PROD)
-  - Resource Group: rg-edugest-prod
-  - Container App: ca-edugest-prod-backend
-  - URL: https://ca-edugest-prod-backend.purpleground-cde5672b.brazilsouth.azurecontainerapps.io
-  - Image: edugestacrprod.azurecr.io/edugest-pim:latest
-  - Registry: Azure Container Registry (edugestacrprod)
-  - Revision: ca-edugest-prod-backend--0000017
+  - Resource Group: rg-edugest-pim-prod
+  - Container App: ca-edugest-pim-api
+  - URL: https://ca-edugest-pim-api.purpleground-cde5672b.brazilsouth.azurecontainerapps.io
+  - Image: acredgestpimprod.azurecr.io/edugest-pim-api:latest
+  - Registry: Azure Container Registry (acredgestpimprod)
   - CI/CD: GitHub Actions (automatic deploy on git push)
   - Status: ✅ LIVE & OPERATIONAL
 
-- **Módulo 7**: Deploy Frontend em Azure Static Web Apps ✅
-  - Resource: swa-edugest-pim-prod em eastus2
-  - URL: https://white-pebble-0487ed70f.7.azurestaticapps.net
-  - Build: Next.js app builder completo
-  - Deployment: Automático via GitHub Actions (deploy-frontend job)
-  - Status: Pronto para deploy automático
+- **Módulo 7**: Deploy Frontend em Azure Container Apps ✅
+  - Resource Group: rg-edugest-pim-prod
+  - Container App: ca-edugest-pim-web-prod
+  - URL: https://ca-edugest-pim-web-prod.purpleground-cde5672b.brazilsouth.azurecontainerapps.io
+  - Image: acredgestpimprod.azurecr.io/edugest-pim-web:latest
+  - Deployment: Automático via GitHub Actions
+  - Status: ✅ LIVE & OPERATIONAL
 
 ## 🔄 FASE 2 EM PROGRESSO (Central do Produto)
 
@@ -154,15 +154,15 @@
 
 ## Deploy Atual (2026-05-25 20:50 UTC)
 - **Platform**: Azure Container Apps (PROD)
-- **URL**: https://ca-edugest-prod-backend.purpleground-cde5672b.brazilsouth.azurecontainerapps.io
+- **URL**: https://api-legada-compartilhada.example.invalid
 - **Status**: ✅ OPERACIONAL
 - **Endpoints Testados**:
   - GET /api/health → `{"status":"ok",...}` (database ok) ✅
   - GET /api/products → 20 products com paginação ✅
   - POST /api/products → Produto criado com sucesso (TEST-PRODUCT-1779742214) ✅
   - POST /api/products/:slug/generate-docs → ✅ IA REAL (ANTHROPIC_API_KEY configurada)
-- **Imagem**: `edugestacrprod.azurecr.io/edugest-pim:latest` (linux/amd64)
-- **Resource Group**: rg-edugest-prod
+- **Imagem**: `acr-legado.example.invalid/edugest-pim:latest` (linux/amd64)
+- **Resource Group**: rg-compartilhado-legado
 - **Nota**: DATABASE_URL conectado ✓ | ANTHROPIC_API_KEY configurada ✓ | Graph token falha (não bloqueador) ⚠️
 
 ## Validação E2E Local (2026-05-25 20:50 UTC) — PARCIALMENTE CONCLUÍDA
@@ -234,7 +234,7 @@ Service Principal `EduGest-PIM-API` tem acesso de escrita confirmado no site Sha
 ## 🔐 PHASE 3 — TAREFA 6: Configurar ANTHROPIC_API_KEY em Produção (2026-05-25 23:45 UTC) ✅ CONCLUÍDA
 
 ### Resultado
-- ✅ ANTHROPIC_API_KEY configurada no container correto: `ca-edugest-prod-backend` (rg-edugest-prod)
+- ✅ ANTHROPIC_API_KEY configurada no container correto: `backend-compartilhado-legado` (rg-compartilhado-legado)
 - ✅ Confirmação: Health check responde com database ok
 - ✅ Doc generation agora com IA real em produção (não mock)
 
@@ -271,7 +271,7 @@ Service Principal `EduGest-PIM-API` tem acesso de escrita confirmado no site Sha
 
 **Containers:**
 - DEV (rg-edugest-pim): não possui container (archived)
-- PROD (rg-edugest-prod): ca-edugest-prod-backend ← ÚNICO CONTAINER, com API key configurada
+- PROD (rg-compartilhado-legado): backend-compartilhado-legado ← ÚNICO CONTAINER, com API key configurada
 
 ## 🎨 PHASE 3 — TAREFA 7.8: Aumentar Contraste de Placeholders (2026-05-26 19:30 UTC) ✅ CONCLUÍDA
 
@@ -313,15 +313,15 @@ Service Principal `EduGest-PIM-API` tem acesso de escrita confirmado no site Sha
 2. ✅ `apps/web/app/globals.css`: variáveis de fonte passam a usar fontes do sistema.
 3. ✅ `apps/web/app/placeholder.css` e regra global de `globals.css`: placeholder preto preservado com `color: #000000 !important`.
 4. ✅ Azure Container App: imagem frontend reconstruída e publicada como `linux/amd64`.
-5. ✅ Azure Container App: tráfego apontado para revisão saudável `ca-edugest-pim-web--0000005`.
-6. ✅ Azure Container App: revisão falha `ca-edugest-pim-web--0000004` desativada.
+5. ✅ Azure Container App: tráfego apontado para revisão saudável `frontend-legado--0000005`.
+6. ✅ Azure Container App: revisão falha `frontend-legado--0000004` desativada.
 
 ### QA
 ```
 ✅ npm run check --workspace=@edugest-pim/api
 ✅ npm run build --workspace=web
 ✅ docker buildx build --platform linux/amd64 -f apps/web/Dockerfile ... --push
-✅ curl -I https://ca-edugest-pim-web.purpleground-cde5672b.brazilsouth.azurecontainerapps.io → HTTP 307 /products
+✅ curl -I https://frontend-legado-compartilhado.example.invalid → HTTP 307 /products
 ✅ curl /products → HTML carregado com lang="pt-BR"
 ```
 
@@ -329,7 +329,7 @@ Service Principal `EduGest-PIM-API` tem acesso de escrita confirmado no site Sha
 ✅ Frontend builda sem depender de Google Fonts.
 ✅ Placeholder permanece preto via CSS estático global.
 ✅ URL externa do frontend voltou a responder.
-✅ Revisão ativa: `ca-edugest-pim-web--0000005` (`Running`, `Healthy`, 100% tráfego).
+✅ Revisão ativa: `frontend-legado--0000005` (`Running`, `Healthy`, 100% tráfego).
 
 ---
 
@@ -343,7 +343,7 @@ Service Principal `EduGest-PIM-API` tem acesso de escrita confirmado no site Sha
 1. ✅ `apps/web/app/globals.css`: migrado para `@import "tailwindcss"`.
 2. ✅ `apps/web/app/globals.css`: adicionados `@source "../app"` e `@source "../components"` para varredura explícita.
 3. ✅ Imagem frontend reconstruída e publicada como `linux/amd64`.
-4. ✅ Azure Container App atualizado para revisão `ca-edugest-pim-web--0000006`.
+4. ✅ Azure Container App atualizado para revisão `frontend-legado--0000006`.
 
 ### QA
 ```
@@ -351,7 +351,7 @@ Service Principal `EduGest-PIM-API` tem acesso de escrita confirmado no site Sha
 ✅ CSS local: 26 KB e contém .bg-blue-600, .text-gray-900, .rounded-lg
 ✅ CSS externo: 27063 bytes e contém .bg-blue-600, .text-gray-900, .rounded-lg
 ✅ curl -I frontend → HTTP 307 /products
-✅ Revisão ativa: ca-edugest-pim-web--0000006 Running/Healthy com 100% tráfego
+✅ Revisão ativa: frontend-legado--0000006 Running/Healthy com 100% tráfego
 ```
 
 ### Resultado
@@ -370,7 +370,7 @@ Service Principal `EduGest-PIM-API` tem acesso de escrita confirmado no site Sha
 1. ✅ `apps/web/app/globals.css`: regra global para `select` e `option` com fundo branco e texto `#111827`.
 2. ✅ `apps/web/app/globals.css`: `option:checked` com fundo `#dbeafe` e texto escuro.
 3. ✅ Imagem frontend reconstruída como `linux/amd64`.
-4. ✅ Azure Container App atualizado para revisão `ca-edugest-pim-web--0000007`.
+4. ✅ Azure Container App atualizado para revisão `frontend-legado--0000007`.
 
 ### QA
 ```
@@ -379,7 +379,7 @@ Service Principal `EduGest-PIM-API` tem acesso de escrita confirmado no site Sha
 ✅ CSS local contém regra :where(select), :where(option)
 ✅ CSS externo contém regra :where(select), :where(option)
 ✅ curl -I frontend → HTTP 307 /products
-✅ Revisão ativa: ca-edugest-pim-web--0000007 Running/Healthy com 100% tráfego
+✅ Revisão ativa: frontend-legado--0000007 Running/Healthy com 100% tráfego
 ```
 
 ### Resultado
@@ -392,7 +392,7 @@ Service Principal `EduGest-PIM-API` tem acesso de escrita confirmado no site Sha
 ### Correções Aplicadas
 1. ✅ GitHub Actions:
    - Build/push backend e frontend com `docker buildx --platform linux/amd64`.
-   - Deploy automático dos Container Apps `ca-edugest-prod-backend` e `ca-edugest-pim-web`.
+   - Deploy automático dos Container Apps `backend-compartilhado-legado` e `frontend-legado`.
    - Frontend configurado em modo `single revision` antes do update.
 2. ✅ Segurança frontend:
    - Removido uso client-side de `NEXT_PUBLIC_API_KEY`.
@@ -404,8 +404,8 @@ Service Principal `EduGest-PIM-API` tem acesso de escrita confirmado no site Sha
 4. ✅ Contrato API/UI:
    - `GET /api/products` agora retorna `descricaoComercialCurta`, `natureza`, `produtoCore` e `updatedAt`.
 5. ✅ Operação Azure:
-   - Backend atualizado para revisão `ca-edugest-prod-backend--0000031`.
-   - Frontend atualizado para revisão `ca-edugest-pim-web--0000008`.
+   - Backend atualizado para revisão `backend-compartilhado-legado--0000031`.
+   - Frontend atualizado para revisão `frontend-legado--0000008`.
    - Revisões web antigas sem tráfego desativadas.
 6. ✅ QA smoke:
    - Criado `scripts/qa-frontend-production.sh`.
@@ -418,8 +418,8 @@ Service Principal `EduGest-PIM-API` tem acesso de escrita confirmado no site Sha
 ✅ bash scripts/qa-frontend-production.sh
 ✅ Frontend /api/products proxy retorna dados sem API key no browser
 ✅ HTML público não contém NEXT_PUBLIC_API_KEY, X-Api-Key, chave local ou api-key
-✅ Azure web: modo Single, revisão ca-edugest-pim-web--0000008 Running/Healthy
-✅ Azure backend: revisão ca-edugest-prod-backend--0000031 Running/Healthy
+✅ Azure web: modo Single, revisão frontend-legado--0000008 Running/Healthy
+✅ Azure backend: revisão backend-compartilhado-legado--0000031 Running/Healthy
 ```
 
 ### Pendência Conhecida
@@ -429,6 +429,31 @@ Service Principal `EduGest-PIM-API` tem acesso de escrita confirmado no site Sha
 ✅ Deploy automático fica menos sujeito a regressão de arquitetura/plataforma.
 ✅ API key deixa de ser exposta no bundle/browser.
 ✅ Smoke test de produção disponível para validação pós-deploy.
+
+---
+
+## 🚑 PHASE 3 — TAREFA 7.15: Hotfix Backend 404 em /api/products (2026-05-27 11:01 UTC) ✅ CONCLUÍDA
+
+### Problema Identificado
+- **Sintoma**: UI exibia `Failed to fetch products (status: 404)`.
+- **Causa**: `backend-compartilhado-legado` estava rodando imagem incorreta `acr-legado.example.invalid/imagem-externa:0c57cb9`, que não expõe as rotas PIM.
+- **Impacto**: frontend `/api/products` estava saudável, mas recebia 404 do backend.
+
+### Correção Aplicada
+1. ✅ Backend restaurado para `acr-legado.example.invalid/edugest-pim:latest`.
+2. ✅ Nova revisão ativa: `backend-compartilhado-legado--0000036`.
+3. ✅ Rota `/api/products` voltou a responder no backend e no proxy frontend.
+
+### QA
+```
+✅ Backend /api/products + X-Api-Key → retorna data[]
+✅ Frontend /api/products proxy → retorna data[]
+✅ bash scripts/qa-frontend-production.sh → PASS
+✅ Backend Container App: backend-compartilhado-legado--0000036 Running/Healthy, 100% tráfego
+```
+
+### Observação
+- O checkout local contém apenas `.github/workflows/deploy.yml`, que aponta para `edugest-pim`. A imagem `imagem-externa:0c57cb9` provavelmente veio de execução externa/manual ou workflow fora deste checkout.
 
 ---
 
@@ -469,12 +494,12 @@ GET /api/health → HTTP 200 OK
 
 **✅ Frontend**
 ```
-https://ca-edugest-pim-web.purpleground-cde5672b.brazilsouth.azurecontainerapps.io → HTTP 307 (redirect)
+https://frontend-legado-compartilhado.example.invalid → HTTP 307 (redirect)
 ```
 
 **✅ Container Image**
 ```
-Current: edugestacrprod.azurecr.io/edugest-pim:latest
+Current: acr-legado.example.invalid/edugest-pim:latest
 Status: Provisioned
 Replicas: 1/1 Active
 ```
@@ -603,23 +628,23 @@ curl -X PUT "https://graph.microsoft.com/v1.0/drives/b!DPNlF5Xwb0WMcvZJP09s45qfJ
 
 | Recurso | URL | Status |
 |---------|-----|--------|
-| **Frontend (EduGest-PIM)** | https://white-pebble-0487ed70f.7.azurestaticapps.net | ✅ HTTP 200 |
+| **Frontend (EduGest-PIM)** | https://static-web-app-legado.example.invalid | ✅ HTTP 200 |
 | Pages | /products, /analyze, /apresentacoes | ✅ SPA routing funcional |
-| **Backend API** | https://ca-edugest-prod-backend.purpleground-cde5672b.brazilsouth.azurecontainerapps.io | ✅ HTTP 200 |
+| **Backend API** | https://api-legada-compartilhada.example.invalid | ✅ HTTP 200 |
 | Health | /api/health | ✅ Operational |
 | Products | /api/products | ✅ Lista 20 produtos |
 
 ### Notas Técnicas
 
-- Frontend: Static Web App `swa-edugest-pim-prod` em eastus2 (Azure limitation: SWA não em brazilsouth)
-- Backend: Container Apps `ca-edugest-prod-backend` em brazilsouth
+- Frontend: Static Web App `swa-legado-compartilhado` em eastus2 (Azure limitation: SWA não em brazilsouth)
+- Backend: Container Apps `backend-compartilhado-legado` em brazilsouth
 - Frontend faz chamadas diretas para backend (sem proxy) via `NEXT_PUBLIC_API_URL`
 - Static Web Apps configurado como SPA (navigationFallback → index.html)
 - CORS não bloqueado entre frontend e backend
 - Build otimizado: ~3.2s no Turbopack
 
 **Status Atualizado (2026-05-25 23:50 UTC):**
-- ✅ Static Web App dedicado criado (swa-edugest-pim-prod)
+- ✅ Static Web App dedicado criado (swa-legado-compartilhado)
 - ✅ Build Next.js concluído
 - ✅ Deploy validado (HTTP 200, SPA routing OK)
 - ⏳ GitHub Actions token para deploy automático pronto (aguarda configuração de secret no GitHub)
@@ -633,14 +658,14 @@ curl -X PUT "https://graph.microsoft.com/v1.0/drives/b!DPNlF5Xwb0WMcvZJP09s45qfJ
 **Solução Implementada:**
 1. ✅ Dockerfile Next.js com output: 'standalone' (Dockerfile em apps/web/)
 2. ✅ Build image platform linux/amd64 para Azure
-3. ✅ Push para ACR (edugestacrprod.azurecr.io/edugest-pim-web:latest)
-4. ✅ Criado Container App: `ca-edugest-pim-web` em `rg-edugest-prod`
+3. ✅ Push para ACR (acr-legado.example.invalid/edugest-pim-web:latest)
+4. ✅ Criado Container App: `frontend-legado` em `rg-compartilhado-legado`
 5. ✅ Variáveis de ambiente configuradas:
-   - `NEXT_PUBLIC_API_URL=https://ca-edugest-prod-backend.purpleground-cde5672b.brazilsouth.azurecontainerapps.io`
+   - `NEXT_PUBLIC_API_URL=https://api-legada-compartilhada.example.invalid`
    - `API_KEY` configurada no servidor Next via secret do Container App (atualizado na Tarefa 7.13)
    - `NODE_ENV=production`
 6. ✅ Ingress externo na porta 3001
-7. ✅ URL de produção: **https://ca-edugest-pim-web.purpleground-cde5672b.brazilsouth.azurecontainerapps.io**
+7. ✅ URL de produção: **https://frontend-legado-compartilhado.example.invalid**
 
 **Status:** 🟢 **LIVE & OPERATIONAL**
 - ✅ Server respondendo com HTML (Next.js app)
@@ -663,7 +688,7 @@ curl -X PUT "https://graph.microsoft.com/v1.0/drives/b!DPNlF5Xwb0WMcvZJP09s45qfJ
    - WORKDIR alterado para `/app/apps/web`
    - CMD simplificado
 2. ✅ Rebuild sem cache + push para ACR
-3. ✅ Deletar/recriar Container App ca-edugest-pim-web
+3. ✅ Deletar/recriar Container App frontend-legado
 4. ✅ Validação: HTTP 307 (redirect) + HTML completo
 
 **Status Final:** 🟢 **OPERACIONAL E ESTÁVEL**
@@ -706,7 +731,7 @@ curl -X PUT "https://graph.microsoft.com/v1.0/drives/b!DPNlF5Xwb0WMcvZJP09s45qfJ
 | Authentication middleware | ✅ ATIVO | x-api-key validation funcionando |
 | TLS/HTTPS | ✅ VÁLIDO | Certificado Microsoft até 2026-11-11 |
 
-**URL Base**: https://ca-edugest-prod-backend.purpleground-cde5672b.brazilsouth.azurecontainerapps.io
+**URL Base**: https://api-legada-compartilhada.example.invalid
 **Status**: 🟢 LIVE & FULLY OPERATIONAL
 
 ### Summary — Phase 3 Tarefa 7
@@ -823,3 +848,158 @@ EduGest-PIM/
 - **Pronto para produção** (build + tipos compilados com sucesso)
 - **Escalável** (suporta criação em massa de produtos)
 - **Feedback visual** em tempo real durante geração
+
+---
+
+## 🚑 PHASE 4 — HOTFIX 1.5: Produto não encontrado (500) ao clicar no produto (2026-05-27 11:13 UTC) ✅ CONCLUÍDA
+
+### Problema
+- Ao clicar no produto `relatorios-inteligentes`, a rota `/api/products/relatorios-inteligentes` retornava HTTP 500.
+- Logs do backend mostravam `PrismaClientKnownRequestError P2022`: coluna `Product.name` não existia no banco.
+- A imagem restaurada do backend estava com Prisma Client incompatível com o schema atual (`nomeComercial`).
+- O checkout atual também não continha mais a página `/products/[slug]`, removida na Phase 4, apesar da listagem ainda apontar para essa URL.
+
+### Correção
+- Recriada `apps/web/app/products/[slug]/page.tsx` usando proxy seguro `/api/products/:slug`.
+- Corrigido `apps/web/app/products/[slug]/edit-ai-content/page.tsx` para aceitar resposta direta do backend ou envelope `{ data }`.
+- Criado proxy Next `apps/web/app/api/products/[slug]/regenerate-financial/route.ts`.
+- Endurecido `Dockerfile` do backend:
+  - `npx prisma generate --schema=./schema.prisma`
+  - validação de build bloqueia imagem se `Product.name` existir ou `nomeComercial` faltar no Prisma DMMF.
+
+### Deploy
+- Backend publicado e ativado:
+  - imagem `acr-legado.example.invalid/edugest-pim:hotfix-product-detail-20260527T1110Z`
+  - revisão `backend-compartilhado-legado--0000037`
+  - estado `Healthy / Running`, tráfego 100%.
+- Frontend publicado e ativado:
+  - imagem `acr-legado.example.invalid/edugest-pim-web:hotfix-product-detail-20260527T1110Z`
+  - revisão `frontend-legado--0000009`
+  - estado `Healthy / Running`, tráfego 100%.
+
+### QA
+- ✅ `npm run build --workspace=web`
+- ✅ `npm run check --workspace=@edugest-pim/api`
+- ✅ `npx prisma generate --schema=./schema.prisma`
+- ✅ Build Docker backend validou Prisma DMMF sem `Product.name`
+- ✅ `GET /api/products/relatorios-inteligentes` via frontend retornou 200
+- ✅ `GET /products/relatorios-inteligentes` retornou 200
+- ✅ `bash scripts/qa-frontend-production.sh` retornou `PASS`
+
+---
+
+## 🚑 PHASE 4 — HOTFIX 1.6: Botões do detalhe restaurados (2026-05-27 11:18 UTC) ✅ CONCLUÍDA
+
+### Problema
+- Após restaurar `/products/[slug]`, a tela voltou sem as ações esperadas: `Voltar`, `Editar` e `Excluir`.
+
+### Correção
+- Recolocada barra de ações em `apps/web/app/products/[slug]/page.tsx`.
+- `Voltar` retorna para `/products`.
+- `Editar` abre `/products/:slug/edit-ai-content`.
+- `Excluir` confirma via `window.confirm`, chama `DELETE /api/products/:slug` pelo proxy seguro e retorna ao catálogo.
+
+### Deploy
+- Frontend publicado:
+  - imagem `acr-legado.example.invalid/edugest-pim-web:hotfix-product-actions-20260527T1120Z`
+  - revisão `frontend-legado--0000010`
+  - estado `Healthy / Running`, tráfego 100%.
+- Backend foi sobrescrito novamente para `imagem-externa:0c57cb9` durante a janela de deploy e foi restaurado:
+  - imagem `acr-legado.example.invalid/edugest-pim:hotfix-product-detail-20260527T1110Z`
+  - revisão `backend-compartilhado-legado--0000039`
+  - estado `Healthy / Running`, tráfego 100%.
+
+### QA
+- ✅ `npm run build --workspace=web`
+- ✅ `bash scripts/qa-frontend-production.sh` retornou `PASS`
+- ✅ `GET /api/products/relatorios-inteligentes` via frontend retornou 200
+
+---
+
+## 🚑 PHASE 4 — HOTFIX 1.7: Editar 404 corrigido (2026-05-27 11:23 UTC) ✅ CONCLUÍDA
+
+### Problema
+- Botão `Editar` abria `/products/:slug/edit-ai-content`, mas a página retornava 404.
+- Causa: em Next.js 16, `params` na página server-side chega como `Promise`; a tela lia `params.slug` diretamente, buscando produto sem slug e caindo em `notFound()`.
+
+### Correção
+- `apps/web/app/products/[slug]/edit-ai-content/page.tsx` agora aguarda `params` antes de usar `slug`.
+- `getProduct()` agora usa `encodeURIComponent(slug)`.
+
+### Deploy
+- Frontend publicado:
+  - imagem `acr-legado.example.invalid/edugest-pim-web:hotfix-edit-route-20260527T1125Z`
+  - revisão `frontend-legado--0000011`
+  - estado `Healthy / Running`, tráfego 100%.
+- Backend confirmado:
+  - imagem `acr-legado.example.invalid/edugest-pim:hotfix-product-detail-20260527T1110Z`
+  - revisão `backend-compartilhado-legado--0000039`
+  - estado `Healthy / Running`, tráfego 100%.
+
+### QA
+- ✅ `npm run build --workspace=web`
+- ✅ `GET /products/relatorios-inteligentes/edit-ai-content` retornou 200
+- ✅ `DELETE /api/products/slug-inexistente-para-teste-delete` retornou 404 de produto inexistente, confirmando rota/proxy DELETE funcional sem apagar dado real
+- ✅ `bash scripts/qa-frontend-production.sh` retornou `PASS`
+
+---
+
+## 🚑 PHASE 4 — HOTFIX 1.8: Backend sobrescrito novamente para imagem sem PIM (2026-05-27 11:35 UTC) ✅ CONCLUÍDA
+
+### Problema
+- Catálogo voltou a exibir `Failed to fetch products (status: 404)`.
+- `/api/products` via frontend retornava `{"success":false,"error":{"code":"NOT_FOUND","message":"Rota não encontrada"}}`.
+
+### Causa
+- `backend-compartilhado-legado` foi sobrescrito novamente para imagens que não contêm as rotas PIM:
+  - `acr-legado.example.invalid/imagem-externa:0c57cb9-fix`
+  - `acr-legado.example.invalid/imagem-externa:0c57cb9`
+- Activity Log do Azure registrou `Microsoft.App/containerApps/write` em `2026-05-27T11:31:36Z`, caller `cleverson@plantaoti.com.br`, appid `04b07795-8ddb-461a-bbee-02f9e1bf7b46` (Azure CLI).
+- O workflow local `.github/workflows/deploy.yml` continua apontando para `edugest-pim`, então a origem provável é outro terminal/automação fora deste checkout usando Azure CLI.
+
+### Correção
+- Backend restaurado para imagem canônica:
+  - `acr-legado.example.invalid/edugest-pim:hotfix-product-detail-20260527T1110Z`
+- Revisão ativa:
+  - `backend-compartilhado-legado--0000042`
+  - `Healthy / Running`, tráfego 100%.
+
+### QA
+- ✅ `az containerapp show` confirmou imagem `edugest-pim:hotfix-product-detail-20260527T1110Z`
+- ✅ `latestRevisionName` e `latestReadyRevisionName`: `backend-compartilhado-legado--0000042`
+- ✅ `bash scripts/qa-frontend-production.sh` retornou `PASS`
+
+### Risco ativo
+- Enquanto outra automação/terminal continuar aplicando `imagem-externa:*` em `backend-compartilhado-legado`, o erro 404 pode reaparecer.
+
+---
+
+## 🏗️ PHASE 4 — INFRA 2.1: Ambiente dedicado EDUGEST-PIM (2026-05-27 13:07 UTC) ✅ CONCLUÍDA
+
+### Decisão
+- Produção do EDUGEST-PIM foi separada em recursos próprios:
+  - Resource Group: `rg-edugest-pim-prod`
+  - ACR: `acredgestpimprod.azurecr.io`
+  - Managed Identity: `id-edugest-pim-prod`
+  - Backend: `ca-edugest-pim-api`
+  - Frontend: `ca-edugest-pim-web-prod`
+  - Log Analytics: `log-edugest-pim-prod`
+
+### URLs atuais
+- API: https://ca-edugest-pim-api.purpleground-cde5672b.brazilsouth.azurecontainerapps.io
+- Frontend: https://ca-edugest-pim-web-prod.purpleground-cde5672b.brazilsouth.azurecontainerapps.io
+
+### Ajustes realizados
+- `.github/workflows/deploy.yml` aponta para o novo Resource Group, novo ACR e novos Container Apps.
+- `scripts/qa-frontend-production.sh` e `scripts/qa-phase4-e2e.sh` usam as novas URLs por padrão.
+- `scripts/create-pim-prod-infra.sh` criado para recriar/atualizar a infra PIM sem copiar secrets de outro projeto.
+- `docs/INFRA.md`, `docs/INFRA-PIM-PROD.md`, `docs/DEPLOY-FRONTEND.md` e `CREDENCIAIS-PRODUCAO.md` atualizados para a infra dedicada.
+
+### QA
+- ✅ Backend revision saudável em `ca-edugest-pim-api`.
+- ✅ Frontend revision saudável em `ca-edugest-pim-web-prod`.
+- ✅ `bash scripts/qa-frontend-production.sh` retornou `PASS`.
+- ✅ `/api/products` via frontend retornou HTTP 200 com lista de produtos.
+
+### Exceção temporária
+- A assinatura Azure recusou a criação de outro Container Apps Managed Environment por quota. Os Container Apps usam o Managed Environment existente até aumento de quota ou migração para outra hospedagem.

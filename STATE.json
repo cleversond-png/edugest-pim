@@ -1,12 +1,12 @@
 {
   "version": "v3",
   "project": "EDUGEST-PIM",
-  "last_updated": "2026-05-27T01:30:00Z",
+  "last_updated": "2026-05-27T13:07:28Z",
   "current_phase": "Phase 4 — Redução de Campos + Inteligência IA",
 
-  "current_task": "Phase 4 Tarefa 1 — CONCLUÍDA (Redução de campos de 77 para 18 + Geração IA Financeiro Automática)",
+  "current_task": "Phase 4 — Produção em infraestrutura dedicada EDUGEST-PIM",
 
-  "pivot_note": "Projeto reorientado em 2026-05-25. O foco principal é o cadastro de produto como fonte única de verdade. Motor de análise de transcrição (POST /api/analyze) é funcionalidade secundária. 2026-05-26 16:44 — Phase 3 COMPLETO ✅: Backend API + Frontend operacionais em Azure e validados. Bug Dockerfile corrigido (WORKDIR + server.js path). URLs: API https://ca-edugest-prod-backend.purpleground-cde5672b.brazilsouth.azurecontainerapps.io | Frontend https://ca-edugest-pim-web.purpleground-cde5672b.brazilsouth.azurecontainerapps.io",
+  "pivot_note": "Projeto reorientado em 2026-05-25. O foco principal é o cadastro de produto como fonte única de verdade. Motor de análise de transcrição (POST /api/analyze) é funcionalidade secundária. 2026-05-27 — Phase 4 implementada e produção isolada em infraestrutura dedicada EDUGEST-PIM. URLs atuais: API https://ca-edugest-pim-api.purpleground-cde5672b.brazilsouth.azurecontainerapps.io | Frontend https://ca-edugest-pim-web-prod.purpleground-cde5672b.brazilsouth.azurecontainerapps.io",
 
   "next_tasks": [
     "Validação E2E: Criar produto → IA gera financeiro → Revisar/editar → Publicar",
@@ -46,15 +46,21 @@
     "Phase 3 Tarefa 7.6: Fix Edit Button — Remove descricaoComercialCompleta field (schema validation error) ✅",
     "Phase 3 Tarefa 7.7: Fix Delete Button — Implement DELETE /api/products/:slug endpoint ✅",
     "Phase 3 Tarefa 7.8: Aumentar Contraste de Placeholders — placeholder:text-gray-400 em todos os fields ✅",
-    "Phase 3 Tarefa 7.10: Frontend externo restaurado — build sem Google Fonts, imagem linux/amd64 publicada, revisão ca-edugest-pim-web--0000005 saudável ✅",
-    "Phase 3 Tarefa 7.11: Restaurar Tailwind CSS completo — globals.css migrado para @import tailwindcss + revisão ca-edugest-pim-web--0000006 saudável ✅",
-    "Phase 3 Tarefa 7.12: Contraste de dropdown/select — select/option com texto escuro e revisão ca-edugest-pim-web--0000007 saudável ✅",
+    "Phase 3 Tarefa 7.10: Frontend externo restaurado — build sem Google Fonts, imagem linux/amd64 publicada, revisão frontend legado --0000005 saudável ✅",
+    "Phase 3 Tarefa 7.11: Restaurar Tailwind CSS completo — globals.css migrado para @import tailwindcss + revisão frontend legado --0000006 saudável ✅",
+    "Phase 3 Tarefa 7.12: Contraste de dropdown/select — select/option com texto escuro e revisão frontend legado --0000007 saudável ✅",
     "Phase 3 Tarefa 7.13: Hardening deploy + segurança frontend — API_KEY server-side, proxies Next, workflow linux/amd64, QA smoke e revisão web 0000008 ✅",
+    "Phase 3 Tarefa 7.15: Hotfix produção — restaurar backend compartilhado legado para imagem edugest-pim:latest após 404 em /api/products ✅",
     "Phase 3 Tarefa 7.14: Fluxo automático de geração de documentação para Copilot — POST /api/products dispara fire-and-forget com geração IA + docs + SharePoint publish, GenerationStatusBanner mostra progresso em tempo real ✅",
     "Phase 4 Tarefa 1.1: Limpeza de Legacy — Remover 7 campos não utilizados (nomeInterno, shortPitch, produtoCore, categoria, versao, etc) ✅",
     "Phase 4 Tarefa 1.2: Redesenhar Formulário — ProductFormSimplified com 18 campos apenas (entrada manual) vs 77 anteriormente (77% redução) ✅",
     "Phase 4 Tarefa 1.3: Geração IA de Financeiro — productAiCompleter.ts com Claude API para gerar preços, margens, faixas por público, pacotes crédito ✅",
-    "Phase 4 Tarefa 1.4: UI Edição Financeiro — FinancialEditPanel interativo com edição inline, regeneração, e salva automático ✅"
+    "Phase 4 Tarefa 1.4: UI Edição Financeiro — FinancialEditPanel interativo com edição inline, regeneração, e salva automático ✅",
+    "Phase 4 Hotfix 1.5: Detalhe de produto restaurado — Prisma Client regenerado sem Product.name, /products/:slug recriado e proxies seguros publicados ✅",
+    "Phase 4 Hotfix 1.6: Ações do detalhe restauradas — botões Voltar, Editar e Excluir recolocados em /products/:slug + frontend 0000010 ✅",
+    "Phase 4 Hotfix 1.7: Editar produto corrigido — params Promise em /products/:slug/edit-ai-content, revisão web 0000011 e DELETE proxy verificado ✅",
+    "Phase 4 Hotfix 1.8: Backend restaurado novamente após overwrite externo; revisão PIM dedicada validada e causa rastreada no Activity Log ✅",
+    "Phase 4 Infra 2.1: Infraestrutura dedicada EDUGEST-PIM criada — rg-edugest-pim-prod, acredgestpimprod, ca-edugest-pim-api, ca-edugest-pim-web-prod e QA de produção aprovado ✅"
   ],
 
   "preserved_modules": {
