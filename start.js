@@ -46,6 +46,22 @@ if (process.env.DATABASE_URL) {
       stdio: "inherit",
     });
     console.log("[App] Prisma schema applied.");
+
+    // Seed catalog on first boot only (idempotent: skip if products exist).
+    try {
+      const count = execSync(
+        "node -e \"const{PrismaClient}=require('@prisma/client');const p=new PrismaClient();p.product.count().then(c=>{process.stdout.write(String(c));return p.$disconnect()}).catch(()=>{process.stdout.write('-1')})\""
+      ).toString().trim();
+      if (count === "0") {
+        console.log("[App] Empty catalog detected, seeding...");
+        execSync("npx ts-node seed.ts", { stdio: "inherit" });
+        console.log("[App] Seed complete.");
+      } else {
+        console.log(`[App] Catalog has ${count} products, skipping seed.`);
+      }
+    } catch (err) {
+      console.error("[App] seed check failed (continuing):", err.message);
+    }
   } catch (err) {
     console.error("[App] prisma db push failed (continuing):", err.message);
   }
