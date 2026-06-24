@@ -1,15 +1,14 @@
 {
   "version": "v3",
   "project": "EDUGEST-PIM",
-  "last_updated": "2026-05-27T13:07:28Z",
+  "last_updated": "2026-06-24T19:40:00Z",
   "current_phase": "Phase 4 — Redução de Campos + Inteligência IA",
 
-  "current_task": "Phase 4 — Produção em infraestrutura dedicada EDUGEST-PIM",
+  "current_task": "Infra reprovisionada na subscription PROJETO EDUGEST — produção no ar via GitHub Actions",
 
-  "pivot_note": "Projeto reorientado em 2026-05-25. O foco principal é o cadastro de produto como fonte única de verdade. Motor de análise de transcrição (POST /api/analyze) é funcionalidade secundária. 2026-05-27 — Phase 4 implementada e produção isolada em infraestrutura dedicada EDUGEST-PIM. URLs atuais: API https://ca-edugest-pim-api.purpleground-cde5672b.brazilsouth.azurecontainerapps.io | Frontend https://ca-edugest-pim-web-prod.purpleground-cde5672b.brazilsouth.azurecontainerapps.io",
+  "pivot_note": "Projeto reorientado em 2026-05-25. O foco principal é o cadastro de produto como fonte única de verdade. Motor de análise de transcrição (POST /api/analyze) é funcionalidade secundária. 2026-06-24 — Subscription antiga ('Azure subscription 1') excluída; toda a infra recriada na subscription 'PROJETO EDUGEST' (id ad59449c-90b3-40e6-8ffa-6fe1fa88aedb, tenant 71d33acc) em Brazil South, deploy 100% via GitHub Actions. URLs atuais: API https://ca-edugest-pim-api.kindcliff-5c939250.brazilsouth.azurecontainerapps.io | Frontend https://ca-edugest-pim-web-prod.kindcliff-5c939250.brazilsouth.azurecontainerapps.io. Recursos: RG rg-edugest-pim-prod, ACR acredgestpimedu, env cae-edugest-pim, PostgreSQL Flexible psql-edugest-pim (db edugest_pim). Schema aplicado via prisma db push no boot; seed idempotente dos 15 produtos no primeiro boot.",
 
   "next_tasks": [
-    "Validação E2E: Criar produto → IA gera financeiro → Revisar/editar → Publicar",
     "Integração com generação automática de Marketing/Onboarding (Fase 4.2)",
     "Otimizações de performance e caching IA",
     "Documentação final de operação"
@@ -60,7 +59,9 @@
     "Phase 4 Hotfix 1.6: Ações do detalhe restauradas — botões Voltar, Editar e Excluir recolocados em /products/:slug + frontend 0000010 ✅",
     "Phase 4 Hotfix 1.7: Editar produto corrigido — params Promise em /products/:slug/edit-ai-content, revisão web 0000011 e DELETE proxy verificado ✅",
     "Phase 4 Hotfix 1.8: Backend restaurado novamente após overwrite externo; revisão PIM dedicada validada e causa rastreada no Activity Log ✅",
-    "Phase 4 Infra 2.1: Infraestrutura dedicada EDUGEST-PIM criada — rg-edugest-pim-prod, acredgestpimprod, ca-edugest-pim-api, ca-edugest-pim-web-prod e QA de produção aprovado ✅"
+    "Phase 4 Infra 2.1: Infraestrutura dedicada EDUGEST-PIM criada — rg-edugest-pim-prod, acredgestpimprod, ca-edugest-pim-api, ca-edugest-pim-web-prod e QA de produção aprovado ✅",
+    "Phase 4 E2E 2.2: Fluxo produção validado — criar produto, IA gerar financeiro, revisar preço, gerar 11 documentos e publicar no SharePoint em EduGest-PIM/Central do Produto/qa-e2e-produto-ia-20260527-1030 ✅",
+    "Phase 4 Infra 3.0: Reprovisionamento na subscription PROJETO EDUGEST — RG/ACR/Container Apps Environment/PostgreSQL Flexible criados em Brazil South, Service Principal + GitHub Secrets configurados, deploy.yml apontado para nova infra, schema via prisma db push e seed idempotente dos 15 produtos no boot; API health database:ok, auth 401, frontend 200. Deploy 100% via GitHub Actions ✅"
   ],
 
   "preserved_modules": {
@@ -151,7 +152,9 @@
 
   "risks": [
     "Hub Docente e Insights existem no portfólio mas não têm slides cadastrados ainda",
-    "Lint web ainda possui débitos prévios em regras strict; build web e check API passam"
+    "Lint web ainda possui débitos prévios em regras strict; build web e check API passam",
+    "Graph/SharePoint indisponível: AZURE_CLIENT_SECRET fornecido é inválido (AADSTS7000215). Health retorna graph:unreachable. Substituir pelo client secret real do app 581edde8 para reativar publicação SharePoint.",
+    "Postgres com firewall 'allow Azure services' (apps Azure acessam; runner do GitHub não). DB push/seed rodam no boot do container, não no runner."
   ],
 
   "notes": [
