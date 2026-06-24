@@ -50,7 +50,7 @@ if (process.env.DATABASE_URL) {
     // Seed catalog on first boot only (idempotent: skip if products exist).
     try {
       const count = execSync(
-        "node -e \"const{PrismaClient}=require('@prisma/client');const p=new PrismaClient();p.product.count().then(c=>{process.stdout.write(String(c));return p.$disconnect()}).catch(()=>{process.stdout.write('-1')})\""
+        "node -e \"new (require('@prisma/client').PrismaClient)().product.count().then(c=>{process.stdout.write(String(c));process.exit(0)}).catch(()=>{process.stdout.write('-1');process.exit(0)})\""
       ).toString().trim();
       if (count === "0") {
         console.log("[App] Empty catalog detected, seeding...");
