@@ -54,7 +54,7 @@ if (process.env.DATABASE_URL) {
       ).toString().trim();
       if (count === "0") {
         console.log("[App] Empty catalog detected, seeding...");
-        execSync("npx ts-node seed.ts", { stdio: "inherit" });
+        execSync("node ./seed-dist/seed.js", { stdio: "inherit" });
         console.log("[App] Seed complete.");
       } else {
         console.log(`[App] Catalog has ${count} products, skipping seed.`);

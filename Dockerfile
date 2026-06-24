@@ -3,6 +3,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json pnpm-lock.yaml* ./
 COPY schema.prisma ./
+COPY seed.ts ./
 COPY apps/api ./apps/api
 COPY apps/web ./apps/web
 COPY packages/core ./packages/core
@@ -12,6 +13,9 @@ RUN npm ci && \
     node -e "const {Prisma}=require('@prisma/client'); const fields=Prisma.dmmf.datamodel.models.find(m=>m.name==='Product').fields.map(f=>f.name); if (fields.includes('name') || !fields.includes('nomeComercial')) throw new Error('Invalid Prisma Product model generated');" && \
     npm run build --workspace=@edugest-pim/core && \
     npm run build --workspace=@edugest-pim/api
+
+# Precompile seed to CommonJS JS (avoids ts-node ESM issues at runtime)
+RUN npx tsc seed.ts --module commonjs --target es2020 --esModuleInterop --skipLibCheck --outDir ./seed-dist || true
 
 # Production stage
 FROM node:20-alpine
@@ -35,8 +39,8 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/apps/api/node_modules ./apps/api/node_modules
 COPY --from=builder /app/schema.prisma ./schema.prisma
 
-# Copy seed script (used for one-off DB seeding via container exec)
-COPY seed.ts ./
+# Copy precompiled seed (used for idempotent first-boot seeding)
+COPY --from=builder /app/seed-dist ./seed-dist
 
 # Copy production startup script
 COPY start.js ./
