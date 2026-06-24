@@ -5,7 +5,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import Ajv from 'ajv'
 import { gerarApresentacao, ApresentacaoInput } from '../services/pptxGenerator'
-import { getGraphClient } from '../services/graph'
+import { uploadPresentation } from '../services/blobStorage'
 import { logger } from '../utils/logger'
 
 const ajv = new Ajv()
@@ -105,32 +105,27 @@ export async function registerApresentacoesRoute(app: FastifyInstance) {
 
       const { buffer, response } = await gerarApresentacao(body)
 
-      // Upload to SharePoint
+      // Upload to Blob Storage
       try {
-        const graphClient = getGraphClient()
-        const baseFolder = process.env.SHAREPOINT_BASE_FOLDER || 'EduGest-PIM'
-        const apresentacoesFolder = `${baseFolder}/Central do Produto/_apresentacoes`
+        const downloadUrl = await uploadPresentation(response.nomeArquivo, buffer)
 
-        await graphClient.createFolder(apresentacoesFolder)
-        const uploadResult = await graphClient.uploadBinaryFile(apresentacoesFolder, response.nomeArquivo, buffer)
-
-        logger.info({ sharepointUrl: uploadResult.webUrl }, 'Presentation published to SharePoint')
+        logger.info({ downloadUrl }, 'Presentation published to Blob Storage')
 
         return res.status(200).send({
           ...response,
-          sharepointUrl: uploadResult.webUrl
+          downloadUrl
         })
-      } catch (sharePointErr: any) {
-        logger.warn({ error: sharePointErr.message }, 'Failed to upload to SharePoint, but PPTX was generated')
+      } catch (storageErr: any) {
+        logger.warn({ error: storageErr.message }, 'Failed to upload to Blob Storage, but PPTX was generated')
 
         // Still return success with warning
         return res.status(200).send({
           ...response,
           status: 'PARTIAL_SUCCESS',
           avisos: [...response.avisos, {
-            produto: 'SHAREPOINT',
+            produto: 'STORAGE',
             tipo: 'UPLOAD_FAILED',
-            mensagem: 'Apresentação gerada mas falhou upload ao SharePoint'
+            mensagem: 'Apresentação gerada mas falhou upload ao Blob Storage'
           }]
         })
       }

@@ -11,7 +11,7 @@ export type HealthResponse = {
   timestamp: string
   services: {
     database?: 'ok' | 'unreachable'
-    graph?: 'ok' | 'unreachable' | 'not_configured'
+    storage?: 'ok' | 'unreachable' | 'not_configured'
   }
 }
 
@@ -22,17 +22,15 @@ export async function registerHealthRoute(app: FastifyInstance) {
     // Database check
     services.database = process.env.DATABASE_URL ? 'ok' : 'unreachable'
 
-    // Graph check
-    if (!process.env.AZURE_CLIENT_ID || !process.env.SHAREPOINT_SITE_ID) {
-      services.graph = 'not_configured'
+    // Storage (Azure Blob) check
+    if (!process.env.AZURE_STORAGE_CONNECTION_STRING) {
+      services.storage = 'not_configured'
     } else {
       try {
-        const { getGraphClient } = await import('../services/graph')
-        const graphClient = getGraphClient()
-        const isHealthy = await graphClient.checkHealth()
-        services.graph = isHealthy ? 'ok' : 'unreachable'
+        const { checkBlobHealth } = await import('../services/blobStorage')
+        services.storage = (await checkBlobHealth()) ? 'ok' : 'unreachable'
       } catch (err: any) {
-        services.graph = 'unreachable'
+        services.storage = 'unreachable'
       }
     }
 

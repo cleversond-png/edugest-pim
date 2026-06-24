@@ -8,7 +8,7 @@ import {
   generateCrmExport,
   generatePartnerExport,
 } from '../services/docGenerator'
-import { publishProductDocuments } from '../services/graph'
+import { publishProductDocuments } from '../services/blobStorage'
 import { hasAnthropicKey } from '../services/aiClientWrapper'
 import { completeProductWithAI } from '../services/productAiCompleter'
 
