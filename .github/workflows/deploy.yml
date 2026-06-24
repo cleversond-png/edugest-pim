@@ -12,11 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AZURE_RESOURCE_GROUP: rg-edugest-pim-prod
-      ACR_NAME: acredgestpimprod
-      ACR_LOGIN_SERVER: acredgestpimprod.azurecr.io
+      ACR_NAME: acredgestpimedu
+      ACR_LOGIN_SERVER: acredgestpimedu.azurecr.io
       API_CONTAINER_APP: ca-edugest-pim-api
       WEB_CONTAINER_APP: ca-edugest-pim-web-prod
-      API_URL: https://ca-edugest-pim-api.purpleground-cde5672b.brazilsouth.azurecontainerapps.io
+      API_URL: https://ca-edugest-pim-api.kindcliff-5c939250.brazilsouth.azurecontainerapps.io
 
     steps:
       - uses: actions/checkout@v4
@@ -113,7 +113,7 @@ jobs:
 
       - name: Production smoke test
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: bash scripts/qa-frontend-production.sh https://${{ env.WEB_CONTAINER_APP }}.purpleground-cde5672b.brazilsouth.azurecontainerapps.io
+        run: bash scripts/qa-frontend-production.sh https://${{ env.WEB_CONTAINER_APP }}.kindcliff-5c939250.brazilsouth.azurecontainerapps.io
 
       - name: Azure Logout
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'

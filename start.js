@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { spawn } = require("child_process");
+const { spawn, execSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
@@ -35,6 +35,22 @@ if (frontendExists) {
   } catch (err) {
     console.log(`[App] Error reading frontend folder:`, err.message);
   }
+}
+
+// Apply Prisma schema to the database (idempotent). Runs from inside the
+// container, whose network can reach the Azure PostgreSQL server.
+if (process.env.DATABASE_URL) {
+  try {
+    console.log("[App] Applying Prisma schema (db push)...");
+    execSync("npx prisma db push --schema=./schema.prisma --skip-generate --accept-data-loss", {
+      stdio: "inherit",
+    });
+    console.log("[App] Prisma schema applied.");
+  } catch (err) {
+    console.error("[App] prisma db push failed (continuing):", err.message);
+  }
+} else {
+  console.log("[App] DATABASE_URL not set, skipping db push.");
 }
 
 console.log("[App] Starting API on port 3000...");

@@ -35,6 +35,9 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/apps/api/node_modules ./apps/api/node_modules
 COPY --from=builder /app/schema.prisma ./schema.prisma
 
+# Copy seed script (used for one-off DB seeding via container exec)
+COPY seed.ts ./
+
 # Copy production startup script
 COPY start.js ./
 
