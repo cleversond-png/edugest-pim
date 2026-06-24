@@ -570,17 +570,20 @@ async function upsertTemplates() {
 
 async function upsertProducts() {
   for (const p of PRODUCTS_TO_SEED) {
-    const existing = await prisma.product.findUnique({ where: { slug: p.slug } })
+    // Campos que não pertencem ao model Product (grupo* → ERPMappingSankhya;
+    // observacoesComerciais não existe mais no schema). Removidos antes do create.
+    const { grupoCodigo, grupoDescricao, observacoesComerciais, ...data } = p as any
+    const existing = await prisma.product.findUnique({ where: { slug: data.slug } })
 
     if (existing) {
       await prisma.product.update({
-        where: { slug: p.slug },
-        data: p,
+        where: { slug: data.slug },
+        data,
       })
-      console.log(`  ✓ Atualizado: ${p.nomeComercial}`)
+      console.log(`  ✓ Atualizado: ${data.nomeComercial}`)
     } else {
-      await prisma.product.create({ data: p })
-      console.log(`  ✓ Criado: ${p.nomeComercial}`)
+      await prisma.product.create({ data })
+      console.log(`  ✓ Criado: ${data.nomeComercial}`)
     }
   }
 }
