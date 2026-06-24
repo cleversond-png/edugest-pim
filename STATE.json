@@ -1,7 +1,7 @@
 {
   "version": "v3",
   "project": "EDUGEST-PIM",
-  "last_updated": "2026-06-24T19:40:00Z",
+  "last_updated": "2026-06-24T21:40:00Z",
   "current_phase": "Phase 4 — Redução de Campos + Inteligência IA",
 
   "current_task": "Infra reprovisionada na subscription PROJETO EDUGEST — produção no ar via GitHub Actions",
@@ -61,7 +61,8 @@
     "Phase 4 Hotfix 1.8: Backend restaurado novamente após overwrite externo; revisão PIM dedicada validada e causa rastreada no Activity Log ✅",
     "Phase 4 Infra 2.1: Infraestrutura dedicada EDUGEST-PIM criada — rg-edugest-pim-prod, acredgestpimprod, ca-edugest-pim-api, ca-edugest-pim-web-prod e QA de produção aprovado ✅",
     "Phase 4 E2E 2.2: Fluxo produção validado — criar produto, IA gerar financeiro, revisar preço, gerar 11 documentos e publicar no SharePoint em EduGest-PIM/Central do Produto/qa-e2e-produto-ia-20260527-1030 ✅",
-    "Phase 4 Infra 3.0: Reprovisionamento na subscription PROJETO EDUGEST — RG/ACR/Container Apps Environment/PostgreSQL Flexible criados em Brazil South, Service Principal + GitHub Secrets configurados, deploy.yml apontado para nova infra, schema via prisma db push e seed idempotente dos 15 produtos no boot; API health database:ok, auth 401, frontend 200. Deploy 100% via GitHub Actions ✅"
+    "Phase 4 Infra 3.0: Reprovisionamento na subscription PROJETO EDUGEST — RG/ACR/Container Apps Environment/PostgreSQL Flexible criados em Brazil South, Service Principal + GitHub Secrets configurados, deploy.yml apontado para nova infra, schema via prisma db push e seed idempotente dos 15 produtos no boot; API health database:ok, auth 401, frontend 200. Deploy 100% via GitHub Actions ✅",
+    "Phase 4 Infra 3.1: Armazenamento migrado de SharePoint para Azure Blob Storage — Storage Account stedugestpim + container privado pim-docs, service blobStorage.ts (upload texto/binário + URLs SAS de leitura), products.ts e apresentacoes.ts gravam no Blob, health checa storage:ok. Validado E2E: 11 docs publicados com IA real, acesso anônimo bloqueado (409), SAS read 200. SharePoint/Graph desativados (código mantido sem uso) ✅"
   ],
 
   "preserved_modules": {
@@ -153,7 +154,7 @@
   "risks": [
     "Hub Docente e Insights existem no portfólio mas não têm slides cadastrados ainda",
     "Lint web ainda possui débitos prévios em regras strict; build web e check API passam",
-    "Graph/SharePoint indisponível: AZURE_CLIENT_SECRET fornecido é inválido (AADSTS7000215). Health retorna graph:unreachable. Substituir pelo client secret real do app 581edde8 para reativar publicação SharePoint.",
+    "SharePoint/Graph descontinuado como destino de publicação — substituído por Azure Blob Storage (container privado pim-docs, URLs SAS). Código do Graph mantido no repo mas sem uso. App SharePoint 581edde8 continua com client secret inválido, porém não afeta mais o produto.",
     "Postgres com firewall 'allow Azure services' (apps Azure acessam; runner do GitHub não). DB push/seed rodam no boot do container, não no runner."
   ],
 
